@@ -1,3 +1,7 @@
+'''
+Version: 0.1.0-alpha
+'''
+
 # Import packages
 import Tkinter as tk
 import numpy as np
