@@ -90,6 +90,24 @@
 
 <br />
 <h3>
+<a id="howto" class="anchor" href="#howto" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to calculate sensor data</h3>
+
+<ul>
+<li>If you use a DSLR, decide which ISO value you want the data calculated for. Use this ISO for all test images. Make sure the camera is set to save the images in RAW format.</li>
+<li>If you use a CCD, keep settings like binning and read rate the same for all test images.</li>
+<li>Take the following test images with your camera:
+<ol>
+<li>Two bias frames: The sensor should be covered and the exposure time should be as short as possible.</li>
+<li>Two flat frames: Image an evenly illuminated white surface. The histogram peak should be about half the way to the right, and the exposure time shouldn't exceed a few seconds unless the camera is cooled.</li>
+<li>One saturated frame: Image something bright, and make sure some part of the image contains completely saturated pixels.</li>
+</ol>
+</li>
+<li>Start APLab and add the frames you just captured in the Image Analyzer tool.</li>
+<li>Click the "Compute sensor data" button, and the calculated values will be displayed. You can now save this information to use with the other tools.</li>
+</ul>
+
+<br />
+<h3>
 <a id="toolsused" class="anchor" href="#toolsused" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tools used</h3>
 
 <ul>
@@ -100,6 +118,7 @@
 <li><a href="http://www.pythonware.com/products/pil/">Python Imaging Library (PIL)</a></li>
 <li><a href="http://www.stsci.edu/institute/software_hardware/pyfits">PyFITS</a></li>
 <li><a href="https://www.cybercom.net/~dcoffin/dcraw/">dcraw</a></li>
+<li><a href="https://github.com/pyinstaller/pyinstaller/wiki">PyInstaller</a></li>
 </ul>
 
 <br />
