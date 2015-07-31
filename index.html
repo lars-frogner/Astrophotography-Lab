@@ -100,7 +100,7 @@
 
 <br />
 <h3>
-<a id="howto" class="anchor" href="#howto" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to calculate sensor data</h3>
+<a id="howto1" class="anchor" href="#howto1" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to calculate sensor data</h3>
 
 <ul>
 <li><p>If you use a DSLR, decide which ISO value you want the data calculated for. Use this ISO for all test images. Make sure the camera is set to save the images in RAW format.</p></li>
@@ -115,6 +115,17 @@
 <li><p>Start APLab and add the frames you just captured in the Image Analyzer tool.</p></li>
 <li><p>Click the "Compute sensor data" button, and the calculated values will be displayed. You can now save this information to use with the other tools.</p></li>
 </ul>
+
+<br />
+<h3>
+<a id="howto2" class="anchor" href="#howto2" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to get image data for the SNR Calculator</h3>
+
+<p>The Image Analyzer tool allows you to extract from your light and dark frames all the information required by the SNR Calculator. Here is how to do it:</p>
+<p><b>Light frame:</b></p>
+<p>Add the light frame you want to use in the Image Analyzer. The mouse pointer needs to be in the "Select" mode. (Change mode by right-clicking in the image and choosing the mode in the menu.) Left-click and drag to draw a selection box over a background part of the image. Make the box as large as you can without including any stars. (If there are very many stars, make sure it contains as few as possible without being too small.) Right-click anywhere in the image and select "Transfer to SNR Calculator". When asked which image region you have selected, choose "Background". In the next window, select your camera, or just click "OK" if it has already been selected. The data from the selected region has now been copied to the input boxes of the SNR Calculator.</p>
+<p>Next, you need to draw a new selection box over a small region of the target. This will be the part of the target that the calculated SNR and target flux will apply to. Right-click in the image again and select "Transfer to SNR Calculator". This time choose "Target" in the window that pops up, and check that you camera is active one in the following window. The target level has now been copied to the corresponding input box in the SNR Calculator.</p>
+<p><b>Dark frames:</b></p>
+<p>You have the option to use either one or two dark frames. If you use two, one of them can be subtracted from the other to remove static features like hot pixels. This will be done automatically for DSLR cameras to get better noise measurements. If you use a DSLR and only one dark frame, you should draw a selection box over a part of the image containing few hot pixels. Otherwise you shouldn't draw a selection box. Right-click anywhere in the image and select "Transfer to SNR Calculator". In the window that pops up, select your camera, or just click "OK" if it has already been selected. The data from the dark frame has now been copied to the corresponding input boxes in the SNR Calculator.</p>
 
 <br />
 <h3>
