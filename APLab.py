@@ -1,5 +1,5 @@
 '''
-Version: 0.1.0-alpha
+Version: 0.1.1-alpha
 '''
 
 # Import packages
@@ -34,7 +34,7 @@ class APLab(tk.Tk):
         self.cnum = cnum # Index if camera in camera data lists. None if no camera is selected.
         self.toolsConfigured = False # True if the non-"Image Analyzer" classes are initialized
         
-        self.title('Astrophotography Lab 0.1.0') # Set window title
+        self.title('Astrophotography Lab 0.1.1') # Set window title
         
         self.addIcon(self) # Add window icon if it exists
         
@@ -5996,8 +5996,8 @@ class ImageAnalyzer(ttk.Frame):
             
             self.wait_window(topAskRegion)
             
-            self.disableWidgets()
-            self.busy = True
+            self.enableWidgets()
+            self.busy = False
             
             # Cancel if topwindow was exited
             if self.cancelled:
