@@ -101,6 +101,10 @@ class APLab(tk.Tk):
         self.photonFluxUnit = tk.IntVar()
         self.electronFluxUnit = tk.IntVar()
         
+        # Define attributes to keep track of current DR unit
+        self.stopsDRUnit = tk.IntVar()
+        self.dBDRUnit = tk.IntVar()
+        
         # Define attributes to keep track of tooltip states
         self.tooltipsOn = tk.IntVar()
         self.tooltipsOn.set(1 if TT_STATE == 'on' else 0)
@@ -174,6 +178,15 @@ class APLab(tk.Tk):
         
         self.menuSettings.add_cascade(label='Flux unit', menu=menuFluxUnit)
         
+        # "Dynamic range unit" submenu of "Settings"
+        menuDRUnit = tk.Menu(self.menubar, tearoff=0)
+        menuDRUnit.add_checkbutton(label='stops', variable=self.stopsDRUnit,
+                                     command=self.setStopsDRUnit)
+        menuDRUnit.add_checkbutton(label='dB', variable=self.dBDRUnit,
+                                     command=self.setdBDRUnit)
+        
+        self.menuSettings.add_cascade(label='Dynamic range unit', menu=menuDRUnit)
+        
         self.menubar.add_cascade(label='Settings', menu=self.menuSettings)
         
         # Show menubar
@@ -186,6 +199,7 @@ class APLab(tk.Tk):
         self.menuSettings.entryconfig(0, state='disabled')
         self.menuSettings.entryconfig(1, state='disabled')
         self.menuSettings.entryconfig(3, state='disabled')
+        self.menuSettings.entryconfig(4, state='disabled')
         
         # Dictionary to hold all frames
         self.frames = {}
@@ -230,6 +244,10 @@ class APLab(tk.Tk):
         # Set default flux unit
         self.photonFluxUnit.set(self.hasQE)
         self.electronFluxUnit.set(not self.hasQE)
+        
+        # Set default DR unit
+        self.stopsDRUnit.set(1)
+        self.dBDRUnit.set(0)
         
         # Setup frames and add to dictionary
         frameSNR = SNRCalculator(self.container, self)
@@ -281,6 +299,7 @@ class APLab(tk.Tk):
         self.menuSettings.entryconfig(0, state='normal')
         self.menuSettings.entryconfig(1, state='normal')
         self.menuSettings.entryconfig(3, state='normal')
+        self.menuSettings.entryconfig(4, state='normal')
                
         self.plMode.set(1)
         self.snrMode.set(0)
@@ -316,6 +335,7 @@ class APLab(tk.Tk):
         self.menuSettings.entryconfig(0, state='normal')
         self.menuSettings.entryconfig(1, state='normal')
         self.menuSettings.entryconfig(3, state='normal')
+        self.menuSettings.entryconfig(4, state='normal')
             
         self.snrMode.set(1)
         self.simMode.set(0)
@@ -351,6 +371,7 @@ class APLab(tk.Tk):
         self.menuSettings.entryconfig(0, state='normal')
         self.menuSettings.entryconfig(1, state='normal')
         self.menuSettings.entryconfig(3, state='normal')
+        self.menuSettings.entryconfig(4, state='normal')
             
         self.snrMode.set(0)
         self.simMode.set(1)
@@ -379,6 +400,7 @@ class APLab(tk.Tk):
         self.menuSettings.entryconfig(0, state='disabled')
         self.menuSettings.entryconfig(1, state='disabled')
         self.menuSettings.entryconfig(3, state='disabled')
+        self.menuSettings.entryconfig(4, state='disabled')
         
         self.snrMode.set(0)
         self.simMode.set(0)
@@ -1561,6 +1583,62 @@ class APLab(tk.Tk):
     
         self.currentFrame().varMessageLabel.set('Using photons/s as unit for flux.')
 
+    def setdBDRUnit(self):
+        
+        '''Use [dB] as unit for dynamic range.'''
+    
+        # Do nothing if dB is already used
+        if not self.stopsDRUnit.get():
+            self.dBDRUnit.set(1)
+            return None
+    
+        self.dBDRUnit.set(1)
+        self.stopsDRUnit.set(0)
+        
+        snrframe = self.frames[SNRCalculator]
+        simframe = self.frames[ImageSimulator]
+        
+        snrframe.varDRLabel.set('dB')
+        simframe.varDRLabel.set('dB')
+        
+        # Convert existing DR values from stops to dB
+        
+        if snrframe.dataCalculated:
+            
+            dr_stops = snrframe.dr
+            dr_dB = 10*np.log10(10**(dr_stops*np.log10(2.0))) 
+            snrframe.varDRInfo.set('%.1f' % dr_dB)
+            
+        if simframe.dataCalculated:
+        
+            dr_stops = simframe.dr
+            dr_dB = 10*np.log10(10**(dr_stops*np.log10(2.0))) 
+            simframe.varDRInfo.set('%.1f' % dr_dB)
+    
+    def setStopsDRUnit(self):
+        
+        '''Use [stops] as unit for dynamic range.'''
+    
+        # Do nothing if stops is already used
+        if not self.dBDRUnit.get():
+            self.stopsDRUnit.set(1)
+            return None
+            
+        self.dBDRUnit.set(0)
+        self.stopsDRUnit.set(1)
+        
+        snrframe = self.frames[SNRCalculator]
+        simframe = self.frames[ImageSimulator]
+        
+        snrframe.varDRLabel.set('stops')
+        simframe.varDRLabel.set('stops')
+        
+        # Convert existing DR values from dB to stops
+        
+        if snrframe.dataCalculated: snrframe.varDRInfo.set('%.1f' % snrframe.dr)
+            
+        if simframe.dataCalculated: simframe.varDRInfo.set('%.1f' % simframe.dr)
+        
     def addIcon(self, window):
     
         '''Set icon if it exists.'''
@@ -1744,6 +1822,7 @@ class SNRCalculator(ttk.Frame):
         self.varSFInfo = tk.StringVar()
         self.varTFInfo = tk.StringVar()
         
+        self.varDRLabel = tk.StringVar()
         self.varRNLabel = tk.StringVar()
         self.varDNLabel = tk.StringVar()
         self.varSNLabel = tk.StringVar()
@@ -1753,6 +1832,7 @@ class SNRCalculator(ttk.Frame):
         
         # Set default attribute values
         
+        self.varDRLabel.set('stops')
         self.varRNLabel.set('e-')
         self.varDNLabel.set('e-')
         self.varSNLabel.set('e-')
@@ -1869,7 +1949,7 @@ class SNRCalculator(ttk.Frame):
         
         labelDR = ttk.Label(frameLowLeft, text='Dynamic range:')
         self.labelDR2 = ttk.Label(frameLowLeft, textvariable=self.varDRInfo, anchor='center', width=5)
-        labelDR3 = ttk.Label(frameLowLeft, text='stops')
+        self.labelDR3 = ttk.Label(frameLowLeft, textvariable=self.varDRLabel)
         
         # Place upper left frame widgets
         
@@ -1905,7 +1985,7 @@ class SNRCalculator(ttk.Frame):
         
         labelDR.grid(row=1, column=0, sticky='W')
         self.labelDR2.grid(row=1, column=1)
-        labelDR3.grid(row=1, column=2, sticky='W')
+        self.labelDR3.grid(row=1, column=2, sticky='W')
         
         # Place more widgets according to camera type
         self.reconfigureNonstaticWidgets()
@@ -2388,11 +2468,13 @@ class SNRCalculator(ttk.Frame):
             self.tf = target_signal_e/self.exposure # Target flux [e-/s]
             
         snr = target_signal_e/np.sqrt(target_signal_e + tbgn**2) # Signal to noise ratio
-        dr = np.log10(sat_cap/tbgn)/np.log10(2.0)                # Dynamic range [stops]
+        
+        self.dr = np.log10(sat_cap/tbgn)/np.log10(2.0) # Dynamic range [stops]
+        dr_dB = 10*np.log10(sat_cap/tbgn) # Dynamic range [dB]
               
         # Update labels
         self.varSNRInfo.set('%.1f' % snr)
-        self.varDRInfo.set('%.1f' % dr)
+        self.varDRInfo.set('%.1f' % (self.dr if self.cont.stopsDRUnit.get() else dr_dB))
         self.varSNInfo.set('%.1f' % sn)
         self.varDNInfo.set('%.1f' % dn)
         self.varTBGNInfo.set('%.1f' % tbgn)
@@ -2486,6 +2568,7 @@ class ImageSimulator(ttk.Frame):
         self.varDNInfo = tk.StringVar()
         self.varTBGNInfo = tk.StringVar()
         
+        self.varDRLabel = tk.StringVar()
         self.varRNLabel = tk.StringVar()
         self.varDNLabel = tk.StringVar()
         self.varSNLabel = tk.StringVar()
@@ -2523,6 +2606,7 @@ class ImageSimulator(ttk.Frame):
         
         # Set default attribute values
         
+        self.varDRLabel.set('stops')
         self.varRNLabel.set('e-')
         self.varDNLabel.set('e-')
         self.varSNLabel.set('e-')
@@ -2629,7 +2713,7 @@ class ImageSimulator(ttk.Frame):
         
         labelDR = ttk.Label(frameLowLeft, text='Dynamic range:')
         self.labelDR2 = ttk.Label(frameLowLeft, textvariable=self.varDRInfo, anchor='center', width=5)
-        labelDR3 = ttk.Label(frameLowLeft, text='stops')
+        self.labelDR3 = ttk.Label(frameLowLeft, textvariable=self.varDRLabel)
         
         # Place upper left frame widgets
         
@@ -2676,7 +2760,7 @@ class ImageSimulator(ttk.Frame):
         
         labelDR.grid(row=2, column=0, sticky='W')
         self.labelDR2.grid(row=2, column=1)
-        labelDR3.grid(row=2, column=2, sticky='W')
+        self.labelDR3.grid(row=2, column=2, sticky='W')
         
         # Place more widgets according to camera type
         self.reconfigureNonstaticWidgets()
@@ -2986,12 +3070,14 @@ class ImageSimulator(ttk.Frame):
         
         snr = target_signal_e/np.sqrt(target_signal_e + tbgn**2) # Signal to noise ratio in subframe
         stack_snr = snr*np.sqrt(self.subs)        # Signal to noise ratio in stacked frame
-        dr = np.log10(sat_cap/tbgn)/np.log10(2.0) # Dynamic range [stops]
+        
+        self.dr = np.log10(sat_cap/tbgn)/np.log10(2.0) # Dynamic range [stops]
+        dr_dB = 10*np.log10(sat_cap/tbgn) # Dynamic range [dB]
         
         # Update labels
         self.varSNRInfo.set('%.1f' % snr)
         self.varStackSNRInfo.set('%.1f' % stack_snr)
-        self.varDRInfo.set('%.1f' % dr)
+        self.varDRInfo.set('%.1f' % (self.dr if self.cont.stopsDRUnit.get() else dr_dB))
         self.varDNInfo.set('%.1f' % dn)
         self.varSNInfo.set('%.1f' % sn)
         self.varTBGNInfo.set('%.1f' % tbgn)
