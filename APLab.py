@@ -3079,7 +3079,7 @@ class ImageSimulator(ttk.Frame):
         
         # Save linear and nonlinear version of the simulated image
         plt.imsave('sim.jpg', img, cmap=plt.get_cmap('gray'), vmin = 0.0, vmax = 1.0)
-        plt.imsave('sim_str.jpg', img, cmap=plt.get_cmap('gray'))
+        plt.imsave('sim_str.jpg', autostretch(img), cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
         
         # Open as PIL images
         im = Image.open('sim.jpg')
@@ -4171,7 +4171,8 @@ class ImageAnalyzer(ttk.Frame):
         
         # *** Right frame ***
         
-        self.labelCanv = ttk.Label(frameRight, text='<Add an image to display here>', anchor='center')
+        self.labelCanv = ttk.Label(frameRight, text='<Added images will be displayed here>',
+                                   anchor='center')
         
         self.scrollbarCanvHor = ttk.Scrollbar(frameRight, orient='horizontal')
         self.scrollbarCanvVer = ttk.Scrollbar(frameRight, orient='vertical')
@@ -5055,7 +5056,7 @@ class ImageAnalyzer(ttk.Frame):
         self.labelMessage.update_idletasks()
             
         # Save data as temporary image
-        plt.imsave('temp.jpg', new_img, cmap=plt.get_cmap('gray'))
+        plt.imsave('temp.jpg', autostretch(new_img), cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
             
         # Open as PIL image and equalize histogram
         pil_img = Image.open('temp.jpg')
@@ -6441,6 +6442,31 @@ def sortCamList(name):
     file.close()
     
     return sortnames.index(name)
+    
+def autostretch(img):
+
+    '''Returns a stretched version of the given image.'''
+        
+    min_val = np.min(img)
+    max_val = np.max(img)
+    
+    if max_val > min_val:
+    
+        # Clip both ends of histogram
+        new_img = (img - min_val).astype('float')/(max_val - min_val)
+        
+        # Stretch the image with an MTF to bring the mean level to 30 %
+        
+        new_mean = 0.25
+        mean = np.mean(new_img)
+        m = mean*(new_mean - 1)/(2*new_mean*mean - new_mean - mean)
+        
+        new_img = new_img*(m - 1.0)/(new_img*(2.0*m - 1.0) - m)
+        
+    else:
+        new_img = np.ones(img.shape)
+        
+    return (65535*new_img).astype('uint16')
     
 # Define tooltip strings
 TTExp = '''\
