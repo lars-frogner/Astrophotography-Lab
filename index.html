@@ -27,10 +27,10 @@
     <div class="wrapper">
       <header>
         <h1>Astrophotography Lab</h1>
-        <p>A program for experimenting with signal and noise in astrophotography</p>
+        <p>A user friendly framework for experimenting with quantities related to astro imaging</p>
 
         <ul>
-          <li><a href="https://github.com/oaltais/aplab/releases/tag/v0.1.1-win">Download for <strong>Windows</strong></a></li>
+          <li><a href="https://github.com/oaltais/aplab/releases/tag/v0.2.0-win">Download for <strong>Windows</strong></a></li>
           <li><a href="https://github.com/oaltais/aplab/zipball/master">Download <strong>Source code</strong></a></li>
           <li><a href="https://github.com/oaltais/aplab">View on <strong>GitHub</strong></a></li>
         </ul>
@@ -39,16 +39,29 @@
         
       </header>
       <section>
-        <h3>
+<h3>
+<a id="News" class="anchor" href="#news" aria-hidden="true"><span class="octicon octicon-link"></span></a><font color="red">New version released!</font></h3>
+<h4>New in version 0.2.0:</h4>
+<ul>
+<li><p>Telescopes! A new system for specifying the optical train allows for calculating the field of view, image scale, sky luminance and a lot more.</p></li>
+<li><p>Automatic detection of ISO and exposure time of added images.</p></li>
+<li><p>Added images can be resized to fit the window, providing a better overview.</p></li>
+<li><p>The histogram of added images can be displayed, together with options for customizing the screen stretch.</p></li>
+<li><p>Modified and added data is now displayed in blue to distinguish it from the default data.</p></li>
+<li><p>Various minor improvements. See the changelog in the readme for details.</p></li>
+</ul>
+<p>Work on the requested OS X-compatible version is unfortunately at a standstill, as I don't have access to a Mac for testing and compilation.</p>
+<br />      
+<h3>
 <a id="description" class="anchor" href="#description" aria-hidden="true"><span class="octicon octicon-link"></span></a>Description</h3>
-
-<p>The goal of Astrophotography Lab is to provide insight into the way camera settings and imaging conditions affect the signal and noise in your astronomical images.</p>
+<p>Astrophotography Lab is not a program for controlling cameras, and it isn't an image processing program.</p>
+<p>It is rather a program for extracting information from the image you have already captured, to interpret this information based on the specifications of your equipment, and to use it as a help for further improving your imaging results.</p>
 
 <p>The program consists of 4 main tools:</p>
 
 <ol>
-<li><p>An analyzer tool that can be used to extract information from your raw images, and calculate sensor characteristics like gain and read noise.</p></li>
-<li><p>A calculator that uses information from your image to calculate useful values like signal-to-noise ratio and dynamic range.</p></li>
+<li><p>An analyser tool that can be used to extract information from your raw images, and calculate sensor characteristics like gain and read noise.</p></li>
+<li><p>A calculator that uses information from your image to calculate useful values like signal-to-noise ratio, dynamic range and skyglow.</p></li>
 <li><p>A simulator tool that creates a synthetic image based on imaging parameters provided by the user.</p></li>
 <li><p>A plotting tool that gives a graphical representation of how various imaging parameters affect the image quality.</p></li>
 </ol>
@@ -60,10 +73,11 @@
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h3>
 
 <ul>
-<li>Automatic calculation of the sensor characteristics of you camera</li>
-<li>Calculation of SNR, skyglow etc. by selecting areas of an image</li>
-<li>Included sensor data for a wide range of CCD and DSLR cameras</li>
-<li>Tooltips explaining the various imaging parameters and calculated values</li>
+<li>Automatic calculation of the sensor characteristics of your camera.</li>
+<li>Calculation of SNR, skyglow etc. by selecting areas of an image.</li>
+<li>Measurement of the field of view and angular distances in your image.</li>
+<li>Informative tooltips explaining the various imaging parameters and calculated values.</li>
+<li>Supports a wide range of CCD and DSLR cameras and telescopes by default, and you can easily add the necessary information for your own equipment.</li>
 </ul>
 
 <br />
@@ -71,31 +85,37 @@
 <a id="screenshots" class="anchor" href="#screenshots" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshots</h3>
 
 <figure>
-    <a href="screenshots/aplab-image_analyzer.png">
-    <img src="screenshots/aplab-image_analyzer.png"/>
+    <a href="screenshots/aplab_screen2.png">
+    <img src="screenshots/aplab_screen2.png"/>
     </a>
-    <figcaption>The Image Analyzer used to measure background noise</figcaption>
+    <figcaption>The Image Analyser used to measure background noise</figcaption>
+</figure>
+<p></p><p></p><figure>
+    <a href="screenshots/aplab_screen1.png">
+    <img src="screenshots/aplab_screen1.png"/>
+    </a>
+    <figcaption>The Image Analyser used to measure sensor data</figcaption>
 </figure>
 <p></p><p></p>
 <figure>
-    <a href="screenshots/aplab-image_simulator.png">
-    <img src="screenshots/aplab-image_simulator.png"/>
+    <a href="screenshots/aplab_screen4.png">
+    <img src="screenshots/aplab_screen4.png"/>
     </a>
     <figcaption>The Image Simulator showing a synthetic image</figcaption>
 </figure>
 <p></p><p></p>
 <figure>
-    <a href="screenshots/aplab-plotting_tool.png">
-    <img src="screenshots/aplab-plotting_tool.png"/>
+    <a href="screenshots/aplab_screen5.png">
+    <img src="screenshots/aplab_screen5.png"/>
     </a>
     <figcaption>The Plotting Tool showing how SNR changes with sky darkness</figcaption>
 </figure>
 <p></p><p></p>
 <figure>
-    <a href="screenshots/aplab-snr_calculator.png">
-    <img src="screenshots/aplab-snr_calculator.png"/>
+    <a href="screenshots/aplab_screen3.png">
+    <img src="screenshots/aplab_screen3.png"/>
     </a>
-    <figcaption>The SNR Calculator showing calculated image information</figcaption>
+    <figcaption>The Image Calculator showing calculated image information</figcaption>
 </figure>
 
 <br />
@@ -103,7 +123,7 @@
 <a id="tutorials" class="anchor" href="#tutorials" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tutorials</h3>
 
 <ul>
-<li><a href="http://www.astronomyforum.net/astrophotography-image-processing-forum/204348-using-astrophotography-lab-determine-proper-exposure-time.html">Using ASTROPHOTOGRAPHY LAB to determine proper Exposure Time</a> by Steve King</li>
+<li><a href="http://www.astronomyforum.net/astrophotography-image-processing-forum/204348-using-astrophotography-lab-determine-proper-exposure-time.html">Using ASTROPHOTOGRAPHY LAB to determine proper Exposure Time</a> by Steve King (made for v0.1.1)</li>
 </ul>
 
 <br />
@@ -120,32 +140,29 @@
 <li><p>One saturated frame: Image something bright, and make sure some part of the image contains completely saturated pixels.</p></li>
 </ol>
 </li>
-<li><p>Start APLab and add the frames you just captured in the Image Analyzer tool.</p></li>
+<li><p>Start APLab and add the frames you just captured in the Image Analyser tool.</p></li>
 <li><p>Click the "Compute sensor data" button, and the calculated values will be displayed. You can now save this information to use with the other tools.</p></li>
 </ul>
 
 <br />
 <h3>
-<a id="howto2" class="anchor" href="#howto2" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to get image data for the SNR Calculator</h3>
+<a id="howto2" class="anchor" href="#howto2" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to get image data for the Image Calculator</h3>
 
-<p>The Image Analyzer tool allows you to extract from your light and dark frames all the information required by the SNR Calculator. Here is how to do it:</p>
+<p>The Image Analyser tool allows you to extract from your light and dark frames all the information required by the Image Calculator. Here is how to do it:</p>
 <p><b>Background and target data:</b></p>
 <ol>
-<li><p>Add the light frame you want to use in the Image Analyzer.</p></li>
+<li><p>Add the light frame you want to use in the Image Analyser.</p></li>
 <li><p>Left-click and drag to draw a selection box over a background part of the image. The mouse pointer needs to be in the "Select" mode. (Change mode by right-clicking in the image and choosing the mode in the menu.)</p></li>
 <li><p>Make the box as large as you can without including any stars. If there are very many stars, make sure it contains as few as possible without being too small.</p></li>
-<li><p>Right-click anywhere in the image and select "Transfer to SNR Calculator". When asked which image region you have selected, choose "Background".</p></li>
-<li><p>In the next window, select your camera, or just click "OK" if it has already been selected. The data from the selected region has now been copied to the input boxes of the SNR Calculator.</p></li>
-<li><p>Next, you need to draw a new selection box over a small region of the target. This will be the part of the target that the calculated SNR and target flux will apply to.</p></li>
-<li><p>Right-click in the image again and select "Transfer to SNR Calculator". This time choose "Target" in the window that pops up.</p></li>
-<li><p>In the following window, check that your camera is the active one. The target level has now been copied to the corresponding input box in the SNR Calculator.</p></li>
+<li><p>Right-click anywhere in the image and select "Transfer data to Image Calculator". When asked which image region you have selected, choose "Background". The data from the selected region has now been copied to the input boxes of the Image Calculator.</p></li>
+<li><p>Next, you need to draw a new selection box over a small region of the target. This will be the part of the target that the calculated SNR and target signal value will apply to.</p></li>
+<li><p>Right-click in the image again and select "Transfer data to Image Calculator". This time choose "Target" in the window that pops up. The target level has now been copied to the corresponding input box in the Image Calculator.</p></li>
 </ol>
 <p><b>Dark frame data:</b></p>
 <p>You have the option to use either one or two dark frames. If you use two, one of them can be subtracted from the other to remove static features like hot pixels. This will be done automatically for DSLR cameras to get better noise measurements.</p>
 <ol>
 <li><p>If you use a DSLR and only one dark frame, you should draw a selection box over a part of the image containing few hot pixels. Otherwise you shouldn't draw a selection box.</p></li>
-<li><p>Right-click anywhere in the image and select "Transfer to SNR Calculator".</p></li>
-<li><p>In the window that pops up, select your camera, or just click "OK" if it has already been selected. The data from the dark frame has now been copied to the corresponding input boxes in the SNR Calculator.</p></li>
+<li><p>Right-click anywhere in the image and select "Transfer data to Image Calculator". The data from the dark frame has now been copied to the corresponding input boxes in the Image Calculator.</p></li>
 </ol>
 
 <br />
@@ -154,9 +171,9 @@
 
 <p>The calculations of sensor data rely on accurate measurements of photon noise in a flat frame. The noise measurements can be affected if the flat frame is not uniform. To prevent this, the program asks for two flat frames, and subtracts one from the other to remove any features in the image.</p>
 <p>If for some reason the two images are not equal (maybe a dust spot moved after the first frame was captured), then the subtracted image will not be uniform and the noise measurement will be affected. Keep this in mind when capturing the flat frames.</p>
-<p>The results given by the SNR Calculator are only as accurate as the sensor data it uses for the calculations. While the data included in the default camera profiles shouldn't be too far off the correct values, I cannot vouch for its accuracy.</p>
-<p>Most of the DSLR data is not directly measured, but derived from other measurements performed by DxO for their <a href="http://www.dxomark.com/">DxOMark site</a>. The CCD data is collected from various manufacturer sites and from other people posting their measurements. On top of this, I have had to make certain assumptions about the black and white levels, simply because there isn't enough data available.</p>
-<p>For these reasons, I definitely recommend that you use the Image Analyzer to perform your own measurements on your camera. Capturing the test frames is simple, and you hardly have to leave your chair.</p>
+<p>The results given by the Image Calculator are only as accurate as the data it uses for the calculations. While the data included in the default camera and telescope profiles shouldn't be too far off the correct values, I cannot vouch for its accuracy.</p>
+<p>Most of the default DSLR data is not directly measured, but derived from other measurements performed by DxO for their <a href="http://www.dxomark.com/">DxOMark site</a>. The CCD data is collected from various manufacturer sites and from other people posting their measurements. On top of this, I have had to make certain assumptions about the black and white levels, simply because there isn't enough data available.</p>
+<p>For these reasons, I definitely recommend that you use the Image Analyser to perform your own measurements on your camera. Capturing the test frames is simple, and you hardly have to leave your chair.</p>
 <p>When it comes to DSLRs, there is also the matter of raw frame "cooking". For many (if not all) models, additional processing is being done to the images before they are saved. For at least some Canon models, the images are darkened and the contrast is decreased for long exposure times (as described in <a href="http://www.stark-labs.com/craig/resources/Articles-&-Reviews/CanonLinearity.pdf">this article</a> by Craig Stark).</p>
 <p>APLab does <i>not</i> try to compensate for this kind of in-camera processing, because of insufficient knowledge of what is being done to the images. But by using measurements of noise rather than intensity in certain circumstances, the calculations are less sensitive to effects like long exposure darkening.</p>
 
