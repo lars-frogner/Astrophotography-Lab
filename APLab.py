@@ -1,5 +1,5 @@
 '''
-Version: 0.2.0-alpha
+Version: 0.2.1-alpha
 
 Written by Lars Frogner
 '''
@@ -45,7 +45,7 @@ class APLab(tk.Tk):
         self.tnum = tnum
         self.toolsConfigured = False # True if the non-"Image Analyser" classes are initialized
         
-        self.title('Astrophotography Lab 0.2.0') # Set window title
+        self.title('Astrophotography Lab 0.2.1') # Set window title
         
         self.addIcon(self) # Add window icon if it exists
         
@@ -1164,7 +1164,7 @@ class APLab(tk.Tk):
             # Insert camera name and type to camera info lists
             CNAME.insert(idx, name)
             TYPE.insert(idx, type)
-            GAIN.insert(idx, [np.array([0]), np.array([1])])
+            GAIN.insert(idx, [np.array([0], dtype='float'), np.array([1])])
             RN.insert(idx, [np.array([0]), np.array([1])])
             SAT_CAP.insert(idx, [[0], [1]])
             BLACK_LEVEL.insert(idx, [[0], [1]])
@@ -6169,14 +6169,17 @@ class ImageAnalyser(ttk.Frame):
     
         '''Enable widgets that can be interacted with.'''
     
-        self.radioCCDm.configure(state='normal')
-        self.radioCCDc.configure(state='normal')
-        self.optionAdd.configure(state='normal')
-        self.buttonAdd.configure(state='normal')
-        self.buttonClear.configure(state='normal')
-        self.buttonCompute.configure(state='normal')
-        for label in self.labelList:
-            label.configure(state='normal')
+        try:
+            self.radioCCDm.configure(state='normal')
+            self.radioCCDc.configure(state='normal')
+            self.optionAdd.configure(state='normal')
+            self.buttonAdd.configure(state='normal')
+            self.buttonClear.configure(state='normal')
+            self.buttonCompute.configure(state='normal')
+            for label in self.labelList:
+                label.configure(state='normal')
+        except:
+            pass
     
     def adjustName(self, label, name):
     
@@ -7176,7 +7179,7 @@ class ImageAnalyser(ttk.Frame):
                                                                             round(self.black_level),
                                                                             round(self.white_level),
                                                                             'NA', line[8]))
-                        if self.cont.cnum: file.write(',' + iso)
+                        if self.cont.isDSLR: file.write(',' + iso)
                         
                         self.cont.noData = False
                     
@@ -7293,7 +7296,10 @@ class ImageAnalyser(ttk.Frame):
                 self.topCamInfo.destroy()
             except:
                 pass
-            self.topResults.destroy()
+            try:
+                self.topResults.destroy()
+            except:
+                pass
         
         # Create the window asking for required camera information
         if self.cont.isDSLR and not con_iso:
@@ -7569,7 +7575,10 @@ class ImageAnalyser(ttk.Frame):
         
         self.wait_window(topStatistics)
         
-        self.menuRC.entryconfigure(8, state='normal')
+        try:
+            self.menuRC.entryconfigure(8, state='normal')
+        except:
+            pass
         
         self.enableWidgets()
         self.busy = False
@@ -8153,9 +8162,11 @@ class ImageAnalyser(ttk.Frame):
         
         self.wait_window(topHist)
         
-        label.stretched_img = self.orig_stretched
-        
-        self.menuRC.entryconfigure(7, state='normal')
+        try:
+            label.stretched_img = self.orig_stretched
+            self.menuRC.entryconfigure(7, state='normal')
+        except:
+            pass
         self.enableWidgets()
         self.busy = False
         
