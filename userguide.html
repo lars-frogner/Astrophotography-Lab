@@ -237,11 +237,11 @@ If there is a bugfix for the standalone version on the download page, do the fol
 <ul>
 <li><p>Two bias frames: The sensor should be covered and the exposure time should be as short as possible.</p></li>
 <li><p>Two flat frames: Image an evenly illuminated white surface. The histogram peak should be about half the way to the right, and the exposure time shouldn't exceed a few seconds unless the camera is cooled.</p></li>
-<li><p>One saturated frame: Image something bright, and make sure some part of the image contains completely saturated pixels.</p></li>
+<li><p>One saturated frame: Image something bright, and make sure some part of the image contains completely saturated pixels. Ordinary light frames will usually have saturated pixels. The saturated frame is only used to determine the white level.</p></li>
 </ul>
 </li>
 <li><p>Start APLab and add the frames you just captured in the Image Analyser tool.</p></li>
-<li><p>Click the "Compute sensor data" button, and the calculated values will be displayed. You can now save this information to use with the other tools.</p></li>
+<li><p>Click the "Compute sensor data" button. If there is no frame in the saturated category, but there is a frame in the light category, you'll be asked if you want to use the light frame as a saturated frame. The calculated values will be displayed, and you can now save this information to use with the other tools.</p></li>
 </ul>
 
 <br>
