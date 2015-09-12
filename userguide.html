@@ -17,6 +17,9 @@
     OL { counter-reset: item; display: table; padding: 0px 25px;}
     OL>LI { display: table-row;}
     OL>LI:before { content: counters(item, ".") ". "; counter-increment: item; display: table-cell; text-align: right; }
+    OL#l2 { counter-reset: item 1}
+    OL#l3 { counter-reset: item 2}
+    OL#l4 { counter-reset: item 3}
     </style>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -51,7 +54,7 @@
       </header>
       <section>
 
-<i><font color="silver">This user guide applies to version 0.2.0 and 0.2.1</font></i>      
+<i><font color="silver">This user guide applies to version 0.3.0, but most aspects are true for 0.2.x as well.</font></i>      
 <br />
 <br />
 <h2>
@@ -100,7 +103,11 @@
     <li><a href="#Calculating sensor data">&nbsp;Calculating sensor data</a></li>
     </li></ol>
 <li><a href="#The Image Calculator">&nbsp;The Image Calculator</a></li>
-<li><a href="#The Image Simulator">&nbsp;The Image Simulator</a></li>
+<li><a href="#The Image Simulator">&nbsp;The Image Simulator</a>
+    <ol>
+    <li><a href="#Getting suggested imaging settings">&nbsp;Getting suggested imaging settings</a></li>
+    <li><a href="#How suggested imaging settings are calculated">&nbsp;How suggested imaging settings are calculated</a></li>
+    </li></ol>
 <li><a href="#The Plotting Tool">&nbsp;The Plotting Tool</a></li>
 <li><a href="#Reliability of the results">&nbsp;Reliability of the results</a></li>
 <li><a href="#Tools used">&nbsp;Tools used</a></li>
@@ -113,17 +120,20 @@
 
 <br>
 <a NAME="Downloading and installation"><font color="#373737"><h3>2. Downloading and installation</font></h3></a>
+<p>Additional steps may be necessary depending on the version, so check the readme for the version you are installing.</p>
+<b>Installing a standalone version</b>
 <ol>
 <p><li>&nbsp;Go to the download page and locate the latest standalone version.</li></p>
-<p><li>&nbsp;Download "aplab-vx.x.x-win.zip" from the bottom of the page that is linked to.</li></p>
+<p><li>&nbsp;Download "aplab-vx.x.x-win-standalone.zip" from the bottom of the page that is linked to.</li></p>
 <p><li>&nbsp;Extract the "Astrophotography Lab" folder from the zip file to whichever folder you prefer.</li></p>
 <p><li>&nbsp;The program can now used by running "APLab.exe" from the "Astrophotography Lab" folder.</li></p>
+<p><li>If there is an update for the standalone version on the download page, follow the instructions below for installing it.</p></li>
 </ol>
-If there is a bugfix for the standalone version on the download page, do the following steps as well:
+<b>Updating from a previous version</b>
 <ol>
-<p><li>&nbsp;Click the link for the bugfix and download "aplab-vx.x.x-win.zip" from the bottom of the page.</li></p>
+<p><li>&nbsp;Click the link for the update and download "aplab-vx.x.x-win-update.zip" from the bottom of the page.</li></p>
 <p><li>&nbsp;Extract "APLab.exe" from the zip file to the folder where the old version of Astrophotography Lab is located, and overwrite the existing "APLab.exe" file.</li></p>
-<p><li>&nbsp;The bugfix is now installed.</li></p>
+<p><li>&nbsp;The update is now installed.</li></p>
 </ol>
 
 <br>
@@ -167,7 +177,7 @@ If there is a bugfix for the standalone version on the download page, do the fol
 <p>You can load a previously saved set of calculated image data by clicking "File" -> "Load image data", and selecting a name from the list. You can load data to the input boxes of either the Image Calculator, Image Simulator or Plotting Tool. The correct values for the input boxes will be chosen depending on the tool you load the data to.</p>
 
 <a NAME="Managing image data"><font color="#373737"><h4>5.3. Managing image data</font></h4></a>
-<p>If you want to delete or rename a previously saved set of calculated image data, click "File" -> "Manage image data". Choose a name from the list, and choose whether you want to delete it or rename it. If you clicked "Rename", input a new name in the new window and click "Rename".</p>
+<p>If you want to delete or rename a previously saved set of calculated image data, click "File" -> "Manage image data". Choose a name from the list, and choose whether you want to delete it or rename it. (The use of the "Add limit signal" button is mentioned in <a href="#Getting suggested imaging settings">9.1. Getting suggested imaging settings</a>.) If you clicked "Rename", input a new name in the new window and click "Rename".</p>
 
 <br>
 <a NAME="More settings"><font color="#373737"><h3>6. More settings</font></h3></a>
@@ -250,11 +260,46 @@ If there is a bugfix for the standalone version on the download page, do the fol
 
 <br>
 <a NAME="The Image Simulator"><font color="#373737"><h3>9. The Image Simulator</font></h3></a>
-<p>The Image Simulator works similarly to the Image Calculator, but uses explicit dark current, skyglow and target signal values rather than pixel values. This tool is not intended for finding information about your actual image, but rather for experimenting with different values for the imaging parameters. You could for instance load calculated data from the Image Calculator, and then see what would happen if you had used a different ISO setting or exposure time, or if you stacked multiple frames. To help with visualizing the results, a synthetic image can be generated based on the imaging parameters and sensor data. This image will have similar signal and noise characteristics as a real image captured with the same parameters and conditions. Click the "Simulate image" button, and the synthetic image will show up in a new window. The image is linear by default (and thus corresponds to what the raw image would look like), but you can show a stretched version of the image by checking the "Stretch:" box.</p>
+<p>The Image Simulator works similarly to the Image Calculator, but uses explicit dark current, skyglow and target signal values rather than pixel values. This tool is not intended for finding information about your actual image, but rather for experimenting with different values for the imaging parameters. You could for instance load calculated data from the Image Calculator, and then see what would happen if you had used a different ISO setting or exposure time, or if you stacked multiple frames.</p>
+<p>To help with visualizing the results, a synthetic image can be generated based on the imaging parameters and sensor data. This image will have similar signal and noise characteristics as a real image captured with the same parameters and conditions. Click the "Simulate image" button, and the synthetic image will show up in a new window. The image is linear by default (and thus corresponds to what the raw image would look like), but you can show a stretched version of the image by checking the "Stretch:" box.</p>
+
+<a NAME="Getting suggested imaging settings"><font color="#373737"><h4>9.1. Getting suggested imaging settings</font></h4></a>
+<p>A major purpose of APLab is to let you find the best camera settings for your imaging projects. But with all the information available from the tools of APLab, isolating the relevant info and interpreting it can be a challenge. This is where the "Get suggested imaging settings" function comes in.</p>
+<p>Using signal values from the Image Simulator input boxes, it will find values for exposure time and ISO (for DSLRs) that are expected to nearly maximize stack SNR, while avoiding unwanted saturation. Since how much saturation is "unwanted" will depend both on the target and personal preferences, you will be in control of this through the parameter called (for the lack of a better name) "limit signal". This is the brightness of some part of your target that you don't want to over-saturate when imaging.</p>
+<p>In order to find sensible values for the different parameters, it is recommended that you use an existing raw image of the target. The following steps describe how to get the suggested imaging settings for your target, assuming that you already have a raw image of the target.</p>
+<p><b>1.</b> Follow the instructions in <a href="#Transferring data to the Image Calculator">7.7. Transferring data to the Image Calculator</a> to extract target and background data from your image of the target (getting dark frame data is recommended).</p>
+<p><b>2.</b> Go to the Image Calculator, click "Calculate data", and then "Transfer data to Image Simulator", leaving the "Transfer limit signal only" box unchecked. You might want to save the image data as described in <a href="#Saving image data">5.1. Saving image data</a>.</p>
+<p><b>3.</b> If you don't think over-saturation will be an issue when imaging this target, skip to step 5, and leave the "Limit signal" input box in the Image Simulator empty. Otherwise, go back to the Image Analyser, look at the image and find the brightest part the target that you do not wish to become over-saturated. This could for instance be the core of a galaxy or a bright part of a nebula. Draw a small selection box around this part, including nothing else. Right-click anywhere in the image and select "Transfer data to Image Calculator", then "Target" and "OK".</p>
+<p><b>4.</b> Go to the Image Calculator again, and click "Calculate data". The new value that has been calculated for target signal is what we want to use as limit signal. Check the "Transfer limit signal only" box, and click "Transfer data to Image Simulator". The limit signal value will be copied to the corresponding input box in the Image Simulator. If you saved the image data in step , you can add the limit signal value to the save by selecting "File" -> "Manage image data", selecting the save and clicking "Add limit signal".</p>
+<p><b>5.</b> Go to the Image Simulator, and hit the "Get suggested imaging settings" button. Only the dark current, skyglow and target signal values are used for the calculations, in addition to the limit signal value if it's provided (if it isn't provided, the target signal is used instead). In the window that pops up, input the total imaging time for the planned session and the maximum sub exposure time that your equipment allows, then click "Done". A window will appear with the results.</p>
+<p>Before you hurry out to get that perfect image of M51, remember that the suggested values can be affected by inaccuracies in the underlying data, and thus shouldn't be trusted blindly. Use them rather as guidelines if they seem reasonable, and keep in mind that there is no substitute for experience. It can be useful to know the basis for the suggested values, so I recommend that you check out <a href="#How suggested imaging settings are calculated">9.2. How suggested imaging settings are calculated</a> below.</p>
+
+<br>
+<a NAME="How suggested imaging settings are calculated"><font color="#373737"><h4>9.2. How suggested imaging settings are calculated</font></h4></a>
+<p><b>1.</b> The longest allowed sub exposure time is determined. This is the exposure time required to bring the brightness level of the parts of the image corresponding to the limit signal to 90% of the saturation limit. If this time is longer than the max exposure time provided by the user, the max exposure time is used instead.</p>
+<p>For DSLRs, step 1 will be performed for each ISO value, and the exposure time will generally be different for each ISO since the saturation capacity varies. The following step is only performed for DSLRs:</p>
+<p><b>1.5.</b> For each ISO, the number of subframes required to get the total imaging time with the exposure times found above is calculated. The program then calculates the signal-to-noise ratios of the resulting stacked images. All this is exactly what is done when generating the "Max stack SNR vs. ISO" plot, of which an example is shown below. The ISO value that gets the highest stack SNR is then chosen as the optimal ISO. We now have the ISO and exposure time that would yield the highest SNR while still avoiding unwanted saturation.</p>
+<figure>
+    <a href="screenshots/max_stack_snr_vs_iso.png">
+    <img src="screenshots/max_stack_snr_vs_iso.png"/>
+    </a>
+    <figcaption>Max stack SNR vs. ISO for M51 with Canon EOS 1100D</figcaption>
+</figure>
+<p>Next, the following steps are performed regardless of camera type:</p>
+<p><b>2.</b> The longest allowed sub exposure time determined above will be short enough to avoid unwanted saturation, but often it will still be unnecessarily long. Look at the "Stack SNR vs. sub exposure time" plot below. It flattens rapidly for increasing exposure times, and often the exposure time can be reduced significantly, with only a minimal reduction of SNR. A shorter exposure time will generally mean that a lower fraction of the subs need to be discarded, and this will yield a higher SNR in the end.</p>
+<figure>
+    <a href="screenshots/stack_snr_vs_sub_exposure_time.png">
+    <img src="screenshots/stack_snr_vs_sub_exposure_time.png"/>
+    </a>
+    <figcaption>Stack SNR vs. sub exposure time for M51 with Canon EOS 1100D with ISO 1600</figcaption>
+</figure>
+<p><b>3.</b> The program generates the data for a "Stack SNR vs. sub exposure time" plot, and finds the shortest exposure time for which the stack SNR would increase by less than 0.3% if you exposed for another 60 seconds. If this exposure time is shorter than the exposure time from step 3, it is chosen as the optimal sub exposure time.</p>
+<p><b>4.</b> Finally, the number of subframes required to get the total imaging time with this sub exposure time is calculated, and the optimal values together with some other relevant info is displayed.</p>
 
 <br>
 <a NAME="The Plotting Tool"><font color="#373737"><h3>10. The Plotting Tool</font></h3></a>
-<p>The Plotting Tool has essentially the same purpose as the Image Simulator, namely visualizing the effect of changing certain parameters, but it does so with graphs rather than an image. Choose the plot you want from the list, input the required data (or transfer it from another tool), and click "Draw graph". I plan to provide more information on the subject of interpreting the graphs later on. Steve King has written a <a target="_blank" href="http://www.astronomyforum.net/astrophotography-image-processing-forum/204348-using-astrophotography-lab-determine-proper-exposure-time.html">nice tutorial</a> on determining the optimal exposure time using one of the plots.</p>
+<p>The Plotting Tool has essentially the same purpose as the Image Simulator, namely visualizing the effect of changing certain parameters, but it does so with graphs rather than an image. To plot a single graph, choose the graph you want from the list, input the required data (or transfer it from another tool), and click "Draw graph". You can also generate comparison plots. With these you just select an imaging parameter, and the graphs related to this parameter will be plotted together. This makes it easier to see how a given parameter affects various aspects of the image.</p>
+<p>You can use the plots to find a lot of useful information. For a good example of this, take a look at Steve King's <a target="_blank" href="http://www.astronomyforum.net/astrophotography-image-processing-forum/204348-using-astrophotography-lab-determine-proper-exposure-time.html">nice tutorial</a> on determining the optimal exposure time using one of the plots. I plan to provide more information on interpreting the plots later on.</p>
 
 <br>
 <a NAME="Reliability of the results"><font color="#373737"><h3>11. Reliability of the results</font></h3></a>
@@ -294,7 +339,9 @@ If there is a bugfix for the standalone version on the download page, do the fol
 <p><a href="contact.html">Contact me</a>, describe the issue and provide the error message.</p>
 <p>If no:</p>
 <p><a href="contact.html">Contact me</a> about the issue anyway.</p>
-
+<br>
+<br>
+<div class="bottom1"><font color="gray"><h5>Copyright &copy; 2015 by Lars Frogner.</font></h5></div>
       </section>
       <footer>
       

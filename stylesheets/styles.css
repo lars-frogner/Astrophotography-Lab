@@ -50,6 +50,20 @@ a small {
   margin:0 auto;
 }
 
+.bottom1 {
+    position: relative;
+	text-align: center;  
+    bottom: 0px; 
+    width: 100%;
+}
+
+.bottom2 {
+    position: fixed;
+	text-align: center;  
+    bottom: 0px; 
+    width: 50%;
+}
+
 .myButton {
 	-moz-box-shadow:inset 0px 1px 3px 0px #91b8b3;
 	-webkit-box-shadow:inset 0px 1px 3px 0px #91b8b3;
