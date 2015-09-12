@@ -1,5 +1,5 @@
 '''
-Version: 0.2.1-alpha
+Version: 0.3.0-alpha
 
 Written by Lars Frogner
 '''
@@ -25,8 +25,10 @@ import pyfits
 import re
 import exifread
 import traceback
+import time
 import datetime
 import textwrap
+import webbrowser
 
 matplotlib.use("TkAgg") # Use TkAgg backend
 matplotlib.rc('font', family='Tahoma') # Set plot font
@@ -45,7 +47,7 @@ class APLab(tk.Tk):
         self.tnum = tnum
         self.toolsConfigured = False # True if the non-"Image Analyser" classes are initialized
         
-        self.title('Astrophotography Lab 0.2.1') # Set window title
+        self.title('Astrophotography Lab 0.3.0') # Set window title
         
         self.addIcon(self) # Add window icon if it exists
         
@@ -238,11 +240,18 @@ class APLab(tk.Tk):
         
         self.menubar.add_cascade(label='Settings', menu=self.menuSettings)
         
+        # "Help" menu
+        self.menuHelp = tk.Menu(self.menubar, tearoff=0)
+        self.menuHelp.add_command(label='User guide', command=self.showUserGuide)
+        
+        self.menubar.add_cascade(label='Help', menu=self.menuHelp)
+        
         # Show menubar
         self.config(menu=self.menubar)
         
         # Some menu items are disabled on startup
-        self.menubar.entryconfig(2, state='disabled')
+        self.menuFile.entryconfig(0, state='disabled')
+        self.menuFile.entryconfig(1, state='disabled')
         
         # Dictionary to hold all frames
         self.frames = {}
@@ -335,7 +344,11 @@ class APLab(tk.Tk):
         '''Shows the given frame.'''
         
         self.frames[page].tkraise()
-  
+    
+    def showUserGuide(self):
+    
+        webbrowser.open('http://oaltais.github.io/aplab/userguide.html')
+    
     def enterPlotFrame(self):
     
         '''Shows the Plotting Tool frame.'''
@@ -358,12 +371,12 @@ class APLab(tk.Tk):
         except:
             pass
         
-        # Resize and recenter window
+        # Resize and re-center window
         setupWindow(self, *PLOT_WINDOW_SIZE)
         
         # Configure menu items
-        self.menubar.entryconfig(2, state='normal')
         self.menuFile.entryconfig(0, state='disabled')
+        self.menuFile.entryconfig(1, state='normal')
                
         self.plMode.set(1)
         self.calMode.set(0)
@@ -396,8 +409,8 @@ class APLab(tk.Tk):
         setupWindow(self, *CAL_WINDOW_SIZE)
         
         # Configure menu items
-        self.menubar.entryconfig(2, state='normal')
         self.menuFile.entryconfig(0, state='normal')
+        self.menuFile.entryconfig(1, state='normal')
             
         self.calMode.set(1)
         self.simMode.set(0)
@@ -424,8 +437,8 @@ class APLab(tk.Tk):
         setupWindow(self, *SIM_WINDOW_SIZE)
         
         # Configure menu items
-        self.menubar.entryconfig(2, state='normal')
         self.menuFile.entryconfig(0, state='disabled')
+        self.menuFile.entryconfig(1, state='normal')
             
         self.calMode.set(0)
         self.simMode.set(1)
@@ -454,7 +467,8 @@ class APLab(tk.Tk):
         setupWindow(self, *AN_WINDOW_SIZE)
         
         # Configure menu items
-        self.menubar.entryconfig(2, state='disabled')
+        self.menuFile.entryconfig(0, state='disabled')
+        self.menuFile.entryconfig(1, state='disabled')
         
         self.calMode.set(0)
         self.simMode.set(0)
@@ -471,6 +485,7 @@ class APLab(tk.Tk):
         if not frame.dataCalculated:
         
             frame.varMessageLabel.set('Image data must be calculated before saving.')
+            frame.labelMessage.configure(foreground='crimson')
             self.menubar.entryconfig(1, state='normal')
             self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
@@ -530,7 +545,7 @@ class APLab(tk.Tk):
             
             frame = self.frames[ImageCalculator]
                 
-            file.write('%s,%s,%d,%d,%g,%d,%g,%g,%g,%g,%d,%.3f,%.3f,%.3f\n' % (CNAME[self.cnum],
+            file.write('%s,%s,%d,%d,%g,%d,%g,%g,%g,%g,%d,%.3f,%.3f,%.3f,0\n' % (CNAME[self.cnum],
                                                                               keywords,
                                                                               frame.gain_idx,
                                                                               frame.rn_idx,
@@ -548,6 +563,7 @@ class APLab(tk.Tk):
             file.close()
             
             frame.varMessageLabel.set('Image data saved.')
+            frame.labelMessage.configure(foreground='navy')
         
         # Show error message if the keyword contains a ","
         elif ',' in keywords:
@@ -575,6 +591,7 @@ class APLab(tk.Tk):
             file = open('imagedata.txt', 'r')
         except IOError:
             frame.varMessageLabel.set('No image data to load.')
+            frame.labelMessage.configure(foreground='crimson')
             self.menubar.entryconfig(1, state='normal')
             self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
@@ -594,6 +611,7 @@ class APLab(tk.Tk):
         if len(lines) == 1:
             
             frame.varMessageLabel.set('No image data to load.')
+            frame.labelMessage.configure(foreground='crimson')
             self.menubar.entryconfig(1, state='normal')
             self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
@@ -672,6 +690,7 @@ class APLab(tk.Tk):
                 frame.updateSensorLabels() # Update sensor info labels in case the ISO has changed
                 frame.emptyInfoLabels() # Clear other info labels
                 frame.varMessageLabel.set('Image data loaded.')
+                frame.labelMessage.configure(foreground='navy')
         
             # If Image Simulator is the active frame
             elif self.simMode.get():
@@ -686,6 +705,7 @@ class APLab(tk.Tk):
                 frame.varDF.set(data[9] if float(data[9]) > 0 else 0)
                 frame.varSF.set(data[10])
                 frame.varTF.set(data[11] if float(data[11]) > 0 else 0)
+                frame.varLF.set(data[12] if float(data[12]) > 0 else '')
                 frame.varSubs.set(1)
             
                 if int(data[8]):
@@ -698,6 +718,7 @@ class APLab(tk.Tk):
                 frame.emptyInfoLabels() # Clear other info labels
                 frame.varMessageLabel.set('Image data loaded.' if int(data[3]) else \
                 'Note: loaded signal data does not contain a separate value for dark current.')
+                frame.labelMessage.configure(foreground='navy')
             
             # If Plotting Tool is the active frame
             else:
@@ -712,6 +733,7 @@ class APLab(tk.Tk):
                 frame.varDF.set(data[9] if float(data[9]) > 0 else 0)
                 frame.varSF.set(data[10])
                 frame.varTF.set(data[11] if float(data[11]) > 0 else 0)
+                frame.varLF.set(data[12] if float(data[12]) > 0 else '')
             
                 if int(data[8]):
                     self.setLumSignalType()
@@ -721,6 +743,7 @@ class APLab(tk.Tk):
                 frame.ax.cla() # Clear plot
                 frame.varMessageLabel.set('Image data loaded.' if int(data[3]) else \
                 'Note: loaded signal data does not contain a separate value for dark current.')
+                frame.labelMessage.configure(foreground='navy')
         
         # If image data is from another camera model:
         # If Image Simulator or Plotting Tool is the active frame
@@ -729,6 +752,7 @@ class APLab(tk.Tk):
             # Set signal data
             frame.varSF.set(data[10])
             frame.varTF.set(data[11])
+            frame.varLF.set(data[12] if float(data[12]) > 0 else '')
             
             self.setLumSignalType()
         
@@ -738,11 +762,13 @@ class APLab(tk.Tk):
             else:
                 frame.ax.cla() # Clear plot
             frame.varMessageLabel.set('Signal data loaded.')
+            frame.labelMessage.configure(foreground='navy')
         
         # If Image Calculator is the active frame
         else:
             
             frame.varMessageLabel.set('Image data is from another camera model. No data loaded.')
+            frame.labelMessage.configure(foreground='crimson')
             
         self.topLoad.destroy() # Close loading window
     
@@ -764,6 +790,7 @@ class APLab(tk.Tk):
             file = open('imagedata.txt', 'r')
         except IOError:
             frame.varMessageLabel.set('No image data to manage.')
+            frame.labelMessage.configure(foreground='crimson')
             self.menubar.entryconfig(1, state='normal')
             self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
@@ -778,6 +805,7 @@ class APLab(tk.Tk):
         if len(lines) == 1:
             
             frame.varMessageLabel.set('No image data to manage.')
+            frame.labelMessage.configure(foreground='crimson')
             self.menubar.entryconfig(1, state='normal')
             self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
@@ -806,7 +834,7 @@ class APLab(tk.Tk):
         self.topManage = tk.Toplevel()
         self.topManage.title('Manage image data')
         self.addIcon(self.topManage)
-        setupWindow(self.topManage, 300, 135)
+        setupWindow(self.topManage, 300, 170)
         self.topManage.focus_force()
         
         labelManage = ttk.Label(self.topManage, text='Choose image data:',anchor='center')
@@ -821,16 +849,26 @@ class APLab(tk.Tk):
                                   command=lambda: self.executeManage(names,
                                                                      keywords,
                                                                      display_keywords,
-                                                                     data,
-                                                                     delete=False))
+                                                                     data))
         buttonDelete = ttk.Button(frameLow, text='Delete',
                                   command=lambda: self.executeManage(names,
                                                                      keywords,
                                                                      display_keywords,
-                                                                     data))
+                                                                     data,
+                                                                     mode='delete'))
+                                                                     
+        buttonAddLim = ttk.Button(frameLow, text='Add limit signal', 
+                                  command=lambda: self.executeManage(names,
+                                                                     keywords,
+                                                                     display_keywords,
+                                                                     data,
+                                                                     mode='add'))
         
-        buttonRename.grid(row=0, column=0, padx=5*scsx)
+        buttonRename.grid(row=0, column=0, padx=(0, 5*scsx))
         buttonDelete.grid(row=0, column=1)
+        buttonAddLim.grid(row=1, column=0, columnspan=2, pady=(5*scsy, 0))
+        
+        if not self.calMode.get(): buttonAddLim.configure(state='disabled')
         
         self.wait_window(self.topManage)
         try:
@@ -845,13 +883,13 @@ class APLab(tk.Tk):
         except:
             pass
     
-    def executeManage(self, names, keywords, display_keywords, datafull, delete=True):
+    def executeManage(self, names, keywords, display_keywords, datafull, mode='rename'):
     
         '''Deletes selected data, or creates window for renaming selected save.'''
     
         linenum = display_keywords.index(self.varManageData.get()) # Index of relevant data
         
-        if delete:
+        if mode == 'delete':
             
             file = open('imagedata.txt', 'w')
             
@@ -859,14 +897,14 @@ class APLab(tk.Tk):
             
             for i in range(linenum):
             
-                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
                                % tuple([names[i]] + [keywords[i]] + datafull[i]))
                 
             if linenum < len(keywords):
                 
                 for i in range(linenum+1, len(keywords)):
                 
-                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
                                % tuple([names[i]] + [keywords[i]] + datafull[i]))
                       
                         
@@ -876,7 +914,51 @@ class APLab(tk.Tk):
             self.topManage.destroy()
             self.manageData()
             self.currentFrame().varMessageLabel.set('Image data deleted.')
+            self.currentFrame().labelMessage.configure(foreground='navy')
+        
+        elif mode == 'add':
+        
+            calframe = self.frames[ImageCalculator]
             
+            if CNAME[self.cnum] != names[linenum]:
+            
+                calframe.varMessageLabel.set(\
+                         'Cannot add limit signal to a file saved from another camera.')
+                calframe.labelMessage.configure(foreground='crimson')
+                return None
+        
+            if not calframe.dataCalculated or calframe.tf == 0:
+        
+                calframe.varMessageLabel.set(\
+                         'Target signal must be calculated before it can be saved as limit signal.')
+                calframe.labelMessage.configure(foreground='crimson')
+                return None
+                
+            file = open('imagedata.txt', 'w')
+            
+            for i in range(linenum):
+                
+                file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+                           % tuple([names[i]] + [keywords[i]] + datafull[i]))
+
+            file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%.3f\n' \
+                       % tuple([names[linenum]] + [keywords[linenum]] + datafull[linenum][:-1] \
+                               + [convSig(calframe.tf, True) if self.hasQE else calframe.tf]))
+            
+            if linenum < len(keywords):
+                
+                for i in range(linenum+1, len(keywords)):
+
+                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+                               % tuple([names[i]] + [keywords[i]] + datafull[i]))
+                         
+            file.close()
+            
+            # Go back to an updated managing window
+            self.topManage.destroy()
+            self.currentFrame().varMessageLabel.set('Limit signal value saved to the image data file.')
+            self.currentFrame().labelMessage.configure(foreground='navy')
+        
         else:
         
             # Create window for inputting new save name
@@ -919,17 +1001,17 @@ class APLab(tk.Tk):
             
             for i in range(linenum):
                 
-                file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+                file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
                            % tuple([names[i]] + [keywords[i]] + datafull[i]))
 
-            file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+            file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
                        % tuple([names[linenum]] + [self.varNewname.get()] + datafull[linenum]))
             
             if linenum < len(keywords):
                 
                 for i in range(linenum+1, len(keywords)):
 
-                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
                                % tuple([names[i]] + [keywords[i]] + datafull[i]))
                          
             file.close()
@@ -939,6 +1021,7 @@ class APLab(tk.Tk):
             self.topManage.destroy()
             self.manageData()
             self.currentFrame().varMessageLabel.set('Image data renamed.')
+            self.currentFrame().labelMessage.configure(foreground='navy')
         
         # Show an error message if the new name contains a ","
         elif ',' in self.varNewname.get():
@@ -1018,7 +1101,7 @@ class APLab(tk.Tk):
         self.wait_window(self.topCamera)
         try:
             self.menubar.entryconfig(1, state='normal')
-            if not self.anMode.get(): self.menubar.entryconfig(2, state='normal')
+            self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
             self.menubar.entryconfig(4, state='normal')
         except:
@@ -1076,6 +1159,7 @@ class APLab(tk.Tk):
         if not self.toolsConfigured:
             self.topCamera.destroy()
             anframe.varMessageLabel.set('Camera selected.')
+            anframe.labelMessage.configure(foreground='navy')
             return None
         
         calframe = self.frames[ImageCalculator]
@@ -1110,6 +1194,7 @@ class APLab(tk.Tk):
         
         self.topCamera.destroy() # Close change camera window
         self.currentFrame().varMessageLabel.set('Camera changed.')
+        self.currentFrame().labelMessage.configure(foreground='navy')
 
     def addNewCamera(self):
     
@@ -1164,7 +1249,7 @@ class APLab(tk.Tk):
             # Insert camera name and type to camera info lists
             CNAME.insert(idx, name)
             TYPE.insert(idx, type)
-            GAIN.insert(idx, [np.array([0], dtype='float'), np.array([1])])
+            GAIN.insert(idx, [np.array([0]), np.array([1])])
             RN.insert(idx, [np.array([0]), np.array([1])])
             SAT_CAP.insert(idx, [[0], [1]])
             BLACK_LEVEL.insert(idx, [[0], [1]])
@@ -1202,7 +1287,7 @@ class APLab(tk.Tk):
                   
         ttk.Label(frameInput, text=u'Pixel size (in \u03bcm): ').grid(row=2, column=0, sticky='W')
         ttk.Entry(frameInput, textvariable=varPS, font=self.small_font,
-                  background=DEFAULT_BG, width=20).grid(row=2, column=1)
+                  background=DEFAULT_BG, width=6).grid(row=2, column=1, sticky='W')
         
         ttk.Button(self.topAddNewCam, text='OK',
                    command=executeAddNew).pack(side='top', pady=(0, 10*scsy), expand=True)
@@ -1271,7 +1356,7 @@ class APLab(tk.Tk):
         self.wait_window(self.topTelescope)
         try:
             self.menubar.entryconfig(1, state='normal')
-            if not self.anMode.get(): self.menubar.entryconfig(2, state='normal')
+            self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
             self.menubar.entryconfig(4, state='normal')
         except:
@@ -1312,6 +1397,7 @@ class APLab(tk.Tk):
         if not self.toolsConfigured:
             self.topTelescope.destroy()
             anframe.varMessageLabel.set('Telescope selected.')
+            anframe.labelMessage.configure(foreground='navy')
             return None
         
         calframe = self.frames[ImageCalculator]
@@ -1326,6 +1412,7 @@ class APLab(tk.Tk):
         
         self.topTelescope.destroy() # Close change telescope window
         self.currentFrame().varMessageLabel.set('Telescope changed.')
+        self.currentFrame().labelMessage.configure(foreground='navy')
         
     def addNewTelescope(self):
     
@@ -1445,6 +1532,7 @@ class APLab(tk.Tk):
             self.FLModVal = FLModVal
             
             self.currentFrame().varMessageLabel.set('Focal length modifier changed.')
+            self.currentFrame().labelMessage.configure(foreground='navy')
             
             self.ISVal = np.arctan2(PIXEL_SIZE[self.cnum][0]*1e-3,
                                     FOCAL_LENGTH[self.tnum][0]*self.FLModVal)*180*3600/np.pi
@@ -1486,7 +1574,7 @@ class APLab(tk.Tk):
         self.wait_window(topChangeFLMod)
         try:
             self.menubar.entryconfig(1, state='normal')
-            if not self.anMode.get(): self.menubar.entryconfig(2, state='normal')
+            self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
             self.menubar.entryconfig(4, state='normal')
         except:
@@ -1522,7 +1610,7 @@ class APLab(tk.Tk):
         
             try:
                 self.menubar.entryconfig(1, state='normal')
-                if not self.anMode.get(): self.menubar.entryconfig(2, state='normal')
+                self.menubar.entryconfig(2, state='normal')
                 self.menubar.entryconfig(3, state='normal')
                 self.menubar.entryconfig(4, state='normal')
             except:
@@ -1617,12 +1705,13 @@ class APLab(tk.Tk):
         
         self.currentFrame().varMessageLabel.set(\
         'Note: changing the value of a camera parameter will reset the application.')
+        self.currentFrame().labelMessage.configure(foreground='navy')
         
         self.wait_window(self.topCModify)
         
         try:
             self.menubar.entryconfig(1, state='normal')
-            if not self.anMode.get(): self.menubar.entryconfig(2, state='normal')
+            self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
             self.menubar.entryconfig(4, state='normal')
         except:
@@ -1881,6 +1970,7 @@ class APLab(tk.Tk):
         plotframe.reconfigureNonstaticWidgets()
         
         self.currentFrame().varMessageLabel.set('Camera parameter modified.')
+        self.currentFrame().labelMessage.configure(foreground='navy')
         
         # Update widgets and attributes in the window with the new parameter value
         self.optionISO.set_menu(*([None] + self.isolist))
@@ -1968,12 +2058,13 @@ class APLab(tk.Tk):
         
         self.currentFrame().varMessageLabel.set(\
         'Note: changing the value of a telescope/lens parameter will reset the application.')
+        self.currentFrame().labelMessage.configure(foreground='navy')
         
         self.wait_window(self.topTModify)
         
         try:
             self.menubar.entryconfig(1, state='normal')
-            if not self.anMode.get(): self.menubar.entryconfig(2, state='normal')
+            self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
             self.menubar.entryconfig(4, state='normal')
         except:
@@ -2047,6 +2138,7 @@ class APLab(tk.Tk):
         plotframe.setDefaultValues()
         
         self.currentFrame().varMessageLabel.set('Telescope parameter modified.')
+        self.currentFrame().labelMessage.configure(foreground='navy')
         
         self.varNewTParamVal.set('')
         self.varErrorModifyT.set('')
@@ -2070,7 +2162,15 @@ class APLab(tk.Tk):
         
             # Show error message if flux data hasn't been calculated
             if not calframe.dataCalculated:
-                calframe.varMessageLabel.set('Data must be calculated before transfering input.')
+                calframe.varMessageLabel.set('Data must be calculated before it can be transferred.')
+                calframe.labelMessage.configure(foreground='crimson')
+                return None
+        
+            if calframe.varTransfLim.get():
+                simframe.varLF.set('%g' % (convSig(calframe.tf, True) if self.lumSignalType.get() \
+                                   else calframe.tf))
+                calframe.varMessageLabel.set('Target flux transferred as limit flux to Image Simulator.')
+                calframe.labelMessage.configure(foreground='crimson')
                 return None
         
             # Set values
@@ -2091,10 +2191,11 @@ class APLab(tk.Tk):
             simframe.dataCalculated = False # Previously calculated data is no longer valid
             simframe.updateSensorLabels() # Update sensor info labels in case the ISO has changed
             simframe.emptyInfoLabels() # Clear other info labels
-            calframe.varMessageLabel.set('Input transfered to Image Simulator.' \
+            calframe.varMessageLabel.set('Data transferred to Image Simulator.' \
                                          if calframe.varUseDark.get() \
-                                         else 'Input transfered. Note that transfered signal ' \
+                                         else 'Data transferred. Note that transferred signal ' \
                                        + 'data does not contain a separate value for dark current.')
+            calframe.labelMessage.configure(foreground='navy')
         
         # If Plotting Tool is the active frame
         elif self.plMode.get():
@@ -2130,11 +2231,17 @@ class APLab(tk.Tk):
             except ValueError:
                 pass
             
+            try:
+                simframe.varLF.set('%g' % plotframe.varLF.get())
+            except ValueError:
+                pass
+            
             simframe.varSubs.set(1)
             
             simframe.updateSensorLabels() # Update sensor info labels in case the ISO has changed
             simframe.emptyInfoLabels() # Clear other info labels
-            plotframe.varMessageLabel.set('Input transfered to Image Simulator.')
+            plotframe.varMessageLabel.set('Input transferred to Image Simulator.')
+            plotframe.labelMessage.configure(foreground='navy')
         
     def transferToPlot(self):
     
@@ -2149,7 +2256,15 @@ class APLab(tk.Tk):
         
             # Show error message if flux data hasn't been calculated
             if not calframe.dataCalculated:
-                calframe.varMessageLabel.set('Data must be calculated before transfering input.')
+                calframe.varMessageLabel.set('Data must be calculated before it can be transferred.')
+                calframe.labelMessage.configure(foreground='crimson')
+                return None
+        
+            if calframe.varTransfLim.get() and self.isDSLR:
+                plotframe.varLF.set('%g' % (convSig(calframe.tf, True) if self.lumSignalType.get() \
+                                   else calframe.tf))
+                calframe.varMessageLabel.set('Target flux transferred as limit flux to Plotting Tool.')
+                calframe.labelMessage.configure(foreground='navy')
                 return None
         
             # Set values
@@ -2167,10 +2282,11 @@ class APLab(tk.Tk):
                                                                           else calframe.tf)))
             
             plotframe.ax.cla() # Clear plot
-            calframe.varMessageLabel.set('Input transfered to Plotting Tool.' \
+            calframe.varMessageLabel.set('Data transferred to Plotting Tool.' \
                                          if calframe.varUseDark.get() \
-                                         else 'Input transfered. Note that transfered signal data ' \
+                                         else 'Data transferred. Note that transferred signal data ' \
                                             + 'does not contain a separate value for dark current.')
+            calframe.labelMessage.configure(foreground='navy')
         
         # If Plotting Tool is the active frame
         elif self.simMode.get():
@@ -2205,8 +2321,14 @@ class APLab(tk.Tk):
             except ValueError:
                 pass
             
+            try:
+                plotframe.varLF.set('%g' % simframe.varLF.get())
+            except ValueError:
+                pass
+            
             plotframe.ax.cla() # Clear plot
-            simframe.varMessageLabel.set('Input transfered to Plotting Tool.')
+            simframe.varMessageLabel.set('Input transferred to Plotting Tool.')
+            simframe.labelMessage.configure(foreground='navy')
     
     def setElectronSignalType(self):
     
@@ -2230,9 +2352,11 @@ class APLab(tk.Tk):
         
         simframe.varSFLabel.set('e-/s')
         simframe.varTFLabel.set('e-/s')
+        simframe.varLFLabel.set('e-/s')
         
         plotframe.varSFLabel.set('e-/s')
         plotframe.varTFLabel.set('e-/s')
+        plotframe.varLFLabel.set('e-/s')
         
         # Change tooltips
         if self.tooltipsOn.get():
@@ -2241,8 +2365,10 @@ class APLab(tk.Tk):
             createToolTip(calframe.labelTF2, TTTFElectron, self.tt_fs)
             createToolTip(simframe.entrySF, TTSFElectron, self.tt_fs)
             createToolTip(simframe.entryTF, TTTFElectron, self.tt_fs)
+            createToolTip(simframe.entryLF, TTLFElectron, self.tt_fs)
             createToolTip(plotframe.entrySF, TTSFElectron, self.tt_fs)
             createToolTip(plotframe.entryTF, TTTFElectron, self.tt_fs)
+            createToolTip(plotframe.entryLF, TTLFElectron, self.tt_fs)
         
         # Change displayed flux values if they have been calculated
         if calframe.dataCalculated:
@@ -2252,7 +2378,45 @@ class APLab(tk.Tk):
             calframe.labelSF2.configure(background=DEFAULT_BG, foreground='black')
             calframe.labelTF2.configure(background=DEFAULT_BG, foreground='black')
             
-        self.currentFrame().varMessageLabel.set('Using electron flux as signal quantity.')
+        try:
+            sig = simframe.varSF.get()
+            simframe.varSF.set('%.3g' % convSig(sig, False))
+        except:
+            pass
+                
+        try:
+            sig = simframe.varTF.get()
+            simframe.varTF.set('%.3g' % convSig(sig, False))
+        except:
+            pass
+                
+        try:
+            sig = simframe.varLF.get()
+            simframe.varLF.set('%.3g' % convSig(sig, False))
+        except:
+            pass
+               
+        try:
+            sig = plotframe.varSF.get()
+            plotframe.varSF.set('%.3g' % convSig(sig, False))
+        except:
+            pass
+                
+        try:
+            sig = plotframe.varTF.get()
+            plotframe.varTF.set('%.3g' % convSig(sig, False))
+        except:
+            pass
+               
+        try:
+            sig = plotframe.varLF.get()
+            plotframe.varLF.set('%.3g' % convSig(sig, False))
+        except:
+            pass
+            
+        self.currentFrame().varMessageLabel.set(\
+                       'Using electron flux as signal quantity. Relevant values have been converted.')
+        self.currentFrame().labelMessage.configure(foreground='navy')
             
     def setLumSignalType(self):
     
@@ -2267,6 +2431,7 @@ class APLab(tk.Tk):
             self.lumSignalType.set(0)
             self.currentFrame().varMessageLabel\
                                 .set('Camera doesn\'t have QE data. Cannot estimate luminance.')
+            self.currentFrame().labelMessage.configure(foreground='crimson')
             return None
             
         self.lumSignalType.set(1)
@@ -2282,9 +2447,11 @@ class APLab(tk.Tk):
         
         simframe.varSFLabel.set(u'mag/arcsec\u00B2')
         simframe.varTFLabel.set(u'mag/arcsec\u00B2')
+        simframe.varLFLabel.set(u'mag/arcsec\u00B2')
         
         plotframe.varSFLabel.set(u'mag/arcsec\u00B2')
         plotframe.varTFLabel.set(u'mag/arcsec\u00B2')
+        plotframe.varLFLabel.set(u'mag/arcsec\u00B2')
         
         # Change tooltips
         if self.tooltipsOn.get():
@@ -2293,15 +2460,17 @@ class APLab(tk.Tk):
             createToolTip(calframe.labelTF2, TTTFLum, self.tt_fs)
             createToolTip(simframe.entrySF, TTSFLum, self.tt_fs)
             createToolTip(simframe.entryTF, TTTFLum, self.tt_fs)
+            createToolTip(simframe.entryLF, TTLFLum, self.tt_fs)
             createToolTip(plotframe.entrySF, TTSFLum, self.tt_fs)
             createToolTip(plotframe.entryTF, TTTFLum, self.tt_fs)
+            createToolTip(plotframe.entryLF, TTLFLum, self.tt_fs)
         
         # Change displayed flux values if they have been calculated
         if calframe.dataCalculated:
         
             sf = convSig(calframe.sf, True)
             calframe.varSFInfo.set('%.4g' % sf)
-            calframe.setLumColor(sf, calframe.labelSF2)
+            calframe.setLumColour(sf, calframe.labelSF2)
             
             if calframe.tf == 0:
                 calframe.varTFInfo.set('-')
@@ -2309,9 +2478,47 @@ class APLab(tk.Tk):
             else:
                 tf = convSig(calframe.tf, True)
                 calframe.varTFInfo.set('%.4g' % tf)
-                calframe.setLumColor(tf, calframe.labelTF2) 
+                calframe.setLumColour(tf, calframe.labelTF2) 
+                
+        try:
+            sig = simframe.varSF.get()
+            simframe.varSF.set('%.4g' % convSig(sig, True))
+        except:
+            pass
+                
+        try:
+            sig = simframe.varTF.get()
+            simframe.varTF.set('%.4g' % convSig(sig, True))
+        except:
+            pass
+                
+        try:
+            sig = simframe.varLF.get()
+            simframe.varLF.set('%.4g' % convSig(sig, True))
+        except:
+            pass
+               
+        try:
+            sig = plotframe.varSF.get()
+            plotframe.varSF.set('%.4g' % convSig(sig, True))
+        except:
+            pass
+                
+        try:
+            sig = plotframe.varTF.get()
+            plotframe.varTF.set('%.4g' % convSig(sig, True))
+        except:
+            pass
+               
+        try:
+            sig = plotframe.varLF.get()
+            plotframe.varLF.set('%.4g' % convSig(sig, True))
+        except:
+            pass
             
-        self.currentFrame().varMessageLabel.set('Using luminance as signal quantity.')
+        self.currentFrame().varMessageLabel.set(\
+                         'Using luminance as signal quantity. Relevant values have been converted.')
+        self.currentFrame().labelMessage.configure(foreground='navy')
 
     def setdBDRUnit(self):
         
@@ -2400,6 +2607,7 @@ class APLab(tk.Tk):
             self.tooltipsOn.set(0)
             
             self.currentFrame().varMessageLabel.set('Tooltips deactivated.')
+            self.currentFrame().labelMessage.configure(foreground='navy')
             
         else:
                                        
@@ -2410,6 +2618,7 @@ class APLab(tk.Tk):
             self.tooltipsOn.set(1)
     
             self.currentFrame().varMessageLabel.set('Tooltips activated.')
+            self.currentFrame().labelMessage.configure(foreground='navy')
 
     def toogleDefaultTTState(self):
 
@@ -2435,6 +2644,7 @@ class APLab(tk.Tk):
             self.defaultTTState.set(0)
             
             self.currentFrame().varMessageLabel.set('Default tooltip state: off')
+            self.currentFrame().labelMessage.configure(foreground='navy')
             
         else:
         
@@ -2445,6 +2655,7 @@ class APLab(tk.Tk):
             self.defaultTTState.set(1)
             
             self.currentFrame().varMessageLabel.set('Default tooltip state: on')
+            self.currentFrame().labelMessage.configure(foreground='navy')
             
         file.close()
 
@@ -2480,11 +2691,12 @@ class APLab(tk.Tk):
     
         self.currentFrame().varMessageLabel.set('Warning: changing font size ' \
                                                 + 'will restart the application.')
+        self.currentFrame().labelMessage.configure(foreground='crimson')
                                                             
         self.wait_window(topFS)
         try:
             self.menubar.entryconfig(1, state='normal')
-            if not self.anMode.get(): self.menubar.entryconfig(2, state='normal')
+            self.menubar.entryconfig(2, state='normal')
             self.menubar.entryconfig(3, state='normal')
             self.menubar.entryconfig(4, state='normal')
         except:
@@ -2630,6 +2842,8 @@ class ImageCalculator(ttk.Frame):
         self.varSFLabel = tk.StringVar()
         self.varTFLabel = tk.StringVar()
         
+        self.varTransfLim = tk.IntVar()
+        
         # Set default attribute values
         
         self.varDRLabel.set('stops')
@@ -2689,9 +2903,14 @@ class ImageCalculator(ttk.Frame):
         labelHeader = ttk.Label(frameHeader, text='Image Calculator', font=large_font, anchor='center')
         
         frameNames = ttk.Frame(frameHeader)
-        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, anchor='center')
-        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, anchor='center')
-        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, anchor='center')
+        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray', 
+                                 anchor='center')
+        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray',
+                                 anchor='center')
+        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, foreground='darkslategray', 
+                                 font=self.cont.smallbold_font, anchor='center')
         
         labelHeader.pack(side='top', pady=3*scsy)
         
@@ -2929,8 +3148,6 @@ class ImageCalculator(ttk.Frame):
                                        command=self.updateRN)
         self.labelRN2 = ttk.Label(frameUpMiddle, text='e-')
         
-        self.setDefaultValues()
-        
         labelExp = ttk.Label(frameUpMiddle, text='Exposure time:')
         self.entryExp = ttk.Entry(frameUpMiddle, textvariable=self.varExp, width=9, font=small_font,
                                   background=DEFAULT_BG)
@@ -2965,11 +3182,19 @@ class ImageCalculator(ttk.Frame):
         
         buttonData = ttk.Button(frameLowMiddle, text='Calculate data', command=self.processInput,
                                 width=14)
+                                
+        frameLim = ttk.Frame(frameLowMiddle)
+        labelLim = ttk.Label(frameLim, text='Transfer limit signal only:')
+        self.checkbuttonLim = tk.Checkbutton(frameLim, variable=self.varTransfLim)
+        
         buttonTransferSim = ttk.Button(frameLowMiddle, text='Transfer data to Image Simulator',
                                        command=self.cont.transferToSim, width=29)
         buttonTransferPlot = ttk.Button(frameLowMiddle, text='Transfer data to Plotting Tool',
                                         command=self.cont.transferToPlot, width=29)
+        
         buttonClear = ttk.Button(frameLowMiddle, text='Clear input', command=self.cont.clearInput)                    
+        
+        self.setDefaultValues()
         
         # Place upper middle frame widgets
         
@@ -2998,18 +3223,23 @@ class ImageCalculator(ttk.Frame):
         # Place lower middle frame widgets
         
         buttonData.grid(row=0, column=0, pady=(0, 22*scsy))
-        buttonTransferSim.grid(row=1, column=0)
-        buttonTransferPlot.grid(row=2, column=0)
-        buttonClear.grid(row=3, column=0, pady=(11*scsy, 0))
+        
+        frameLim.grid(row=1, column=0)
+        labelLim.pack(side='left')
+        self.checkbuttonLim.pack(side='left')
+        
+        buttonTransferSim.grid(row=2, column=0)
+        buttonTransferPlot.grid(row=3, column=0)
+        buttonClear.grid(row=4, column=0, pady=(11*scsy, 0))
         
         # Place more widgets according to camera type
         self.reconfigureNonstaticWidgets()
         
         # *** Message frame ***
         
-        labelMessage = ttk.Label(frameMessage, textvariable=self.varMessageLabel, anchor='center')
+        self.labelMessage = ttk.Label(frameMessage, textvariable=self.varMessageLabel, anchor='center')
         ttk.Separator(frameMessage, orient='horizontal').pack(side='top', fill='x')
-        labelMessage.pack(fill='x')
+        self.labelMessage.pack(fill='x')
         
         if self.cont.tooltipsOn.get(): self.activateTooltips()
 
@@ -3065,7 +3295,7 @@ class ImageCalculator(ttk.Frame):
         self.varPSInfo.set('%g' % PIXEL_SIZE[self.cont.cnum][0])
         self.varQEInfo.set('-' if not self.cont.hasQE else ('%d' % (QE[self.cont.cnum][0]*100)))
         
-        # Set text color according to whether the data is default or user added
+        # Set text colour according to whether the data is default or user added
         self.labelGainI2.configure(foreground=('black' \
                                    if GAIN[self.cont.cnum][1][self.gain_idx] == 0 else 'navy'))
         self.labelRNI2.configure(foreground=('black' \
@@ -3082,6 +3312,9 @@ class ImageCalculator(ttk.Frame):
         self.updateOpticsLabels()
         
         self.varRNInfo.set('%.1f' % RN[self.cont.cnum][0][self.rn_idx])
+        
+        self.checkbuttonLim.configure(state='disabled')
+        self.varTransfLim.set(0)
         
         self.emptyInfoLabels() # Clear labels
     
@@ -3174,7 +3407,7 @@ class ImageCalculator(ttk.Frame):
         self.varBLInfo.set('%d' % BLACK_LEVEL[self.cont.cnum][0][self.gain_idx])
         self.varWLInfo.set('%d' % WHITE_LEVEL[self.cont.cnum][0][self.gain_idx])
         
-        # Set text color according to whether the data is default or user added
+        # Set text colour according to whether the data is default or user added
         self.labelGainI2.configure(foreground=('black' if GAIN[self.cont.cnum][1][self.gain_idx] == 0 else 'navy'))
         self.labelRNI2.configure(foreground=('black' if RN[self.cont.cnum][1][self.rn_idx] == 0 else 'navy'))
         self.labelSatCap2.configure(foreground=('black' if SAT_CAP[self.cont.cnum][1][self.gain_idx] == 0 else 'navy'))
@@ -3193,7 +3426,7 @@ class ImageCalculator(ttk.Frame):
         self.varISInfo.set('%.3g' % (self.cont.ISVal))
         self.varRLInfo.set('%.2g' % (1.22*5.5e-4*180*3600/(APERTURE[self.cont.tnum][0]*np.pi)))
         
-        # Set text color according to whether the data is default or user added
+        # Set text colour according to whether the data is default or user added
         self.labelFL2.configure(foreground=('black' if FOCAL_LENGTH[self.cont.tnum][1] == 0 else 'navy'))
         self.labelAP2.configure(foreground=('black' if APERTURE[self.cont.tnum][1] == 0 else 'navy'))
         
@@ -3267,6 +3500,7 @@ class ImageCalculator(ttk.Frame):
             
         except ValueError:
             self.varMessageLabel.set('Invalid input for exposure time.')
+            self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
             return None
         
@@ -3279,6 +3513,7 @@ class ImageCalculator(ttk.Frame):
             if self.use_dark:
                 self.varMessageLabel.set('Invalid input for dark frame noise.' \
                                          if self.cont.isDSLR else 'Invalid input for dark frame level.')
+                self.labelMessage.configure(foreground='crimson')
                 self.emptyInfoLabels()
                 return None
             else:
@@ -3290,6 +3525,7 @@ class ImageCalculator(ttk.Frame):
         except ValueError:
             if self.cont.isDSLR:
                 self.varMessageLabel.set('Invalid input for background noise.')
+                self.labelMessage.configure(foreground='crimson')
                 self.emptyInfoLabels()
                 return None
             else:
@@ -3300,6 +3536,7 @@ class ImageCalculator(ttk.Frame):
             
         except ValueError:
             self.varMessageLabel.set('Invalid input for background level.')
+            self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
             return None
             
@@ -3314,6 +3551,7 @@ class ImageCalculator(ttk.Frame):
         
             if self.bgl < BLACK_LEVEL[self.cont.cnum][0][self.gain_idx]:
                 self.varMessageLabel.set('The background level cannot be lower than the black level.')
+                self.labelMessage.configure(foreground='crimson')
                 self.emptyInfoLabels()
                 return None
                 
@@ -3321,21 +3559,25 @@ class ImageCalculator(ttk.Frame):
         
             if self.dark_input < BLACK_LEVEL[self.cont.cnum][0][self.gain_idx]:
                 self.varMessageLabel.set('The dark frame level cannot be lower than the black level.')
+                self.labelMessage.configure(foreground='crimson')
                 self.emptyInfoLabels()
                 return None
                 
             if self.bgl < self.dark_input:
                 self.varMessageLabel.set('The background level cannot be lower than the dark frame level.')
+                self.labelMessage.configure(foreground='crimson')
                 self.emptyInfoLabels()
                 return None
             
         if 0 < self.target < self.bgl:
             self.varMessageLabel.set('The target level cannot be lower than the background level.')
+            self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
             return None
         
         if self.target > WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]:
             self.varMessageLabel.set('The target level cannot be higher than the white level.')
+            self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
             return None
         
@@ -3434,24 +3676,28 @@ class ImageCalculator(ttk.Frame):
         
             sf = convSig(self.sf, True)
             self.varSFInfo.set('%.4g' % sf)
-            self.setLumColor(sf, self.labelSF2)
+            self.setLumColour(sf, self.labelSF2)
             
             if self.target != 0:
                 tf = convSig(self.tf, True)
                 self.varTFInfo.set('%.4g' % tf)
-                self.setLumColor(tf, self.labelTF2)
+                self.setLumColour(tf, self.labelTF2)
+                self.checkbuttonLim.configure(state='normal')
             else:
                 self.varTFInfo.set('-')
                 self.labelTF2.configure(background=DEFAULT_BG, foreground='black')
+                self.checkbuttonLim.configure(state='disabled')
+                self.varTransfLim.set(0)
         else:
             self.varSFInfo.set('%.3g' % (self.sf))
-            
+            self.checkbuttonLim.configure(state=('normal' if self.target != 0 else 'disabled'))
             self.varTFInfo.set('-' if self.target == 0 else '%.3g' % (self.tf))
             self.labelTF2.configure(background=DEFAULT_BG, foreground='black')
         
         self.dataCalculated = True
         
         self.varMessageLabel.set(message)
+        self.labelMessage.configure(foreground='navy')
  
     def activateTooltips(self):
     
@@ -3484,6 +3730,7 @@ class ImageCalculator(ttk.Frame):
         createToolTip(self.labelDF2, TTDF, self.cont.tt_fs)
         createToolTip(self.labelSF2, TTSFLum if self.cont.hasQE else TTSFElectron, self.cont.tt_fs)
         createToolTip(self.labelTF2, TTTFLum if self.cont.hasQE else TTTFElectron, self.cont.tt_fs)
+        createToolTip(self.checkbuttonLim, TTLim, self.cont.tt_fs)
  
     def deactivateTooltips(self):
     
@@ -3494,13 +3741,14 @@ class ImageCalculator(ttk.Frame):
                        self.labelFL2, self.labelEFL2, self.labelAP2, self.labelFR2, self.labelIS2, 
                        self.labelRL2, self.labelGainI2, self.labelSatCap2, self.labelBL2, self.labelWL2, 
                        self.labelPS2, self.labelQE2, self.labelRNI2, self.labelDN2, self.labelSN2,
-                       self.labelTBGN2, self.labelDF2, self.labelSF2, self.labelTF2]:
+                       self.labelTBGN2, self.labelDF2, self.labelSF2, self.labelTF2,
+                       self.checkbuttonLim]:
                            
             widget.unbind('<Enter>')
             widget.unbind('<Motion>')
             widget.unbind('<Leave>')
               
-    def setLumColor(self, sf, label):
+    def setLumColour(self, sf, label):
     
         '''Set skyglow label background according to the luminance value.'''
     
@@ -3543,6 +3791,7 @@ class ImageSimulator(ttk.Frame):
         self.varSF = tk.DoubleVar()
         self.varTF = tk.DoubleVar()
         self.varSubs = tk.IntVar()
+        self.varLF = tk.DoubleVar()
         self.varStretch = tk.IntVar()
         
         self.varMessageLabel = tk.StringVar()
@@ -3574,6 +3823,10 @@ class ImageSimulator(ttk.Frame):
         self.varTBGNLabel = tk.StringVar()
         self.varSFLabel = tk.StringVar()
         self.varTFLabel = tk.StringVar()
+        self.varLFLabel = tk.StringVar()
+        
+        self.tot = 0
+        self.max = 0
         
         # Define frames
         
@@ -3601,7 +3854,6 @@ class ImageSimulator(ttk.Frame):
         self.topCanvas = tk.Toplevel()
         self.topCanvas.destroy()
                      
-            
         # Read demonstration image
         self.img_orig = matplotlib.image.imread('sim_orig_image.png')
         
@@ -3614,6 +3866,7 @@ class ImageSimulator(ttk.Frame):
         self.varTBGNLabel.set('e-')
         self.varSFLabel.set(u'mag/arcsec\u00B2' if self.cont.hasQE else 'e-/s')
         self.varTFLabel.set(u'mag/arcsec\u00B2' if self.cont.hasQE else 'e-/s')
+        self.varLFLabel.set(u'mag/arcsec\u00B2' if self.cont.hasQE else 'e-/s')
         
         # Place frames
         
@@ -3626,7 +3879,8 @@ class ImageSimulator(ttk.Frame):
         frameRight.pack(side='right', padx=(0, 30*scsx), expand=True)
         
         frameOptics.pack(side='top', pady=(25*scsy, 50*scsy), expand=True)
-        ttk.Label(frameLeft, text='User modified camera/optics data is displayed in blue',
+        ttk.Label(frameLeft, text='User modified camera/optics data is displayed in blue' \
+                                    + '\n\n*Only required to get suggested camera settings',
                   foreground='dimgray').pack(side='bottom', pady=(8*scsy, 25*scsy))
         frameSensor.pack(side='bottom', expand=True)
         
@@ -3643,9 +3897,14 @@ class ImageSimulator(ttk.Frame):
         labelHeader = ttk.Label(frameHeader, text='Image Simulator', font=large_font, anchor='center')
         
         frameNames = ttk.Frame(frameHeader)
-        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, anchor='center')
-        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, anchor='center')
-        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, anchor='center')
+        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray', 
+                                 anchor='center')
+        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray',
+                                 anchor='center')
+        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, foreground='darkslategray', 
+                                 font=self.cont.smallbold_font, anchor='center')
         
         labelHeader.pack(side='top', pady=3*scsy)
         
@@ -3884,6 +4143,11 @@ class ImageSimulator(ttk.Frame):
                                  background=DEFAULT_BG, width=9)
         labelTF2 = ttk.Label(frameUpMiddle, textvariable=self.varTFLabel)
         
+        labelLF = ttk.Label(frameUpMiddle, text='*Limit signal:')
+        self.entryLF = ttk.Entry(frameUpMiddle, textvariable=self.varLF, font=small_font,
+                                 background=DEFAULT_BG, width=9)
+        labelLF2 = ttk.Label(frameUpMiddle, textvariable=self.varLFLabel)
+        
         labelSubs = ttk.Label(frameUpMiddle, text='Number of subframes:')
         self.entrySubs = ttk.Entry(frameUpMiddle, textvariable=self.varSubs, font=small_font,
                                    background=DEFAULT_BG, width=9)
@@ -3891,8 +4155,12 @@ class ImageSimulator(ttk.Frame):
         
         # Define lower middle frame widgets
         
-        buttonData = ttk.Button(frameLowMiddle, text='Calculate data', command=self.processInput, width=14)
-        buttonSim = ttk.Button(frameLowMiddle, text='Simulate image', command=self.simulateController, width=14)
+        buttonData = ttk.Button(frameLowMiddle, text='Calculate data', command=self.processInput, 
+                                width=14)
+        buttonSim = ttk.Button(frameLowMiddle, text='Simulate image', command=self.simulateController, 
+                               width=14)
+        buttonSug = ttk.Button(frameLowMiddle, text='Get suggested imaging settings', 
+                               command=self.getSuggestedSettings, width=26)
         buttonTransferPlot = ttk.Button(frameLowMiddle, text='Transfer input to Plotting Tool',
                                         command=self.cont.transferToPlot, width=26)
         buttonClear = ttk.Button(frameLowMiddle, text='Clear input', command=self.cont.clearInput)
@@ -3917,16 +4185,21 @@ class ImageSimulator(ttk.Frame):
         self.entryTF.grid(row=6, column=1)
         labelTF2.grid(row=6, column=2, sticky='W')
         
-        labelSubs.grid(row=7, column=0, sticky='W')
-        self.entrySubs.grid(row=7, column=1)
-        labelSubs2.grid(row=7, column=2)
+        labelLF.grid(row=7, column=0, sticky='W')
+        self.entryLF.grid(row=7, column=1)
+        labelLF2.grid(row=7, column=2, sticky='W')
+        
+        labelSubs.grid(row=8, column=0, sticky='W')
+        self.entrySubs.grid(row=8, column=1)
+        labelSubs2.grid(row=8, column=2)
         
         # Place lower middle frame widgets
         
         buttonData.grid(row=0, column=0)
         buttonSim.grid(row=1, column=0)
-        buttonTransferPlot.grid(row=2, column=0, pady=(22*scsy, 11*scsy))
-        buttonClear.grid(row=3, column=0)
+        buttonSug.grid(row=2, column=0, pady=(6*scsy, 0))
+        buttonTransferPlot.grid(row=3, column=0, pady=(22*scsy, 11*scsy))
+        buttonClear.grid(row=4, column=0)
         
         # Place more widgets according to camera type
         self.reconfigureNonstaticWidgets()
@@ -3969,6 +4242,7 @@ class ImageSimulator(ttk.Frame):
         self.varDF.set('')
         self.varSF.set('')
         self.varTF.set('')
+        self.varLF.set('')
         self.varSubs.set(1)
         self.varStretch.set(0)
         
@@ -3980,7 +4254,7 @@ class ImageSimulator(ttk.Frame):
         self.varQEInfo.set('-' if not self.cont.hasQE else ('%d' % (QE[self.cont.cnum][0]*100)))
         self.varRNInfo.set('%.1f' % (self.varRN.get()))
         
-        # Set text color according to whether the data is default or user added
+        # Set text colour according to whether the data is default or user added
         self.labelGainI2.configure(foreground=('black' \
                                    if GAIN[self.cont.cnum][1][self.gain_idx] == 0 else 'navy'))
         self.labelRNI2.configure(foreground=('black' \
@@ -4082,7 +4356,7 @@ class ImageSimulator(ttk.Frame):
         self.varBLInfo.set('%d' % BLACK_LEVEL[self.cont.cnum][0][self.gain_idx])
         self.varWLInfo.set('%d' % WHITE_LEVEL[self.cont.cnum][0][self.gain_idx])
         
-        # Set text color according to whether the data is default or user added
+        # Set text colour according to whether the data is default or user added
         self.labelGainI2.configure(foreground=('black' if GAIN[self.cont.cnum][1][self.gain_idx] == 0 else 'navy'))
         self.labelRNI2.configure(foreground=('black' if RN[self.cont.cnum][1][self.rn_idx] == 0 else 'navy'))
         self.labelSatCap2.configure(foreground=('black' if SAT_CAP[self.cont.cnum][1][self.gain_idx] == 0 else 'navy'))
@@ -4101,7 +4375,7 @@ class ImageSimulator(ttk.Frame):
         self.varISInfo.set('%.3g' % (self.cont.ISVal))
         self.varRLInfo.set('%.2g' % (1.22*5.5e-4*180*3600/(APERTURE[self.cont.tnum][0]*np.pi)))
         
-        # Set text color according to whether the data is default or user added
+        # Set text colour according to whether the data is default or user added
         self.labelFL2.configure(foreground=('black' if FOCAL_LENGTH[self.cont.tnum][1] == 0 else 'navy'))
         self.labelAP2.configure(foreground=('black' if APERTURE[self.cont.tnum][1] == 0 else 'navy'))
     
@@ -4116,6 +4390,7 @@ class ImageSimulator(ttk.Frame):
             
         except ValueError:
             self.varMessageLabel.set('Invalid input for exposure time.')
+            self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
             return None
         
@@ -4124,6 +4399,7 @@ class ImageSimulator(ttk.Frame):
             
         except ValueError:
             self.varMessageLabel.set('Invalid input for dark current.')
+            self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
             return None
         
@@ -4133,6 +4409,7 @@ class ImageSimulator(ttk.Frame):
             
         except ValueError:
             self.varMessageLabel.set('Invalid input for skyglow.')
+            self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
             return None
             
@@ -4142,6 +4419,7 @@ class ImageSimulator(ttk.Frame):
             
         except ValueError:
             self.varMessageLabel.set('Invalid input for target signal.')
+            self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
             return None
             
@@ -4150,6 +4428,7 @@ class ImageSimulator(ttk.Frame):
             
         except ValueError:
             self.varMessageLabel.set('Invalid input for number of subframes. Must be an integer.')
+            self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
             return None
         
@@ -4191,10 +4470,11 @@ class ImageSimulator(ttk.Frame):
         self.dataCalculated = True
         
         self.varMessageLabel.set('SNR calculated.')
+        self.labelMessage.configure(foreground='navy')
     
     def simulateController(self, fromCheckbutton=False):
     
-        '''Changes the dispayed simulated image according to various conditions.'''
+        '''Changes the displayed simulated image according to various conditions.'''
         
         # If the "Simulate image" button is pressed
         if not fromCheckbutton:
@@ -4209,6 +4489,7 @@ class ImageSimulator(ttk.Frame):
                 if self.subs > 200:
                     self.varMessageLabel.set(\
                     'Please decrease number of subframes to 200 or less before simulating.')
+                    self.labelMessage.configure(foreground='crimson')
                     return None
                 
                 self.showCanvasWindow()
@@ -4235,6 +4516,7 @@ class ImageSimulator(ttk.Frame):
     
         # Show "Working.." message while calculating
         self.varMessageLabel.set('Working..')
+        self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
     
         gain = float(GAIN[self.cont.cnum][0][self.gain_idx]) # Gain [e-/ADU]
@@ -4248,12 +4530,12 @@ class ImageSimulator(ttk.Frame):
             
         map = np.where(self.img_orig > 0.0) # Locations of target pixels
         
-        # Generate sky, target and dark images from poisson distributions
+        # Generate sky, target and dark images from Poisson distributions
         dark = np.random.poisson(dark_signal_e, imsize)/gain
         sky = np.random.poisson(sky_signal_e, imsize)/gain
         target = np.random.poisson(target_signal_e, imsize)/gain
         
-        # Generate bias images with correct amount of gaussian read noise
+        # Generate bias images with correct amount of Gaussian read noise
         bias = BLACK_LEVEL[self.cont.cnum][0][self.gain_idx] \
                + (np.random.normal(0, rn, imsize).astype(int))/gain
         
@@ -4273,7 +4555,7 @@ class ImageSimulator(ttk.Frame):
         # Scale pixel values to be between 0 and 1, with 1 corresponding to the saturation capacity
         img = img/WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]
         
-        # Save linear and nonlinear version of the simulated image
+        # Save linear and non-linear version of the simulated image
         plt.imsave('sim.jpg', img, cmap=plt.get_cmap('gray'), vmin = 0.0, vmax = 1.0)
         plt.imsave('sim_str.jpg', autostretch(img), cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
         
@@ -4303,6 +4585,7 @@ class ImageSimulator(ttk.Frame):
             self.canvasSim.image = self.photoim
         
         self.varMessageLabel.set('Image simulated.')
+        self.labelMessage.configure(foreground='navy')
 
     def activateTooltips(self):
     
@@ -4312,6 +4595,7 @@ class ImageSimulator(ttk.Frame):
         createToolTip(self.entryDF, TTDF, self.cont.tt_fs)
         createToolTip(self.entrySF, TTSFLum if self.cont.hasQE else TTSFElectron, self.cont.tt_fs)
         createToolTip(self.entryTF, TTTFLum if self.cont.hasQE else TTTFElectron, self.cont.tt_fs)
+        createToolTip(self.entryLF, TTLFLum if self.cont.hasQE else TTLFElectron, self.cont.tt_fs)
         createToolTip(self.entrySubs, TTSubs, self.cont.tt_fs)
         createToolTip(self.labelSNR2, TTSNR, self.cont.tt_fs)
         createToolTip(self.labelStackSNR2, TTStackSNR, self.cont.tt_fs)
@@ -4341,8 +4625,8 @@ class ImageSimulator(ttk.Frame):
     
         '''Remove tooltips from all widgets.'''
     
-        for widget in [self.entryExp, self.entryDF, self.entrySF, self.entryTF, self.entrySubs,
-                       self.labelSNR2, self.labelStackSNR2, self.labelDR2, self.labelFL2, 
+        for widget in [self.entryExp, self.entryDF, self.entrySF, self.entryTF, self.entryLF,
+                       self.entrySubs, self.labelSNR2, self.labelStackSNR2, self.labelDR2, self.labelFL2, 
                        self.labelEFL2, self.labelAP2, self.labelFR2, self.labelIS2, self.labelRL2, 
                        self.labelGainI2, self.labelSatCap2, self.labelBL2, self.labelWL2, self.labelPS2, 
                        self.labelQE2, self.labelRNI2, self.labelDN2, self.labelSN2, self.labelTBGN2]:
@@ -4394,7 +4678,245 @@ class ImageSimulator(ttk.Frame):
             
             self.topCanvas.update()
     
+    def getSuggestedSettings(self):
+        
+        try:
+            df = self.varDF.get()
+            sf = (convSig(self.varSF.get(), False) if self.cont.lumSignalType.get() \
+                                                            else self.varSF.get())
+            tf = (convSig(self.varTF.get(), False) if self.cont.lumSignalType.get() \
+                                                        else self.varTF.get())
+                
+        except ValueError:
+            self.varMessageLabel.set(\
+                 'Requires valid input for dark current, skyglow and target signal.')
+            self.labelMessage.configure(foreground='crimson')
+            self.emptyInfoLabels()
+            return None
+            
+        try:
+            lf = (convSig(self.varLF.get(), False) if self.cont.lumSignalType.get() \
+                                                            else self.varLF.get())
+        except ValueError:
+            self.varLF.set()
+            lf = tf
+            
+        maxf = lf + sf + df
+        
+        varTot = tk.DoubleVar()
+        varMax = tk.DoubleVar()
+        varMessageLabel = tk.StringVar()
+        
+        varTot.set('' if self.tot == 0 else self.tot/3600)
+        varMax.set('' if self.max == 0 else self.max)
+        
+        def findCameraSettings():
+        
+            try:
+                self.tot = varTot.get()*3600
+            except:
+                varMessageLabel.set('Invalid total imaging time.')
+                return None
+                
+            try:
+                self.max = varMax.get()
+            except:
+                varMessageLabel.set('Invalid max exposure time.')
+                return None
+        
+            if self.cont.isDSLR:
+        
+                iso = ISO[self.cont.cnum]
+                
+                sat_cap = SAT_CAP[self.cont.cnum][0]
+                
+                isTooLong = 0.9*sat_cap/maxf > self.max
+                exposure1 = 0.9*sat_cap/maxf*np.invert(isTooLong) + self.max*isTooLong
+                    
+                subs1 = self.tot/exposure1
+                
+                rn1 = RN[self.cont.cnum][0]
+                
+                snr1 = tf*exposure1/np.sqrt(tf*exposure1 + sf*exposure1 + df*exposure1 + rn1**2)
+                stack_snr1 = snr1*np.sqrt(subs1)
+            
+                idx = np.argmax(stack_snr1)
+                
+                opt_iso = iso[idx]
+                opt_exp = exposure1[idx]
+                sat_exp = (0.9*sat_cap/maxf)[idx]
+                opt_subs = subs1[idx]
+                
+            else:
+                idx = self.rn_idx
+                opt_iso = False
+                opt_exp = np.min([0.9*SAT_CAP[self.cont.cnum][self.gain_idx]/maxf, self.max])
+                sat_exp = 0.9*SAT_CAP[self.cont.cnum][self.gain_idx]/maxf
+                opt_subs = self.tot/opt_exp
+            
+            exposure2 = np.linspace(1, 900, 200)
+            subs2 = self.tot/exposure2
+            
+            rn2 = RN[self.cont.cnum][0][idx]
+            
+            in_snr = tf*opt_exp/np.sqrt(tf*opt_exp + sf*opt_exp + df*opt_exp + rn2**2)
+            in_stack_snr = in_snr*np.sqrt(opt_subs)
+            
+            snr2 = tf*exposure2/np.sqrt(tf*exposure2 + sf*exposure2 + df*exposure2 + rn2**2)
+            stack_snr2 = snr2*np.sqrt(subs2)
+            
+            better_exps = exposure2[:-27][(stack_snr2[27:] - stack_snr2[:-27])/stack_snr2[:-27] < 0.003]
+            if len(better_exps) > 0 and better_exps[0] < opt_exp:
+                opt_exp = int(round(better_exps[0]/10.0)*10)
+                opt_subs = self.tot/opt_exp
+                
+            snr = tf*opt_exp/np.sqrt(tf*opt_exp + sf*opt_exp + df*opt_exp + rn2**2)
+            stack_snr = snr*np.sqrt(opt_subs)
+            
+            tbgn = np.sqrt(sf*opt_exp + df*opt_exp + rn2**2)
+            sat_cap = SAT_CAP[self.cont.cnum][0][idx if opt_iso else self.gain_idx]
+            dr = np.log10(sat_cap/tbgn)/np.log10(2.0)
+            if self.cont.dBDRUnit.get(): dr *= 10*np.log(2.0)/np.log(10.0)
+            
+            topSettings.destroy()
+            self.displaySuggestedSettings(opt_iso, opt_exp, sat_exp, self.max, int(np.ceil(opt_subs)), 
+                                          in_stack_snr, snr, stack_snr, dr)
+            
+        topSettings = tk.Toplevel()
+        topSettings.title('Get suggested imaging settings')
+        self.cont.addIcon(topSettings)
+        setupWindow(topSettings, 300, 180)
+        topSettings.focus_force()
     
+        ttk.Label(topSettings, text='Please provide the requested information:')\
+                 .pack(side='top', pady=(15*scsy, 10*scsy), expand=True)
+            
+        frameInput = ttk.Frame(topSettings)
+        frameInput.pack(side='top', pady=(7*scsy, 10*scsy), expand=True)
+            
+        ttk.Label(frameInput, text='Total imaging time: ').grid(row=0, column=0, sticky='W')
+        entryTot = ttk.Entry(frameInput, textvariable=varTot, font=self.cont.small_font,
+                  background=DEFAULT_BG, width=6)
+        entryTot.grid(row=0, column=1)
+        ttk.Label(frameInput, text=' hours').grid(row=0, column=2, sticky='W')
+                  
+        ttk.Label(frameInput, text='Max exposure time: ').grid(row=1, column=0, sticky='W')
+        entryMax = ttk.Entry(frameInput, textvariable=varMax, font=self.cont.small_font,
+                  background=DEFAULT_BG, width=6)
+        entryMax.grid(row=1, column=1)
+        ttk.Label(frameInput, text=' seconds').grid(row=1, column=2, sticky='W')
+           
+        if self.cont.tooltipsOn.get():
+            createToolTip(entryTot, TTTotal, self.cont.tt_fs)
+            createToolTip(entryMax, TTMax, self.cont.tt_fs)
+        
+        frameButtons = ttk.Frame(topSettings)
+        frameButtons.pack(side='top', expand=True, pady=(10*scsy, 10*scsy))
+        ttk.Button(frameButtons, text='Done',
+                   command=findCameraSettings).grid(row=0, column=0, padx=(0, 5*scsx))
+        ttk.Button(frameButtons, text='Cancel',
+                   command=lambda: topSettings.destroy()).grid(row=0, column=1)
+              
+        ttk.Label(topSettings, textvariable=varMessageLabel, font=self.cont.small_font,
+                  background=DEFAULT_BG).pack(side='top', pady=(0, 5*scsy), expand=True)
+   
+    def displaySuggestedSettings(self, iso, exp, sat_exp, max, subs, in_stack_snr, snr, stack_snr, dr):
+    
+        topSettings = tk.Toplevel()
+        topSettings.title('Suggested imaging settings')
+        self.cont.addIcon(topSettings)
+        setupWindow(topSettings, 330, 430)
+        topSettings.focus_force()
+        
+        frameTop = ttk.Frame(topSettings)
+        frameTop.pack(side='top', pady=(20, 6*scsy), expand=True)
+        
+        ttk.Label(frameTop, text='Suggested imaging settings',
+                  font=self.cont.smallbold_font,
+                  anchor='center').pack(side='top', pady=(0, 10*scsy))
+        
+        frameResults = ttk.Frame(frameTop)
+        frameResults.pack(side='top')
+        
+        if iso:
+            labelISO1 = ttk.Label(frameResults, text='ISO: ')
+            labelISO1.grid(row=0, column=0, sticky='W')
+            labelISO2 = ttk.Label(frameResults, text=('%d' % iso), width=7, anchor='center')
+            labelISO2.grid(row=0, column=1)
+            createToolTip(labelISO2, TTSet, self.cont.tt_fs)
+        
+        labelExp1 = ttk.Label(frameResults, text='Exposure time: ')
+        labelExp1.grid(row=1, column=0, sticky='W')
+        labelExp2 = ttk.Label(frameResults, text=('%d' % exp), width=7, anchor='center')
+        labelExp2.grid(row=1, column=1)
+        labelExp3 = ttk.Label(frameResults, text=' seconds')
+        labelExp3.grid(row=1, column=2, sticky='W')
+        
+        labelSubs1 = ttk.Label(frameResults, text='Number of subframes: ')
+        labelSubs1.grid(row=2, column=0, sticky='W')
+        labelSubs2 = ttk.Label(frameResults, text=('%d' % subs), width=7, anchor='center')
+        labelSubs2.grid(row=2, column=1)
+        
+        for widget in [labelExp2, labelSubs2]:
+            createToolTip(widget, TTSet, self.cont.tt_fs)
+        
+        frameMiddle = ttk.Frame(topSettings)
+        frameMiddle.pack(side='top', pady=(8*scsy, 6*scsy), expand=True)
+        
+        ttk.Label(frameMiddle, text='Resulting signal values',
+                  font=self.cont.smallbold_font,
+                  anchor='center').pack(side='top', pady=(0, 10*scsy))
+        
+        frameResultVals = ttk.Frame(frameMiddle)
+        frameResultVals.pack(side='top')
+        
+        ttk.Label(frameResultVals, text='Sub SNR: ').grid(row=0, column=0, sticky='W')
+        ttk.Label(frameResultVals, text=('%.1f' % snr), width=7,
+                  anchor='center').grid(row=0, column=1)
+        
+        ttk.Label(frameResultVals, text='Stack SNR: ').grid(row=1, column=0, sticky='W')
+        ttk.Label(frameResultVals, text=('%.1f' % stack_snr), width=7,
+                  anchor='center').grid(row=1, column=1)
+        
+        ttk.Label(frameResultVals, text='Dynamic range: ').grid(row=2, column=0, sticky='W')
+        ttk.Label(frameResultVals, text=('%.1f' % dr), width=7,
+                  anchor='center').grid(row=2, column=1)
+        ttk.Label(frameResultVals, text=(' stops' if self.cont.stopsDRUnit.get() else ' dB'))\
+                 .grid(row=2, column=2, sticky='W')
+        
+        frameBottom = ttk.Frame(topSettings)
+        frameBottom.pack(side='top', pady=(8*scsy, 10*scsy), expand=True)
+                 
+        ttk.Label(frameBottom, text='Detailed information',
+                  font=self.cont.smallbold_font,
+                  anchor='center').pack(side='top', pady=(0, 10*scsy))
+        
+        frameCompVals = ttk.Frame(frameBottom)
+        frameCompVals.pack(side='top')
+        
+        ttk.Label(frameCompVals, text='User limited exp. time: ').grid(row=0, column=0, sticky='W')
+        ttk.Label(frameCompVals, text=('%d' % max), width=7,
+                  anchor='center').grid(row=0, column=1)
+        ttk.Label(frameCompVals, text=' seconds').grid(row=0, column=2, sticky='W')
+        
+        ttk.Label(frameCompVals, text='Saturation limited exp. time: ').grid(row=1, column=0, sticky='W')
+        ttk.Label(frameCompVals, text=('%d' % sat_exp), width=7,
+                  anchor='center').grid(row=1, column=1)
+        ttk.Label(frameCompVals, text=' seconds').grid(row=1, column=2, sticky='W')
+        
+        ttk.Label(frameCompVals, text='Reduced exp. time: ').grid(row=2, column=0, sticky='W')
+        ttk.Label(frameCompVals, text=('%d' % exp), width=7,
+                  anchor='center').grid(row=2, column=1)
+        ttk.Label(frameCompVals, text=' seconds').grid(row=2, column=2, sticky='W')
+        
+        ttk.Label(frameCompVals, text='Stack SNR loss from reduction: ').grid(row=3, column=0, sticky='W')
+        ttk.Label(frameCompVals, text=('%.2f%%' % ((in_stack_snr - stack_snr)*100/stack_snr)), width=7,
+                  anchor='center').grid(row=3, column=1)
+        
+        ttk.Button(topSettings, text='Close', command=lambda: topSettings.destroy())\
+                  .pack(side='bottom', pady=(0, 15*scsy), expand=True)
+   
+   
 class PlottingTool(ttk.Frame):
 
     def __init__(self, parent, controller):
@@ -4412,6 +4934,10 @@ class PlottingTool(ttk.Frame):
         
         # Define attributes
         
+        self.varPlotMode = tk.StringVar()
+        self.varPlotMode.set('single')
+        self.varTypeLabel = tk.StringVar()
+        self.varTypeLabel.set('Choose plot type')
         self.varPlotType = tk.StringVar()
         
         self.varISO = tk.IntVar()
@@ -4421,12 +4947,14 @@ class PlottingTool(ttk.Frame):
         self.varDF = tk.DoubleVar()
         self.varSF = tk.DoubleVar()
         self.varTF = tk.DoubleVar()
+        self.varLF = tk.DoubleVar()
         self.varTotal = tk.DoubleVar()
         self.varMax = tk.DoubleVar()
         self.varMessageLabel = tk.StringVar()
         
         self.varSFLabel = tk.StringVar()
         self.varTFLabel = tk.StringVar()
+        self.varLFLabel = tk.StringVar()
         
         # Define frames
         
@@ -4453,10 +4981,11 @@ class PlottingTool(ttk.Frame):
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(f, frameRight)
         self.canvas._tkcanvas.config(highlightthickness=0)
         
-        # Set dafault attribute values
+        # Set default attribute values
         
         self.varSFLabel.set(u'mag/arcsec\u00B2' if self.cont.hasQE else 'e-/s')
         self.varTFLabel.set(u'mag/arcsec\u00B2' if self.cont.hasQE else 'e-/s')
+        self.varLFLabel.set(u'mag/arcsec\u00B2' if self.cont.hasQE else 'e-/s')
         
         self.setDefaultValues()
         
@@ -4468,8 +4997,8 @@ class PlottingTool(ttk.Frame):
         
         frameLeft.pack(side='left', fill='both', padx=(50*scsx, 0), expand=True)
         
-        frameUpLeft.pack(side='top', pady=(30*scsy, 0), expand=True)
-        frameLowLeft.pack(side='top', pady=(0, 30*scsy), expand=True)
+        frameUpLeft.pack(side='top', pady=(5*scsy, 0), expand=True)
+        frameLowLeft.pack(side='top', pady=(0, 20*scsy), expand=True)
         frameButton.pack(side='bottom', pady=(0, 30*scsy), expand=True)
         
         frameRight.pack(side='right', expand=True)
@@ -4481,9 +5010,14 @@ class PlottingTool(ttk.Frame):
         labelHeader = ttk.Label(frameHeader, text='Plotting Tool', font=large_font, anchor='center')
         
         frameNames = ttk.Frame(frameHeader)
-        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, anchor='center')
-        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, anchor='center')
-        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, anchor='center')
+        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray', 
+                                 anchor='center')
+        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray',
+                                 anchor='center')
+        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, foreground='darkslategray', 
+                                 font=self.cont.smallbold_font, anchor='center')
         
         labelHeader.pack(side='top', pady=3*scsy)
         
@@ -4498,7 +5032,17 @@ class PlottingTool(ttk.Frame):
         
         # Define upper left frame widgets
         
-        labelPlotType = ttk.Label(frameUpLeft, text='Choose plot type', font=medium_font,
+        labelMode = ttk.Label(frameUpLeft, text='Plotting mode:', font=self.cont.smallbold_font,
+                              anchor='center')
+                              
+        frameMode = ttk.Frame(frameUpLeft)
+        
+        radioSing = ttk.Radiobutton(frameMode, text='Single plots', variable=self.varPlotMode,
+                                    value='single', command=self.changePlotMode)
+        radioComp = ttk.Radiobutton(frameMode, text='Comparison plots', variable=self.varPlotMode,
+                                    value='comparison', command=self.changePlotMode)
+        
+        labelPlotType = ttk.Label(frameUpLeft, textvariable=self.varTypeLabel, font=self.cont.smallbold_font,
                                   anchor='center', width=33)
         self.optionPlotType = ttk.OptionMenu(frameUpLeft, self.varPlotType, None, *self.plotList,
                                              command=self.toggleActiveWidgets)
@@ -4542,6 +5086,11 @@ class PlottingTool(ttk.Frame):
                                   background=DEFAULT_BG, width=9)
         labelTF2 = ttk.Label(frameLowLeft, textvariable=self.varTFLabel)
         
+        self.labelLF = ttk.Label(frameLowLeft, text='Limit signal:')
+        self.entryLF = ttk.Entry(frameLowLeft, textvariable=self.varLF, font=small_font,
+                                  background=DEFAULT_BG, width=9)
+        self.labelLF2 = ttk.Label(frameLowLeft, textvariable=self.varLFLabel)
+        
         labelTotal = ttk.Label(frameLowLeft, text='Total imaging time:')
         self.entryTotal = ttk.Entry(frameLowLeft, textvariable=self.varTotal, font=small_font,
                                   background=DEFAULT_BG, width=9)
@@ -4561,7 +5110,13 @@ class PlottingTool(ttk.Frame):
         
         # Place upper left frame widgets
         
-        labelPlotType.pack(side='top')
+        labelMode.pack(side='top')
+        frameMode.pack(side='top')
+        
+        radioSing.grid(row=0, column=0)
+        radioComp.grid(row=0, column=1)
+        
+        labelPlotType.pack(side='top', pady=(10*scsy, 0))
         self.optionPlotType.pack(side='top')
         
         # Place lower left frame widgets
@@ -4584,16 +5139,16 @@ class PlottingTool(ttk.Frame):
         self.entryTF.grid(row=6, column=1)
         labelTF2.grid(row=6, column=2, sticky='W')
             
-        labelTotal.grid(row=7, column=0, sticky='W')
-        self.entryTotal.grid(row=7, column=1)
-        labelTotal2.grid(row=7, column=2, sticky='W')
+        labelTotal.grid(row=8, column=0, sticky='W')
+        self.entryTotal.grid(row=8, column=1)
+        labelTotal2.grid(row=8, column=2, sticky='W')
         
         # Place more widgets according to camera type
         self.reconfigureNonstaticWidgets()
         
         # Place button frame widgets
         buttonDraw.grid(row=0, column=0)
-        buttonTransferSim.grid(row=1, column=0, pady=(22*scsy, 11*scsy))
+        buttonTransferSim.grid(row=1, column=0, pady=(14*scsy, 11*scsy))
         buttonClear.grid(row=2, column=0)
         
         # *** Right frame (plot window) ***
@@ -4602,10 +5157,10 @@ class PlottingTool(ttk.Frame):
         
         # *** Message frame ***
         
-        labelMessage = ttk.Label(frameMessage, textvariable=self.varMessageLabel, anchor='center')
+        self.labelMessage = ttk.Label(frameMessage, textvariable=self.varMessageLabel, anchor='center')
         
         ttk.Separator(frameMessage, orient='horizontal').pack(side='top', fill='x')
-        labelMessage.pack(fill='x')
+        self.labelMessage.pack(fill='x')
         
         # Disable or enable widgets according to plot type
         self.toggleActiveWidgets(self.plotList[0])
@@ -4633,12 +5188,24 @@ class PlottingTool(ttk.Frame):
         self.p6 = 'Dynamic range vs. ISO'
         self.p11 = 'Saturation capacity vs. gain'
         
+        self.pc1 = 'Sub exposure time'
+        self.pc2 = 'Number of subframes'
+        self.pc3 = 'Skyglow'
+        self.pc4 = 'ISO'
+        
         # Set list of available plot types depending on camera type
-        if self.cont.isDSLR:
-            self.plotList = [self.p1, self.p7, self.p10, self.p2, self.p3,
-                             self.p4, self.p5, self.p9, self.p8, self.p6, self.p11]
+        if self.varPlotMode.get() == 'single':
+            if self.cont.isDSLR:
+                self.plotList = [self.p1, self.p7, self.p10, self.p2, self.p3,
+                                 self.p4, self.p5, self.p9, self.p8, self.p6, self.p11]
+            else:
+                self.plotList = [self.p1, self.p7, self.p10, self.p2, self.p3, self.p4, self.p9, 
+                                 self.p8]
         else:
-            self.plotList = [self.p1, self.p7, self.p10, self.p2, self.p3, self.p4, self.p9, self.p8]
+            if self.cont.isDSLR:
+                self.plotList = [self.pc1, self.pc2, self.pc3, self.pc4]
+            else:
+                self.plotList = [self.pc1, self.pc2, self.pc3]
         
         self.varPlotType.set(self.plotList[0])
         
@@ -4649,6 +5216,7 @@ class PlottingTool(ttk.Frame):
         self.varDF.set('')
         self.varSF.set('')
         self.varTF.set('')
+        self.varLF.set('')
         self.varTotal.set('')
         self.varMax.set(600)
         
@@ -4670,6 +5238,10 @@ class PlottingTool(ttk.Frame):
         self.labelRN.grid_forget()
         self.optionRN.grid_forget()
         self.labelRN2.grid_forget()
+        
+        self.labelLF.grid_forget()
+        self.entryLF.grid_forget()
+        self.labelLF2.grid_forget()
             
         self.labelMax.grid_forget()
         self.entryMax.grid_forget()
@@ -4689,10 +5261,14 @@ class PlottingTool(ttk.Frame):
             
             self.labelISO.grid(row=1, column=0, sticky='W')
             self.optionISO.grid(row=1, column=1)
+        
+            self.labelLF.grid(row=7, column=0, sticky='W')
+            self.entryLF.grid(row=7, column=1)
+            self.labelLF2.grid(row=7, column=2, sticky='W')
             
-            self.labelMax.grid(row=8, column=0, sticky='W')
-            self.entryMax.grid(row=8, column=1)
-            self.labelMax2.grid(row=8, column=2, sticky='W')
+            self.labelMax.grid(row=9, column=0, sticky='W')
+            self.entryMax.grid(row=9, column=1)
+            self.labelMax2.grid(row=9, column=2, sticky='W')
                 
         else:
         
@@ -4739,6 +5315,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = False
             self.useMax = False
             self.useFlux = True
+            self.useLim = False
         
             self.optionISO.configure(state='normal')
             self.optionGain.configure(state='disabled')
@@ -4748,6 +5325,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
             
         elif type == self.p2:
         
@@ -4755,6 +5333,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = True
             self.useMax = False
             self.useFlux = True
+            self.useLim = False
             
             self.optionISO.configure(state='normal')
             self.optionGain.configure(state='disabled')
@@ -4764,6 +5343,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
             
         elif type == self.p3:
         
@@ -4771,6 +5351,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = False
             self.useMax = False
             self.useFlux = True
+            self.useLim = False
             
             self.optionISO.configure(state='normal')
             self.optionGain.configure(state='disabled')
@@ -4780,6 +5361,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
             
         elif type == self.p4:
         
@@ -4787,6 +5369,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = False
             self.useMax = False
             self.useFlux = True
+            self.useLim = False
             
             self.optionISO.configure(state='normal')
             self.optionGain.configure(state='disabled')
@@ -4796,6 +5379,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
             
         elif type == self.p5:
         
@@ -4803,6 +5387,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = True
             self.useMax = True
             self.useFlux = True
+            self.useLim = True
             
             self.optionISO.configure(state='disabled')
             self.optionGain.configure(state='disabled')
@@ -4812,6 +5397,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='normal')
             
         elif type == self.p6:
         
@@ -4819,6 +5405,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = False
             self.useMax = False
             self.useFlux = True
+            self.useLim = False
             
             self.optionISO.configure(state='disabled')
             self.optionGain.configure(state='normal')
@@ -4828,6 +5415,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
             
         elif type == self.p7:
         
@@ -4835,6 +5423,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = False
             self.useMax = False
             self.useFlux = True
+            self.useLim = False
             
             self.optionISO.configure(state='normal')
             self.optionGain.configure(state='normal')
@@ -4844,6 +5433,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
             
         elif type == self.p8:
         
@@ -4851,6 +5441,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = False
             self.useMax = False
             self.useFlux = True
+            self.useLim = False
             
             self.optionISO.configure(state='normal')
             self.optionGain.configure(state='normal')
@@ -4860,6 +5451,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
             
         elif type == self.p9:
         
@@ -4867,6 +5459,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = False
             self.useMax = False
             self.useFlux = True
+            self.useLim = False
             
             self.optionISO.configure(state='normal')
             self.optionGain.configure(state='normal')
@@ -4876,6 +5469,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
             
         elif type == self.p10:
         
@@ -4883,6 +5477,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = False
             self.useMax = False
             self.useFlux = True
+            self.useLim = False
             
             self.optionISO.configure(state='normal')
             self.optionGain.configure(state='disabled')
@@ -4892,6 +5487,7 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='normal')
             self.entrySF.configure(state='normal')
             self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
             
         elif type == self.p11:
         
@@ -4899,6 +5495,7 @@ class PlottingTool(ttk.Frame):
             self.useTotal = False
             self.useMax = False
             self.useFlux = False
+            self.useLim = False
             
             self.optionISO.configure(state='disabled')
             self.optionGain.configure(state='disabled')
@@ -4908,7 +5505,104 @@ class PlottingTool(ttk.Frame):
             self.entryDF.configure(state='disabled')
             self.entrySF.configure(state='disabled')
             self.entryTF.configure(state='disabled')
+            self.entryLF.configure(state='disabled')
+            
+        elif type == self.pc1:
+        
+            self.useExp = False
+            self.useTotal = True
+            self.useMax = False
+            self.useFlux = True
+            self.useLim = False
+            
+            self.optionISO.configure(state='normal')
+            self.optionGain.configure(state='normal')
+            self.entryExp.configure(state='disabled')
+            self.entryTotal.configure(state='normal')
+            self.entryMax.configure(state='disabled')
+            self.entryDF.configure(state='normal')
+            self.entrySF.configure(state='normal')
+            self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
+            
+        elif type == self.pc2:
+        
+            self.useExp = True
+            self.useTotal = False
+            self.useMax = False
+            self.useFlux = True
+            self.useLim = False
+            
+            self.optionISO.configure(state='normal')
+            self.optionGain.configure(state='disabled')
+            self.entryExp.configure(state='normal')
+            self.entryTotal.configure(state='disabled')
+            self.entryMax.configure(state='disabled')
+            self.entryDF.configure(state='normal')
+            self.entrySF.configure(state='normal')
+            self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
+            
+        elif type == self.pc3:
+        
+            self.useExp = True
+            self.useTotal = False
+            self.useMax = False
+            self.useFlux = True
+            self.useLim = False
+            
+            self.optionISO.configure(state='normal')
+            self.optionGain.configure(state='normal')
+            self.entryExp.configure(state='normal')
+            self.entryTotal.configure(state='disabled')
+            self.entryMax.configure(state='disabled')
+            self.entryDF.configure(state='normal')
+            self.entrySF.configure(state='normal')
+            self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='disabled')
+            
+        elif type == self.pc4:
+        
+            self.useExp = False
+            self.useTotal = True
+            self.useMax = True
+            self.useFlux = True
+            self.useLim = True
+            
+            self.optionISO.configure(state='disabled')
+            self.optionGain.configure(state='disabled')
+            self.entryExp.configure(state='disabled')
+            self.entryTotal.configure(state='normal')
+            self.entryMax.configure(state='normal')
+            self.entryDF.configure(state='normal')
+            self.entrySF.configure(state='normal')
+            self.entryTF.configure(state='normal')
+            self.entryLF.configure(state='normal')
     
+    def changePlotMode(self):
+    
+        if self.varPlotMode.get() == 'single':
+            if self.cont.isDSLR:
+                self.plotList = [self.p1, self.p7, self.p10, self.p2, self.p3,
+                                 self.p4, self.p5, self.p9, self.p8, self.p6, self.p11]
+            else:
+                self.plotList = [self.p1, self.p7, self.p10, self.p2, self.p3, self.p4, self.p9, 
+                                 self.p8]
+                                 
+            self.varTypeLabel.set('Choose plot type')
+        
+        else:
+            if self.cont.isDSLR:
+                self.plotList = [self.pc1, self.pc2, self.pc3, self.pc4]
+            else:
+                self.plotList = [self.pc1, self.pc2, self.pc3]
+                
+            self.varTypeLabel.set('Choose parameter')
+        
+        self.varPlotType.set(self.plotList[0])
+        self.optionPlotType.set_menu(*([None] + self.plotList))
+        self.toggleActiveWidgets(self.plotList[0])
+        
     def processInput(self):
     
         '''Check that all inputted values are valid and run plot method.'''
@@ -4919,6 +5613,7 @@ class PlottingTool(ttk.Frame):
         except ValueError:
             if self.useExp:
                 self.varMessageLabel.set('Invalid input for exposure time.')
+                self.labelMessage.configure(foreground='crimson')
                 return None
         
         try:
@@ -4927,6 +5622,7 @@ class PlottingTool(ttk.Frame):
             
         except ValueError:
             self.varMessageLabel.set('Invalid input for dark current.')
+            self.labelMessage.configure(foreground='crimson')
             return None
         
         try:
@@ -4936,6 +5632,17 @@ class PlottingTool(ttk.Frame):
                 
         except ValueError:
             self.varMessageLabel.set('Invalid input for skyglow.')
+            self.labelMessage.configure(foreground='crimson')
+            return None
+            
+        try:
+            if self.useLim:
+                self.lf = (convSig(self.varLF.get(), False) if self.cont.lumSignalType.get() \
+                                                            else self.varLF.get())
+            
+        except ValueError:
+            self.varMessageLabel.set('Invalid input for limit signal.')
+            self.labelMessage.configure(foreground='crimson')
             return None
             
         try:
@@ -4945,6 +5652,7 @@ class PlottingTool(ttk.Frame):
             
         except ValueError:
             self.varMessageLabel.set('Invalid input for target signal.')
+            self.labelMessage.configure(foreground='crimson')
             return None
                 
         try:
@@ -4953,6 +5661,7 @@ class PlottingTool(ttk.Frame):
         except ValueError:
             if self.useTotal:
                 self.varMessageLabel.set('Invalid input for total imaging time.')
+                self.labelMessage.configure(foreground='crimson')
                 return None
                 
         try:
@@ -4961,6 +5670,7 @@ class PlottingTool(ttk.Frame):
         except ValueError:
             if self.useMax and self.cont.isDSLR:
                 self.varMessageLabel.set('Invalid input for max exposure time.')
+                self.labelMessage.configure(foreground='crimson')
                 return None
         
         self.plot()
@@ -5049,13 +5759,16 @@ class PlottingTool(ttk.Frame):
             
             if len(iso) < 2:
                 self.varMessageLabel.set('At least two ISO values required.')
+                self.labelMessage.configure(foreground='crimson')
                 return None
+                
+            maxf = self.lf + self.sf + self.df
             
             sat_cap = SAT_CAP[self.cont.cnum][0]
             
-            isTooLong = 0.3*sat_cap/self.sf > self.max
+            isTooLong = 0.9*sat_cap/maxf > self.max
             
-            exposure = 0.3*sat_cap/self.sf*np.invert(isTooLong) + self.max*isTooLong
+            exposure = 0.9*sat_cap/maxf*np.invert(isTooLong) + self.max*isTooLong
             subs = self.total/exposure
             
             rn = RN[self.cont.cnum][0]
@@ -5064,21 +5777,24 @@ class PlottingTool(ttk.Frame):
                                            + self.df*exposure + rn**2)
             stack_snr = snr*np.sqrt(subs)
             
+            xvals = np.linspace(0, 1, len(iso))
             self.ax.cla()
-            self.ax.plot(iso, stack_snr, 'o-', color='forestgreen')
+            self.ax.plot(xvals, stack_snr, 'o-', color='forestgreen')
             
             for i in range(len(iso)):
                 self.ax.annotate('%d x %d s' % (subs[i], np.ceil(exposure[i])), name='Tahoma',
-                                 fontsize=self.cont.tt_fs, xy=(iso[i], stack_snr[i]),
-                                 xytext=(8, -22), textcoords='offset points',
+                                 fontsize=self.cont.tt_fs, xy=(xvals[i], stack_snr[i]),
+                                 xytext=(-20, -30), textcoords='offset points',
                                  arrowprops=dict(arrowstyle='->', facecolor='black'))
             self.ax.text(0.5, 0.05,
-                         'Exposure time limited if the background\nlevel reaches 30% of the white level',
+                         'Exposure time limited if unwanted saturation occurs',
                          horizontalalignment='center', verticalalignment='center',
                          transform=self.ax.transAxes, name='Tahoma', fontsize=self.cont.tt_fs)
             
             self.ax.set_title(self.p5, name='Tahoma', weight='heavy', fontsize=medium_fs)
             self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xticks(xvals)
+            self.ax.set_xticklabels([str(i) for i in iso])
             self.ax.set_ylabel('Maximum stack SNR', name='Tahoma', fontsize=small_fs)
             self.canvas.draw()
             
@@ -5088,6 +5804,7 @@ class PlottingTool(ttk.Frame):
             
             if len(iso) < 2:
                 self.varMessageLabel.set('At least two ISO values required.')
+                self.labelMessage.configure(foreground='crimson')
                 return None
             
             sat_cap = SAT_CAP[self.cont.cnum][0]
@@ -5097,17 +5814,30 @@ class PlottingTool(ttk.Frame):
             
             dr = np.log10(sat_cap/tbgn)/np.log10(2)
             
+            xvals = np.linspace(0, 1, len(iso))
             self.ax.cla()
-            self.ax.plot(iso, dr, 'o-', color='navy')
+            self.ax.plot(xvals, dr, 'o-', color='navy')
             self.ax.set_title(self.p6, name='Tahoma', weight='heavy', fontsize=medium_fs)
             self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xticks(xvals)
+            self.ax.set_xticklabels([str(i) for i in iso])
             self.ax.set_ylabel('Dynamic range [stops]', name='Tahoma', fontsize=small_fs)
             self.canvas.draw()
             
         elif type == self.p7:
         
             if self.cont.lumSignalType.get():
-                sf = convSig(np.linspace(22, 19, 200), False)
+                f = convSig(self.sf, True)
+                if f < 20:
+                    min = f - 1
+                    max = 22
+                elif f > 21:
+                    min = 19
+                    max = f + 1
+                else:
+                    min = 19
+                    max = 22
+                sf = convSig(np.linspace(max, min, 200), False)
             else:
                 sf = np.linspace(0, 2*self.sf, 201)
             
@@ -5134,7 +5864,17 @@ class PlottingTool(ttk.Frame):
         elif type == self.p8:
            
             if self.cont.lumSignalType.get():
-                sf = convSig(np.linspace(22, 19, 200), False)
+                f = convSig(self.sf, True)
+                if f < 20:
+                    min = f - 1
+                    max = 22
+                elif f > 21:
+                    min = 19
+                    max = f + 1
+                else:
+                    min = 19
+                    max = 22
+                sf = convSig(np.linspace(max, min, 200), False)
             else:
                 sf = np.linspace(0, 2*self.sf, 201)
         
@@ -5182,7 +5922,20 @@ class PlottingTool(ttk.Frame):
             
         elif type == self.p10:
         
-            tf = np.linspace(0*self.tf, 2*self.tf, 201)
+            if self.cont.lumSignalType.get():
+                f = convSig(self.tf, True)
+                if f < 20:
+                    min = f - 1
+                    max = 22
+                elif f > 21:
+                    min = 19
+                    max = f + 1
+                else:
+                    min = 19
+                    max = 22
+                tf = convSig(np.linspace(max, min, 200), False)
+            else:
+                tf = np.linspace(0, 2*self.sf, 201)
             
             rn = RN[self.cont.cnum][0][self.rn_idx]
             
@@ -5211,6 +5964,7 @@ class PlottingTool(ttk.Frame):
             
             if len(gain) < 2:
                 self.varMessageLabel.set('At least two ISO values required.')
+                self.labelMessage.configure(foreground='crimson')
                 return None
             
             self.ax.cla()
@@ -5221,8 +5975,175 @@ class PlottingTool(ttk.Frame):
             self.ax.set_ylabel('log2(saturation capacity)', name='Tahoma', fontsize=small_fs)
             self.canvas.draw()
             
-        self.varMessageLabel.set('Data plotted.')
+        elif type == self.pc1:
+        
+            exposure = np.linspace(1, 900, 200)
+            rn = RN[self.cont.cnum][0][self.rn_idx]
             
+            snr1 = self.tf*exposure/np.sqrt(self.tf*exposure + self.sf*exposure \
+                                           + self.df*exposure + rn**2)
+            snr1_min, snr1_max, snr1 = self.norm(snr1)
+            
+            subs2 = self.total/exposure
+            snr2 = self.tf*exposure/np.sqrt(self.tf*exposure + self.sf*exposure \
+                                            + self.df*exposure + rn**2)
+            stack_snr2 = snr2*np.sqrt(subs2)
+            stack_snr2_min, stack_snr2_max, stack_snr2 = self.norm(stack_snr2)
+
+            sat_cap3 = SAT_CAP[self.cont.cnum][0][self.gain_idx]
+            tbgn3 = np.sqrt(rn**2 + self.df*exposure + self.sf*exposure)
+            dr3 = np.log10(sat_cap3/tbgn3)/np.log10(2)
+            dr3_min, dr3_max, dr3 = self.norm(dr3)
+            
+            self.ax.cla()
+            self.ax.plot(exposure, snr1, '-', color='crimson', 
+                         label='Target SNR: %.1f - %.1f' % (snr1_min, snr1_max))
+            self.ax.plot(exposure, stack_snr2, '-', color='forestgreen',
+                         label='Stack SNR: %.1f - %.1f' % (stack_snr2_min, stack_snr2_max))
+            self.ax.plot(exposure, dr3, '-', color='navy', 
+                         label='Dynamic range: %.1f - %.1f stops' % (dr3_min, dr3_max))
+            self.ax.legend(loc='best', fontsize=small_fs)
+            self.ax.set_title(self.pc1 + ' comparison plot', name='Tahoma', weight='heavy', 
+                              fontsize=medium_fs)
+            self.ax.set_xlabel('Sub exposure time [s]', name='Tahoma', fontsize=small_fs)
+            self.ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+            self.ax.set_yticklabels(['Min', '', '', '', '', 'Max'])
+            self.ax.set_ylabel('Value', name='Tahoma', fontsize=small_fs)
+            self.canvas.draw()
+            
+        elif type == self.pc2:
+        
+            subs = np.linspace(0, 200, 201)
+            rn = RN[self.cont.cnum][0][self.rn_idx]
+            snr = self.tf*self.exposure/np.sqrt(self.tf*self.exposure + self.sf*self.exposure \
+                                                + self.df*self.exposure + rn**2)
+                                                
+            stack_snr1 = snr*np.sqrt(subs)
+            stack_snr1_min, stack_snr1_max, stack_snr1 = self.norm(stack_snr1[:-1])
+            
+            delta_snr1 = snr*(np.sqrt(subs[1:]) - np.sqrt(subs[:-1]))
+            delta_snr1_min, delta_snr1_max, delta_snr1 = self.norm(delta_snr1)
+            
+            self.ax.cla()
+            self.ax.plot(subs[:-1], stack_snr1, '-', color='crimson', 
+                         label='Stack SNR: %.1f - %.1f' % (stack_snr1_min, stack_snr1_max))
+            self.ax.plot(subs[:-1], delta_snr1, '-', color='forestgreen',
+                         label='Stack SNR increase: %.1f - %.1f' % (delta_snr1_min, delta_snr1_max))
+            self.ax.legend(loc='best', fontsize=small_fs)
+            self.ax.set_title(self.pc2 + ' comparison plot', name='Tahoma', weight='heavy', 
+                              fontsize=medium_fs)
+            self.ax.set_xlabel('Number of subframes', name='Tahoma', fontsize=small_fs)
+            self.ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+            self.ax.set_yticklabels(['Min', '', '', '', '', 'Max'])
+            self.ax.set_ylabel('Value', name='Tahoma', fontsize=small_fs)
+            self.canvas.draw()
+            
+        elif type == self.pc3:
+        
+            if self.cont.lumSignalType.get():
+                f = convSig(self.sf, True)
+                if f < 20:
+                    min = f - 1
+                    max = 22
+                elif f > 21:
+                    min = 19
+                    max = f + 1
+                else:
+                    min = 19
+                    max = 22
+                sf = convSig(np.linspace(max, min, 200), False)
+            else:
+                sf = np.linspace(0, 2*self.sf, 201)
+            
+            rn = RN[self.cont.cnum][0][self.rn_idx]
+            
+            snr1 = self.tf*self.exposure/np.sqrt(self.tf*self.exposure + sf*self.exposure \
+                                                + self.df*self.exposure + rn**2)
+            snr1_min, snr1_max, snr1 = self.norm(snr1)
+            current_snr1 = self.tf*self.exposure/np.sqrt(self.tf*self.exposure + self.sf*self.exposure \
+                                                        + self.df*self.exposure + rn**2)
+                                                        
+            sat_cap1 = SAT_CAP[self.cont.cnum][0][self.gain_idx]
+            tbgn1 = np.sqrt(rn**2 + self.df*self.exposure + sf*self.exposure)
+            current_tbgn1 = np.sqrt(rn**2 + self.df*self.exposure + self.sf*self.exposure)
+            dr1 = np.log10(sat_cap1/tbgn1)/np.log10(2)
+            dr1_min, dr1_max, dr1 = self.norm(dr1)
+            current_dr1 = np.log10(sat_cap1/current_tbgn1)/np.log10(2)
+            
+            self.ax.cla()
+            self.ax.plot((convSig(sf, True) if self.cont.lumSignalType.get() else sf), snr1, '-', 
+                         color='crimson', label='Target SNR: %.1f - %.1f' % (snr1_min, snr1_max))
+            self.ax.plot((convSig(sf, True) if self.cont.lumSignalType.get() else sf), dr1, '-', 
+                         color='forestgreen', 
+                         label='Dynamic range: %.1f - %.1f stops' % (dr1_min, dr1_max))
+            self.ax.legend(loc='best', fontsize=small_fs)
+            self.ax.plot((convSig(self.sf, True) if self.cont.lumSignalType.get() else self.sf),
+                         (current_snr1 - snr1_min)/(snr1_max - snr1_min), 'o', color='crimson')
+            self.ax.plot((convSig(self.sf, True) if self.cont.lumSignalType.get() else self.sf),
+                         (current_dr1 - dr1_min)/(dr1_max - dr1_min), 'o', color='forestgreen')
+            self.ax.set_title(self.pc3 + ' comparison plot', name='Tahoma', weight='heavy', 
+                              fontsize=medium_fs)
+            self.ax.set_xlabel('Skyglow %s' % (u'[mag/arcsec\u00B2]' \
+                                               if self.cont.lumSignalType.get() else '[e-/s]'), 
+                               name='Tahoma', fontsize=small_fs)
+            self.ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+            self.ax.set_yticklabels(['Min', '', '', '', '', 'Max'])
+            self.ax.set_ylabel('Value', name='Tahoma', fontsize=small_fs)
+            self.canvas.draw()
+            
+        elif type == self.pc4:
+        
+            iso = ISO[self.cont.cnum]
+            
+            if len(iso) < 2:
+                self.varMessageLabel.set('At least two ISO values required.')
+                self.labelMessage.configure(foreground='crimson')
+                return None
+                
+            maxf = self.lf + self.sf + self.df
+            
+            sat_cap = SAT_CAP[self.cont.cnum][0]
+            rn = RN[self.cont.cnum][0]
+            isTooLong = 0.9*sat_cap/maxf > self.max
+            exposure = 0.9*sat_cap/maxf*np.invert(isTooLong) + self.max*isTooLong
+            
+            subs1 = self.total/exposure
+            snr1 = self.tf*exposure/np.sqrt(self.tf*exposure + self.sf*exposure \
+                                           + self.df*exposure + rn**2)
+            stack_snr1 = snr1*np.sqrt(subs1)
+            stack_snr1_min, stack_snr1_max, stack_snr1 = self.norm(stack_snr1)
+            
+            tbgn2 = np.sqrt(rn**2 + self.df*exposure + self.sf*exposure)
+            dr2 = np.log10(sat_cap/tbgn2)/np.log10(2)
+            dr2_min, dr2_max, dr2 = self.norm(dr2)
+            
+            xvals = np.linspace(0, 1, len(iso))
+            self.ax.cla()
+            self.ax.plot(xvals, stack_snr1, '-o', color='crimson', 
+                         label='Max stack SNR: %.1f - %.1f' % (stack_snr1_min, stack_snr1_max))
+            self.ax.plot(xvals, dr2, '-o', color='forestgreen',
+                         label='Dynamic range: %.1f - %.1f stops' % (dr2_min, dr2_max))
+            self.ax.legend(loc='best', fontsize=small_fs)
+            self.ax.set_title(self.pc4 + ' comparison plot', name='Tahoma', weight='heavy', 
+                              fontsize=medium_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xticks(xvals)
+            self.ax.set_xticklabels([str(i) for i in iso])
+            self.ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+            self.ax.set_yticklabels(['Min', '', '', '', '', 'Max'])
+            self.ax.set_ylabel('Value', name='Tahoma', fontsize=small_fs)
+            self.canvas.draw()
+            
+        self.varMessageLabel.set('Data plotted.')
+        self.labelMessage.configure(foreground='navy')
+    
+    def norm(self, vals):
+    
+        min_val = np.min(vals)
+        max_val = np.max(vals)
+        
+        return (min_val, max_val, (vals - min_val)/(max_val - min_val))
+    
     def activateTooltips(self):
     
         '''Add tooltips to all relevant widgets.'''
@@ -5231,6 +6152,7 @@ class PlottingTool(ttk.Frame):
         createToolTip(self.entryDF, TTDF, self.cont.tt_fs)
         createToolTip(self.entrySF, TTSFLum if self.cont.hasQE else TTSFElectron, self.cont.tt_fs)
         createToolTip(self.entryTF, TTTFLum if self.cont.hasQE else TTTFElectron, self.cont.tt_fs)
+        createToolTip(self.entryLF, TTLFLum if self.cont.hasQE else TTLFElectron, self.cont.tt_fs)
         createToolTip(self.entryTotal, TTTotal, self.cont.tt_fs)
         createToolTip(self.entryMax, TTMax, self.cont.tt_fs)
         
@@ -5238,8 +6160,8 @@ class PlottingTool(ttk.Frame):
     
         '''Remove tooltips from all widgets.'''
     
-        for widget in [self.entryExp, self.entryDF, self.entrySF, self.entryTF, self.entryTotal,
-                       self.entryMax]:
+        for widget in [self.entryExp, self.entryDF, self.entrySF, self.entryTF, self.entryLF,
+                       self.entryTotal, self.entryMax]:
                            
             widget.unbind('<Enter>')
             widget.unbind('<Motion>')
@@ -5271,8 +6193,8 @@ class ImageAnalyser(ttk.Frame):
         
         self.mode = 'select'
         self.noInput = True # True if no files are added
-        self.useGreen = None # Used to decide which CFA color to extract
-        self.CFAPattern = None # Used to decide the CFA pattern of the color camera
+        self.useGreen = None # Used to decide which CFA colour to extract
+        self.CFAPattern = None # Used to decide the CFA pattern of the colour camera
         self.currentImage = None # ID for the currently showing canvas image
         self.selectionBox = None # ID for the canvas selection box
         self.measureLine = None # ID for the canvas measure line
@@ -5347,9 +6269,14 @@ class ImageAnalyser(ttk.Frame):
                                 anchor='center')
         
         frameNames = ttk.Frame(frameHeader)
-        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, anchor='center')
-        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, anchor='center')
-        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, anchor='center')
+        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray', 
+                                 anchor='center')
+        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray',
+                                 anchor='center')
+        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, foreground='darkslategray', 
+                                 font=self.cont.smallbold_font, anchor='center')
         
         labelHeader.pack(side='top', pady=3*scsy)
         
@@ -5371,8 +6298,8 @@ class ImageAnalyser(ttk.Frame):
         
         self.radioCCDm = ttk.Radiobutton(frameType, text='Mono CCD', variable=self.varCCDType,
                                          value='mono', command=self.changeCCDType)
-        self.radioCCDc = ttk.Radiobutton(frameType, text='Color CCD', variable=self.varCCDType,
-                                         value='color', command=self.changeCCDType)
+        self.radioCCDc = ttk.Radiobutton(frameType, text='Colour CCD', variable=self.varCCDType,
+                                         value='colour', command=self.changeCCDType)
         self.labelDSLR = ttk.Label(frameType, text='DSLR', font=self.cont.small_font,
                                    anchor='center')
         
@@ -5524,7 +6451,7 @@ class ImageAnalyser(ttk.Frame):
         # *** Right-click menu ***
         
         self.menuRC = tk.Menu(self.canvasDisplay, tearoff=0)
-        self.menuRC.add_command(label='Show full image', command=self.useFullImage)
+        self.menuRC.add_command(label='Show at 1:1 scale', command=self.useFullImage)
         self.menuRC.add_command(label='Fit to window', command=self.useResImage)
         self.menuRC.add_separator()
         self.menuRC.add_command(label='"Select" mode', command=self.useSelectMode)
@@ -5615,14 +6542,15 @@ class ImageAnalyser(ttk.Frame):
     
         type = self.varImType.get()
         
-        supportedformats = [self.supportedformats[0]] if self.cont.isDSLR \
-                                                      else [self.supportedformats[1]]
+        supportedformats = self.supportedformats if self.cont.isDSLR \
+                                                 else [self.supportedformats[1]]
         
         if type == 'Bias':
         
             # Show error if two bias frames are already added
             if self.displayed_bias == 2:
                 self.varMessageLabel.set('Cannot have more than 2 bias frames.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
         
@@ -5639,6 +6567,7 @@ class ImageAnalyser(ttk.Frame):
             # Show error if too many files were selected
             if len(biasfiles) > 2 or (len(biasfiles) > 1 and self.displayed_bias == 1):
                 self.varMessageLabel.set('Cannot have more than 2 bias frames.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
                 
@@ -5661,6 +6590,8 @@ class ImageAnalyser(ttk.Frame):
                         self.enableWidgets()
                         return None
                     
+                    self.displayed_bias = 1
+                    
                     # Display header and file name
                     
                     self.varBias1Label.set(self.adjustName(self.labelBias1, filename))
@@ -5675,9 +6606,8 @@ class ImageAnalyser(ttk.Frame):
             
                     self.showImage(self.labelBias1)
                     
-                    self.displayed_bias = 1
-                    
                     self.varMessageLabel.set('Bias frame added.')
+                    self.labelMessage.configure(foreground='navy')
                 
                 # If one file is already added
                 else:
@@ -5689,6 +6619,7 @@ class ImageAnalyser(ttk.Frame):
                     # Show error if the same file is already added
                     if filename == self.varBias1Label.get():
                         self.varMessageLabel.set('This bias frame is already added.')
+                        self.labelMessage.configure(foreground='crimson')
                         self.enableWidgets()
                         return None
                     
@@ -5700,6 +6631,8 @@ class ImageAnalyser(ttk.Frame):
                         self.enableWidgets()
                         return None
                     
+                    self.displayed_bias = 2
+                    
                     # Display file name after the existing one
                     
                     self.varBias2Label.set(self.adjustName(self.labelBias2, filename))
@@ -5709,13 +6642,12 @@ class ImageAnalyser(ttk.Frame):
                     
                     self.showImage(self.labelBias2)
                     
-                    self.displayed_bias = 2
-                    
                     # Cycle image type optionmenu to flat frames
                     self.varImType.set('Flat')
                     self.updateFrameButtonText('Flat')
                     
                     self.varMessageLabel.set('Bias frame added.')
+                    self.labelMessage.configure(foreground='navy')
             
             # If two files were selected
             else:
@@ -5735,6 +6667,8 @@ class ImageAnalyser(ttk.Frame):
                     self.enableWidgets()
                     return None
                     
+                self.displayed_bias = 1
+                    
                 self.varBias1Label.set(self.adjustName(self.labelBias1, filename1))
                 self.varBiasHLabel.set('Bias frames')
                 
@@ -5753,8 +6687,9 @@ class ImageAnalyser(ttk.Frame):
                                   compare=self.labelBias1)
                 except:
                     self.enableWidgets()
-                    self.displayed_bias = 1
                     return None
+                
+                self.displayed_bias = 2
                 
                 self.varBias2Label.set(self.adjustName(self.labelBias2, filename2))
                 
@@ -5762,17 +6697,17 @@ class ImageAnalyser(ttk.Frame):
                 
                 self.showImage(self.labelBias2)
                 
-                self.displayed_bias = 2
-                
                 self.varImType.set('Flat')
                 self.updateFrameButtonText('Flat')
                 
                 self.varMessageLabel.set('Bias frames added.')
+                self.labelMessage.configure(foreground='navy')
         
         elif type == 'Dark':
         
             if self.displayed_dark == 2:
                 self.varMessageLabel.set('Cannot have more than 2 dark frames.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
         
@@ -5785,6 +6720,7 @@ class ImageAnalyser(ttk.Frame):
             
             if len(darkfiles) > 2 or (len(darkfiles) > 1 and self.displayed_dark == 1):
                 self.varMessageLabel.set('Cannot have more than 2 dark frames.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
                 
@@ -5804,6 +6740,8 @@ class ImageAnalyser(ttk.Frame):
                         self.enableWidgets()
                         return None
                     
+                    self.displayed_dark = 1
+                    
                     self.varDark1Label.set(self.adjustName(self.labelDark1, filename))
                     self.varDarkHLabel.set('Dark frame')
                     
@@ -5815,9 +6753,8 @@ class ImageAnalyser(ttk.Frame):
             
                     self.showImage(self.labelDark1)
                     
-                    self.displayed_dark = 1
-                    
                     self.varMessageLabel.set('Dark frame added.')
+                    self.labelMessage.configure(foreground='navy')
                 
                 else:
                 
@@ -5827,6 +6764,7 @@ class ImageAnalyser(ttk.Frame):
                     
                     if filename == self.varDark1Label.get():
                         self.varMessageLabel.set('This dark frame is already added.')
+                        self.labelMessage.configure(foreground='crimson')
                         self.enableWidgets()
                         return None
                     
@@ -5837,6 +6775,8 @@ class ImageAnalyser(ttk.Frame):
                         self.enableWidgets()
                         return None
                     
+                    self.displayed_dark = 2
+                    
                     self.varDark2Label.set(self.adjustName(self.labelDark2, filename))
                     self.varDarkHLabel.set('Dark frames')
                     
@@ -5844,12 +6784,11 @@ class ImageAnalyser(ttk.Frame):
                     
                     self.showImage(self.labelDark2)
                     
-                    self.displayed_dark = 2
-                    
                     self.varImType.set('Light')
                     self.updateFrameButtonText('Light')
                     
                     self.varMessageLabel.set('Dark frame added.')
+                    self.labelMessage.configure(foreground='navy')
             
             else:
             
@@ -5864,6 +6803,8 @@ class ImageAnalyser(ttk.Frame):
                 except:
                     self.enableWidgets()
                     return None
+                
+                self.displayed_dark = 1
                     
                 self.varDark1Label.set(self.adjustName(self.labelDark1, filename1))
                 self.varDarkHLabel.set('Dark frames')
@@ -5883,26 +6824,27 @@ class ImageAnalyser(ttk.Frame):
                                   compare=self.labelDark1)
                 except:
                     self.enableWidgets()
-                    self.displayed_dark = 1
                     return None
+                
+                self.displayed_dark = 2
                 
                 self.varDark2Label.set(self.adjustName(self.labelDark2, filename2))
                 
                 self.labelDark2.pack(side='top', fill='x', anchor='w')
                 
                 self.showImage(self.labelDark2)
-                
-                self.displayed_dark = 2
                     
                 self.varImType.set('Light')
                 self.updateFrameButtonText('Light')
                 
                 self.varMessageLabel.set('Dark frames added.')
+                self.labelMessage.configure(foreground='navy')
             
         elif type == 'Flat':
         
             if self.displayed_flat == 2:
                 self.varMessageLabel.set('Cannot have more than 2 flat frames.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
         
@@ -5915,6 +6857,7 @@ class ImageAnalyser(ttk.Frame):
             
             if len(flatfiles) > 2 or (len(flatfiles) > 1 and self.displayed_flat == 1):
                 self.varMessageLabel.set('Cannot have more than 2 flat frames.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
                 
@@ -5930,15 +6873,17 @@ class ImageAnalyser(ttk.Frame):
                     
                     try:
                         self.getImage(self.labelFlat1, flat1path, filename, 'flat',
-                                      splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'color'))
+                                      splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'colour'))
                     except:
                         self.enableWidgets()
                         return None
+                    
+                    self.displayed_flat = 1
                         
-                    color = ' (green)' if self.useGreen == True \
+                    colour = ' (green)' if self.useGreen == True \
                                        else (' (red)' if self.useGreen == False else '')
                     
-                    self.varFlat1Label.set(self.adjustName(self.labelFlat1, filename + color))
+                    self.varFlat1Label.set(self.adjustName(self.labelFlat1, filename + colour))
                     self.varFlatHLabel.set('Flat frame')
                     
                     self.frameFlat.pack(side='top', fill='x', anchor='w')
@@ -5949,9 +6894,8 @@ class ImageAnalyser(ttk.Frame):
                     
                     self.showImage(self.labelFlat1)
                     
-                    self.displayed_flat = 1
-                    
                     self.varMessageLabel.set('Flat frame added.')
+                    self.labelMessage.configure(foreground='navy')
                 
                 else:
                 
@@ -5961,33 +6905,35 @@ class ImageAnalyser(ttk.Frame):
                     
                     if filename == self.varFlat1Label.get().split(' (')[0]:
                         self.varMessageLabel.set('This flat frame is already added.')
+                        self.labelMessage.configure(foreground='crimson')
                         self.enableWidgets()
                         return None
                         
-                    color = ' (green)' if self.useGreen == True \
+                    colour = ' (green)' if self.useGreen == True \
                                        else (' (red)' if self.useGreen == False else '')
                     
                     try:
                         self.getImage(self.labelFlat2, flat2path, filename, 'flat',
-                                      splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'color'),
+                                      splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'colour'),
                                       compare=self.labelFlat1)
                     except:
                         self.enableWidgets()
                         return None
                     
-                    self.varFlat2Label.set(self.adjustName(self.labelFlat2, filename + color))
+                    self.displayed_flat = 2
+                    
+                    self.varFlat2Label.set(self.adjustName(self.labelFlat2, filename + colour))
                     self.varFlatHLabel.set('Flat frames')
                     
                     self.labelFlat2.pack(side='top', fill='x', anchor='w')
                     
                     self.showImage(self.labelFlat2)
                     
-                    self.displayed_flat = 2
-                    
                     self.varImType.set('Saturated')
                     self.updateFrameButtonText('Saturated')
                     
                     self.varMessageLabel.set('Flat frame added.')
+                    self.labelMessage.configure(foreground='navy')
                     
             else:
             
@@ -5999,15 +6945,17 @@ class ImageAnalyser(ttk.Frame):
                 
                 try:
                     self.getImage(self.labelFlat1, flat1path, filename1, 'flat',
-                                  splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'color'))
+                                  splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'colour'))
                 except:
                     self.enableWidgets()
                     return None
-                    
-                color = ' (green)' if self.useGreen == True \
+                
+                self.displayed_flat = 1
+                
+                colour = ' (green)' if self.useGreen == True \
                                    else (' (red)' if self.useGreen == False else '')
                     
-                self.varFlat1Label.set(self.adjustName(self.labelFlat1, filename1 + color))
+                self.varFlat1Label.set(self.adjustName(self.labelFlat1, filename1 + colour))
                 self.varFlatHLabel.set('Flat frames')
                 
                 self.frameFlat.pack(side='top', fill='x', anchor='w')
@@ -6022,30 +6970,31 @@ class ImageAnalyser(ttk.Frame):
                     
                 try:
                     self.getImage(self.labelFlat2, flat2path, filename2, 'flat',
-                                  splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'color'),
+                                  splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'colour'),
                                   compare=self.labelFlat1)
                 except:
                     self.enableWidgets()
-                    self.displayed_flat = 1
                     return None
                 
-                self.varFlat2Label.set(self.adjustName(self.labelFlat2, filename2 + color))
+                self.displayed_flat = 2
+                
+                self.varFlat2Label.set(self.adjustName(self.labelFlat2, filename2 + colour))
                 
                 self.labelFlat2.pack(side='top', fill='x', anchor='w')
                 
                 self.showImage(self.labelFlat2)
-                
-                self.displayed_flat = 2
                     
                 self.varImType.set('Saturated')
                 self.updateFrameButtonText('Saturated')
                     
                 self.varMessageLabel.set('Flat frames added.')
+                self.labelMessage.configure(foreground='navy')
                 
         elif type == 'Light':
         
             if self.displayed_light == 1:
                 self.varMessageLabel.set('Cannot have more than 1 light frame.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
         
@@ -6058,6 +7007,7 @@ class ImageAnalyser(ttk.Frame):
             
             if len(lightfiles) > 1:
                 self.varMessageLabel.set('Cannot have more than 1 light frame.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
                 
@@ -6069,15 +7019,17 @@ class ImageAnalyser(ttk.Frame):
                     
             try:
                 self.getImage(self.labelLight, lightpath, filename, 'light',
-                              splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'color'))
+                              splitCFA=(self.cont.isDSLR or self.varCCDType.get() == 'colour'))
             except:
                 self.enableWidgets()
                 return None
+                    
+            self.displayed_light = 1
                 
-            color = ' (green)' if self.useGreen == True \
+            colour = ' (green)' if self.useGreen == True \
                                else (' (red)' if self.useGreen == False else '')
                     
-            self.varLightLabel.set(self.adjustName(self.labelLight, filename + color))
+            self.varLightLabel.set(self.adjustName(self.labelLight, filename + colour))
                     
             self.labelLightH.pack(side='top', fill='x', anchor='w')
             self.labelLight.pack(side='top', fill='x', anchor='w')
@@ -6086,17 +7038,17 @@ class ImageAnalyser(ttk.Frame):
                     
             self.showImage(self.labelLight)
                     
-            self.displayed_light = 1
-                    
             self.varImType.set('Dark')
             self.updateFrameButtonText('Dark')
                     
             self.varMessageLabel.set('Light frame added.')
+            self.labelMessage.configure(foreground='navy')
             
         elif type == 'Saturated':
         
             if self.displayed_saturated == 1:
                 self.varMessageLabel.set('Cannot have more than 1 saturated frame.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
         
@@ -6109,6 +7061,7 @@ class ImageAnalyser(ttk.Frame):
             
             if len(saturatedfiles) > 1:
                 self.varMessageLabel.set('Cannot have more than 1 saturated frame.')
+                self.labelMessage.configure(foreground='crimson')
                 self.enableWidgets()
                 return None
                 
@@ -6124,6 +7077,8 @@ class ImageAnalyser(ttk.Frame):
                 self.enableWidgets()
                 return None
                     
+            self.displayed_saturated = 1
+                    
             self.varSaturatedLabel.set(self.adjustName(self.labelSaturated, filename))
                     
             self.labelSaturatedH.pack(side='top', fill='x', anchor='w')
@@ -6133,12 +7088,11 @@ class ImageAnalyser(ttk.Frame):
                     
             self.showImage(self.labelSaturated)
                     
-            self.displayed_saturated = 1
-                    
             self.varImType.set('Bias')
             self.updateFrameButtonText('Bias')
                     
             self.varMessageLabel.set('Saturated frame added.')
+            self.labelMessage.configure(foreground='navy')
             
         self.enableWidgets()
         self.noInput = False
@@ -6186,7 +7140,7 @@ class ImageAnalyser(ttk.Frame):
         '''Cut the filename if it reaches the end of the file frame.'''
     
         namewidth = self.cont.small_font.measure(name)
-        framewidth = self.frameFiles.winfo_width()
+        framewidth = self.frameFiles.winfo_width()*0.9
     
         if namewidth > framewidth:
         
@@ -6214,6 +7168,7 @@ class ImageAnalyser(ttk.Frame):
                 self.clearFiles()
                 self.currentCCDType = self.varCCDType.get()
                 self.varMessageLabel.set('CCD type changed to %s.' % (self.varCCDType.get()))
+                self.labelMessage.configure(foreground='navy')
                 
             self.showWarning('Warning', 'Changing CCD type will\nremove added files. Proceed?',
                              'Yes', 'Cancel', cmd)
@@ -6225,6 +7180,7 @@ class ImageAnalyser(ttk.Frame):
         else:
             # Show message that the camera type was changed
             self.varMessageLabel.set('CCD type changed to %s.' % (self.varCCDType.get()))
+            self.labelMessage.configure(foreground='navy')
             self.currentCCDType = self.varCCDType.get()
      
     def clearFiles(self):
@@ -6282,6 +7238,7 @@ class ImageAnalyser(ttk.Frame):
         '''Read image data and store as label attributes.'''
         
         self.varMessageLabel.set('%s - Loading file..' % filename)
+        self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
         # Create path string compatible with windows terminal
@@ -6291,9 +7248,10 @@ class ImageAnalyser(ttk.Frame):
         py_filepath = '\\'.join(filepath.split('/'))
     
         # If image is a DSLR raw image
-        if self.cont.isDSLR:
+        if '*.' + filename.split('.')[1].lower() in self.supportedformats[0][1]:
         
             self.varMessageLabel.set('%s - Converting to TIFF..' % filename)
+            self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
             # Create TIFF file from raw with dcraw
@@ -6301,6 +7259,7 @@ class ImageAnalyser(ttk.Frame):
                             % norm_filepath.encode(sys.getfilesystemencoding()), shell=True)
             
             self.varMessageLabel.set('%s - Reading Exif metadata..' % filename)
+            self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
             tiff_filepath = '.'.join(py_filepath.split('.')[:-1]) + '.tiff'
@@ -6333,18 +7292,21 @@ class ImageAnalyser(ttk.Frame):
                     if not self.showWarning('Warning', warning, 'Yes', 'Cancel', lambda: None):
                             
                         self.varMessageLabel.set('Cancelled.')
+                        self.labelMessage.configure(foreground='crimson')
                         raise Exception
             
             label.exposure = self.checkExp(True, tags, compare, label, type)
             label.iso = iso
             
             self.varMessageLabel.set('%s - Extracting raw data..' % filename)
+            self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
             # Get array of image data
             img = plt.imread(tiff_filepath)
             
             self.varMessageLabel.set('%s - Deleting TIFF file..' % filename)
+            self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
             # Delete TIFF file created by dcraw
@@ -6352,15 +7314,6 @@ class ImageAnalyser(ttk.Frame):
                             % (os.path.normpath('"'  + '.'.join(filepath.split('.')[:-1]) + '.tiff"'))\
                               .encode(sys.getfilesystemencoding()),
                             shell=True)
-            
-            self.varMessageLabel.set('%s - Checking image dimensions..' % filename)
-            self.labelMessage.update_idletasks()
-            
-            # Show error if the image size if different from the previously added image
-            if compare and (img.shape != np.array(compare.raw_img.shape)*(2 if splitCFA else 1)).any():
-                self.varMessageLabel.set('Error: The dimensions of "%s" does not match ' % filename \
-                                             + 'those of the other added frame.')
-                raise Exception
                 
         # If image is a CCD raw image
         else:
@@ -6369,12 +7322,14 @@ class ImageAnalyser(ttk.Frame):
             if filename.split('.')[1].lower() in ['tif', 'tiff']:
             
                 self.varMessageLabel.set('%s - Reading TIFF file..' % filename)
+                self.labelMessage.configure(foreground='navy')
                 self.labelMessage.update_idletasks()
             
                 # Get array of image data from TIFF file
                 img = plt.imread(py_filepath)
                 
                 self.varMessageLabel.set('%s - Reading Exif metadata..' % filename)
+                self.labelMessage.configure(foreground='navy')
                 self.labelMessage.update_idletasks()
                 
                 file = open(py_filepath, 'rb')
@@ -6387,6 +7342,7 @@ class ImageAnalyser(ttk.Frame):
             elif filename.split('.')[1].lower() in ['fit', 'fits']:
                 
                 self.varMessageLabel.set('%s - Reading FITS file..' % filename)
+                self.labelMessage.configure(foreground='navy')
                 self.labelMessage.update_idletasks()
                 
                 # Get array of image data from FITS file
@@ -6397,37 +7353,41 @@ class ImageAnalyser(ttk.Frame):
                 
                 hdulist.close()
                 
+                if len(img.shape) != 2:
+                    self.varMessageLabel.set('Image file "%s" contains colour channels.' \
+                                            + 'Please use a non-debayered image.' % filename)
+                    self.labelMessage.configure(foreground='crimson')
+                    raise Exception
+                
                 self.varMessageLabel.set('%s - Reading FITS header..' % filename)
+                self.labelMessage.configure(foreground='navy')
                 self.labelMessage.update_idletasks()
                 
                 label.exposure = self.checkExp(False, header, compare, label, type)
-                
-            if len(img.shape) != 2:
-                self.varMessageLabel.set('Image file "%s" contains color channels.' \
-                                         + 'Please use a non-debayered image.' % filename)
-                raise Exception
-                
-        # If image has a CFA and a specific color needs to be extracted
+        
+        # If image has a CFA and a specific colour needs to be extracted
         if splitCFA:
                 
             self.varMessageLabel.set('%s - Detecting CFA pattern..' % filename)
+            self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
-            # Get which color of pixels to extract from user if neccessary
+            # Get which colour of pixels to extract from user if necessary
             if self.useGreen is None:
                 self.busy = True
-                self.askColor()
-                self.wait_window(self.topAskColor)
+                self.askColour()
+                self.wait_window(self.topAskColour)
                 self.busy = False
                 self.useGreen = self.varUseGreen.get()
                 
             # Abort if user cancels
             if self.cancelled:
                 self.varMessageLabel.set('Cancelled.')
+                self.labelMessage.configure(foreground='crimson')
                 raise Exception
             
             # If image is a DSLR raw image
-            if self.cont.isDSLR:
+            if self.cont.isDSLR and not filename.split('.')[1].lower() in ['tif', 'tiff', 'fit', 'fits']:
                 
                 # Get string of raw file information
                 metadata = subprocess.check_output('dcraw -i -v %s' \
@@ -6441,7 +7401,7 @@ class ImageAnalyser(ttk.Frame):
                             
                         if parts[0] == 'Filter pattern': self.CFAPattern = parts[1].strip()
                 
-            # Ask user for CFA pattern if it wasn't detected or if camera is color CCD
+            # Ask user for CFA pattern if it wasn't detected or if camera is colour CCD
             if self.CFAPattern is None:
                 self.busy = True
                 self.askCFAPattern()
@@ -6452,14 +7412,17 @@ class ImageAnalyser(ttk.Frame):
             # Abort if user cancels
             if self.cancelled:
                 self.varMessageLabel.set('Cancelled.')
+                self.labelMessage.configure(foreground='crimson')
                 raise Exception
                 
             if not self.CFAPattern in ['RG/GB', 'BG/GR', 'GR/BG', 'GB/RG']:
-                self.varMessageLabel.set('Error: CFA pattern %s not recognized.' % (self.CFAPattern))
+                self.varMessageLabel.set('CFA pattern %s not recognized.' % (self.CFAPattern))
+                self.labelMessage.configure(foreground='crimson')
                 raise Exception
                 
             self.varMessageLabel.set('%s - Extracting %s pixels..' \
                                      % (filename, ('green' if self.useGreen else 'red')))
+            self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
                 
             # Extract green and red pixels as separate images
@@ -6490,15 +7453,28 @@ class ImageAnalyser(ttk.Frame):
             if type == 'light':
                 self.labelLight.isSplitted = False
         
+        self.varMessageLabel.set('%s - Checking image dimensions..' % filename)
+        self.labelMessage.configure(foreground='navy')
+        self.labelMessage.update_idletasks()
+        
+        # Show error if the image size if different from the previously added image
+        if compare and new_img.shape != compare.raw_img.shape:
+            self.varMessageLabel.set('The dimensions of "%s" does not match ' % filename \
+                                     + 'those of the other added frame.')
+            self.labelMessage.configure(foreground='crimson')
+            raise Exception
+        
         # Store raw image data as label attribute
         label.raw_img = new_img[:, :]
             
         self.varMessageLabel.set('%s - Applying screen stretch..' % filename)
+        self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
         label.stretched_img = autostretch(new_img)
         
         self.varMessageLabel.set('%s - Converting to JPEG..' % filename)
+        self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         self.updateDisplayedImage(label, filename=filename)
                 
@@ -6541,6 +7517,7 @@ class ImageAnalyser(ttk.Frame):
                     if not self.showWarning('Warning', warning, 'Yes', 'Cancel', lambda: None):
                             
                         self.varMessageLabel.set('Cancelled.')
+                        self.labelMessage.configure(foreground='crimson')
                         raise Exception
             
         except (KeyError, ValueError):
@@ -6586,6 +7563,7 @@ class ImageAnalyser(ttk.Frame):
             if not self.showWarning('Warning', warning, 'Yes', 'Cancel', lambda: None):
                             
                 self.varMessageLabel.set('Cancelled.')
+                self.labelMessage.configure(foreground='crimson')
                 raise Exception
                 
         return exposure_num
@@ -6596,42 +7574,42 @@ class ImageAnalyser(ttk.Frame):
         
         return np.abs(exp1 - exp2) >= 0.05*(exp1 + exp2)
        
-    def askColor(self):
+    def askColour(self):
     
-        '''Show window with options for choosing which CFA color to extract.'''
+        '''Show window with options for choosing which CFA colour to extract.'''
     
         def ok():
         
             '''Set confirmation that the window wasn't exited, and close window.'''
         
             self.cancelled = False
-            self.topAskColor.destroy()
+            self.topAskColour.destroy()
         
         # Setup window
         
-        self.topAskColor = tk.Toplevel()
-        self.topAskColor.title('Choose color')
-        self.cont.addIcon(self.topAskColor)
-        setupWindow(self.topAskColor, 300, 145)
-        self.topAskColor.focus_force()
+        self.topAskColour = tk.Toplevel()
+        self.topAskColour.title('Choose colour')
+        self.cont.addIcon(self.topAskColour)
+        setupWindow(self.topAskColour, 300, 145)
+        self.topAskColour.focus_force()
         
         self.cancelled = True
         self.varUseGreen = tk.IntVar()
         self.varUseGreen.set(1)
         
-        tk.Label(self.topAskColor,
-                  text='Choose which color of pixels to extract.\nGreen is recommended unless the '\
+        tk.Label(self.topAskColour,
+                  text='Choose which colour of pixels to extract.\nGreen is recommended unless the '\
                        + 'image\nwas taken with a red narrowband filter.',
                   font=self.cont.small_font).pack(side='top', pady=(10*scsy, 5*scsy), expand=True)
         
-        frameRadio = ttk.Frame(self.topAskColor)
+        frameRadio = ttk.Frame(self.topAskColour)
         frameRadio.pack(side='top', expand=True, pady=(0, 10*scsy))
         ttk.Radiobutton(frameRadio, text='Green', variable=self.varUseGreen,
                         value=1).grid(row=0, column=0)
         ttk.Radiobutton(frameRadio, text='Red', variable=self.varUseGreen,
                         value=0).grid(row=0, column=1)
         
-        ttk.Button(self.topAskColor, text='OK', command=ok).pack(side='top', expand=True,
+        ttk.Button(self.topAskColour, text='OK', command=ok).pack(side='top', expand=True,
                                                                  pady=(0, 10*scsy))
     
     def askCFAPattern(self):
@@ -6659,7 +7637,7 @@ class ImageAnalyser(ttk.Frame):
         self.varCFAPattern = tk.StringVar()
         self.varCFAPattern.set(CFAList[0])
         
-        ttk.Label(self.topAskCFA, text='Choose the color filter pattern of your camera.',
+        ttk.Label(self.topAskCFA, text='Choose the colour filter pattern of your camera.',
                   anchor='center').pack(side='top', pady=(10*scsy, 5*scsy), expand=True)
         
         ttk.OptionMenu(self.topAskCFA, self.varCFAPattern, None, *CFAList).pack(side='top',
@@ -6771,7 +7749,7 @@ class ImageAnalyser(ttk.Frame):
                 
     def removeImageEvent(self, event):
     
-        '''Mark rightclicked label with red, and remove marked labels if rightclicked again.'''
+        '''Mark right-clicked label with red, and remove marked labels if right-clicked again.'''
     
         if self.busy: return None
     
@@ -6957,6 +7935,7 @@ class ImageAnalyser(ttk.Frame):
                 self.getSelectedLabel().configure(style='leftselectedfile.TLabel')
         
             self.varMessageLabel.set('Frame removed.' if count == 1 else 'Frames removed.')
+            self.labelMessage.configure(foreground='navy')
         
         # Change label background to red if it isn't already right-clicked
         else:
@@ -6976,7 +7955,9 @@ class ImageAnalyser(ttk.Frame):
                 self.displayed_saturated == 1):
             
             # Ask user to use light frame instead of saturated frame if added
-            if self.displayed_light == 1:
+            if self.displayed_bias == 2 and \
+               self.displayed_flat == 2 and \
+               self.displayed_light == 1:
             
                 text='A frame containing saturated pixels is required\nto compute sensor data. ' \
                       + 'Does the added\nlight frame contain saturated pixels?'
@@ -6984,6 +7965,7 @@ class ImageAnalyser(ttk.Frame):
                 if not self.showWarning('Note', text, 'Yes', 'No', lambda: None):
                     self.varMessageLabel.set('Cancelled. Please add a saturated ' \
                                              + 'frame to compute sensor data.')
+                    self.labelMessage.configure(foreground='crimson')
                     self.menuActive = False
                     return False
                     
@@ -6995,6 +7977,7 @@ class ImageAnalyser(ttk.Frame):
             else:
                 self.varMessageLabel.set('Two bias frames, two flat frames and ' \
                              + 'one saturated (or light) frame is required to compute sensor data.')
+                self.labelMessage.configure(foreground='crimson')
                 return None
         else:
         
@@ -7040,6 +8023,7 @@ class ImageAnalyser(ttk.Frame):
         self.sat_cap = self.gain*self.white_level
         
         self.varMessageLabel.set('Sensor data computed.')
+        self.labelMessage.configure(foreground='navy')
         
         isovals = []
         
@@ -7173,12 +8157,10 @@ class ImageAnalyser(ttk.Frame):
                         g_idx2 = rn_idx2 = 1
                     
                         # Add the data
-                        file.write('\n%s,%s,%.3g*,%.3g*,%d*,%d*,%d*,%s,%s*' % (line[0], line[1],
-                                                                               self.gain, self.rn,
-                                                                               round(self.sat_cap),
-                                                                            round(self.black_level),
-                                                                            round(self.white_level),
-                                                                            'NA', line[8]))
+                        file.write('\n%s,%s,%.3g*,%.3g*,%d*,%d*,%d*,%s,%s' \
+                                    % (line[0], line[1], self.gain, self.rn, round(self.sat_cap),
+                                       round(self.black_level), round(self.white_level), 'NA',
+                                       line[8]))
                         if self.cont.isDSLR: file.write(',' + iso)
                         
                         self.cont.noData = False
@@ -7292,14 +8274,12 @@ class ImageAnalyser(ttk.Frame):
                 frame.setDefaultValues()
                 
             self.varMessageLabel.set('Sensor information added for %s.' % CNAME[idx])
+            self.labelMessage.configure(foreground='navy')
             try:
                 self.topCamInfo.destroy()
             except:
                 pass
-            try:
-                self.topResults.destroy()
-            except:
-                pass
+            self.topResults.destroy()
         
         # Create the window asking for required camera information
         if self.cont.isDSLR and not con_iso:
@@ -7337,7 +8317,7 @@ class ImageAnalyser(ttk.Frame):
         event.widget.delete(self.selectionBox)
         event.widget.delete(self.measureLine)
             
-        # Define list to store selction box corner coordinates
+        # Define list to store selection box corner coordinates
         self.selectionArea = [int(event.widget.canvasx(event.x)),
                               int(event.widget.canvasy(event.y)), 0, 0]
         
@@ -7595,6 +8575,7 @@ class ImageAnalyser(ttk.Frame):
         if not label in [self.labelDark1, self.labelDark2, self.labelLight]:
         
             self.varMessageLabel.set('Only available for dark and light frames.')
+            self.labelMessage.configure(foreground='crimson')
             self.menuActive = False
             return None
             
@@ -7606,6 +8587,7 @@ class ImageAnalyser(ttk.Frame):
             
                 self.varMessageLabel.set('Please select a background or target region '\
                                          + 'of the image before transfering data.')
+                self.labelMessage.configure(foreground='crimson')
                 self.menuActive = False
                 return None
                 
@@ -7654,6 +8636,7 @@ class ImageAnalyser(ttk.Frame):
             # Cancel if topwindow was exited
             if self.cancelled:
                 self.varMessageLabel.set('Cancelled.')
+                self.labelMessage.configure(foreground='crimson')
                 self.menuActive = False
                 return None
             
@@ -7691,10 +8674,11 @@ class ImageAnalyser(ttk.Frame):
                 calframe.varExp.set('%.4g' % (self.labelLight.exposure))
                 expstr = ' Exposure time set to %.4g s.' % (self.labelLight.exposure)
                 
-            self.varMessageLabel.set(('Background data transfered to Image Calculator.' \
+            self.varMessageLabel.set(('Background data transferred to Image Calculator.' \
                                       if varBGRegion.get() \
-                                      else 'Target data transfered to Image Calculator.') + isostr \
+                                      else 'Target data transferred to Image Calculator.') + isostr \
                                                                                         + expstr)
+            self.labelMessage.configure(foreground='navy')
         
         # If the selected frame is a dark frame
         else:
@@ -7743,6 +8727,7 @@ class ImageAnalyser(ttk.Frame):
                     # Cancel if topwindow is exited
                     if self.cancelled:
                         self.varMessageLabel.set('Cancelled.')
+                        self.labelMessage.configure(foreground='crimson')
                         self.menuActive = False
                         return None
                     
@@ -7850,7 +8835,8 @@ class ImageAnalyser(ttk.Frame):
                 expstr = ' Exposure time set to %.4g s.' \
                          % (label.exposure if label.exposure is not None else expvals[0])
                     
-            self.varMessageLabel.set('Dark data transfered to Image Calculator.' + isostr + expstr)
+            self.varMessageLabel.set('Dark data transferred to Image Calculator.' + isostr + expstr)
+            self.labelMessage.configure(foreground='navy')
                     
         self.menuActive = False
     
@@ -8206,7 +9192,7 @@ class ImageAnalyser(ttk.Frame):
     
     def applyAutoStretch(self, label):
     
-        '''Redraw an autostretched version of the histogram.'''
+        '''Redraw an auto-stretched version of the histogram.'''
     
         label.stretched_img = autostretch(label.raw_img)
         self.updateHist(label)
@@ -8249,11 +9235,12 @@ class ImageAnalyser(ttk.Frame):
         
             if not fromHist:
                 self.varMessageLabel.set('%s - Resizing..' % filename)
+                self.labelMessage.configure(foreground='navy')
                 self.labelMessage.update_idletasks()
                 
             self.createResImage(label)
-        
-    
+   
+   
 class MessageWindow(ttk.Frame):
 
     def __init__(self, parent, controller):
@@ -8286,9 +9273,14 @@ class MessageWindow(ttk.Frame):
                                 anchor='center')
         
         frameNames = ttk.Frame(frameHeader)
-        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, anchor='center')
-        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, anchor='center')
-        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, anchor='center')
+        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray', 
+                                 anchor='center')
+        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, 
+                                 font=self.cont.smallbold_font, foreground='darkslategray',
+                                 anchor='center')
+        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, foreground='darkslategray', 
+                                 font=self.cont.smallbold_font, anchor='center')
         
         labelHeader.pack(side='top', pady=3*scsy)
         
@@ -8566,7 +9558,6 @@ def convSig(val, toMag):
     T = 1.0 - app.TLoss # Telescope transmission factor
     
     E = 1.986e-16/app.avgWL # Average photon energy [J]
-    
     q = QE[app.cnum][0] # Peak quantum efficiency
     
     if toMag:
@@ -8603,7 +9594,8 @@ def itpData(datastring, d_type):
         vals[i] = data[i].split('*')[0]
     
     return [vals, um]
-    
+      
+   
 tk.CallWrapper = Catcher
     
 # Define tooltip strings
@@ -8614,7 +9606,7 @@ TTExp = textwrap.fill('The exposure time of the subframe.', tw)
 TTUseDark = textwrap.fill('[Deactivate if you don\'t have a dark frame with the same exposure time and temperature as the light frame. This will restrict the noise and flux values that can be calculated, but SNR and DR will not be affected.]', tw)
 TTDarkNoise = textwrap.fill('The standard deviation of pixel values in a dark frame with the same exposure time and temperature as the relevant subframe.', tw) + '\n\n' + textwrap.fill('[This value must be from an uncalibrated frame.]', tw)
 TTDarkLevel = textwrap.fill('The average or median pixel value in a dark frame with the same exposure time and temperature as the relevant subframe.', tw) + '\n\n' + textwrap.fill('[This value must be from an uncalibrated frame.]', tw)
-TTBGNoise = textwrap.fill('The standard deviation of pixel values in a background region of the subframe.', tw) + '\n\n' + textwrap.fill('[This value must be from one color of the Bayer array of an uncalibrated frame.]', tw)
+TTBGNoise = textwrap.fill('The standard deviation of pixel values in a background region of the subframe.', tw) + '\n\n' + textwrap.fill('[This value must be from one colour of the Bayer array of an uncalibrated frame.]', tw)
 TTBGLevel = textwrap.fill('The average or median pixel value in a background region of the subframe.', tw) + '\n\n' + textwrap.fill('[This value must be from an uncalibrated frame.]', tw)
 TTTarget = textwrap.fill('The average or median pixel value in a target region of the subframe, where the SNR is to be calculated.', tw) + '\n\n' + textwrap.fill('[This value must be from an uncalibrated frame.]', tw)
 TTDF = textwrap.fill('The number of photoelectrons per second produced in each pixel by the dark current.', tw)
@@ -8622,13 +9614,15 @@ TTSFLum = textwrap.fill('The estimated apparent magnitude of a 1x1 arcsecond pie
 TTSFElectron = textwrap.fill('The number of photoelectrons per second produced in each pixel as a result of photons from the skyglow.', tw) + '\n\n' + textwrap.fill('[This is a measure of the sky brightness. Different electron fluxes are not directly comparable between different camera models, but are comparable for the same camera model if the optical train is the same.]', tw)
 TTTFLum = textwrap.fill('The estimated apparent magnitude of a 1x1 arcsecond piece of the target.', tw) + '\n\n' + textwrap.fill('[The magnitude unit used here does not correspond exactly to a visual magnitude unit, since the passband of the camera generally will be different from the visual (V) passband. The camera sensitivity is assumed to peak at 555 nm.]', tw)
 TTTFElectron = textwrap.fill('The number of photoelectrons per second produced in each target pixel as a result of photons from the target.', tw) + '\n\n' + textwrap.fill('[This is a measure of the brightness of the target. Different electron fluxes are not directly comparable between different camera models, but are comparable for the same camera model if the optical train is the same.]', tw)
-TTDSFPhoton = textwrap.fill('The number of photons per second that would have to reach each pixel to produce the observed electron flux from both skyglow and dark current.', tw) + '\n\n' + textwrap.fill('[Different photon fluxes are comparable between different camera models, povided that the same optical train is used and that the fluxes relate to the same color(s) of light.]', tw)
-TTDSFElectron = textwrap.fill('The number of photoelectrons per second produced in each pixel either as a result of photons from the skylow, or from dark current.', tw) + '\n\n' + textwrap.fill('[Different electron fluxes are not directly comparable between different camera models, but are comparable for the same camera model if the optical train is the same.]', tw)
+TTLFLum = textwrap.fill(u'The luminance (in mag/arcsec\u00B2) of the brightest part of the target that you don\'t want to become completely saturated during an exposure. This is used to find an upper limit to the exposure time for that particular target.', tw)
+TTLFElectron = textwrap.fill(u'The electron flux of the brightest part of the target that you don\'t want to become completely saturated during an exposure. This is used to find an upper limit to the exposure time for that particular target.', tw)
+TTDSFPhoton = textwrap.fill('The number of photons per second that would have to reach each pixel to produce the observed electron flux from both skyglow and dark current.', tw) + '\n\n' + textwrap.fill('[Different photon fluxes are comparable between different camera models, provided that the same optical train is used and that the fluxes relate to the same colour(s) of light.]', tw)
+TTDSFElectron = textwrap.fill('The number of photoelectrons per second produced in each pixel either as a result of photons from the skyglow, or from dark current.', tw) + '\n\n' + textwrap.fill('[Different electron fluxes are not directly comparable between different camera models, but are comparable for the same camera model if the optical train is the same.]', tw)
 TTSubs = textwrap.fill('[Set higher than 1 to get the SNR and simulated image of a stacked frame rather than of a single subframe.]', tw)
 TTSNR = textwrap.fill('The signal to noise ratio of the target in the subframe.', tw)
 TTStackSNR = textwrap.fill('The signal to noise ratio of the target in the stacked image.', tw) + '\n\n' + textwrap.fill('[The subframes are assumed to be averaged together.]', tw)
 TTDR = textwrap.fill('The dynamic range of the image indicates the size of the intensity range between the noise floor and the saturation capacity.', tw) + '\n\n' + textwrap.fill('[The intensity range doubles for every stop, or about every third dB.]', tw)
-TTFL = textwrap.fill('The distance traveled by parallell rays after refraction/reflection in the primary lens/mirror before they converge in a focal point.', tw)
+TTFL = textwrap.fill('The distance travelled by parallel rays after refraction/reflection in the primary lens/mirror before they converge in a focal point.', tw)
 TTEFL = textwrap.fill('The focal length multiplied by the magnification factor of the barlow lens or focal reducer.', tw)
 TTAP = textwrap.fill('The diameter of the primary lens/mirror.', tw)
 TTFR = textwrap.fill('The ratio of the effective focal length to the aperture diameter.', tw) + '\n\n' + textwrap.fill('[A lower focal ratio means that a higher rate of photons can reach each pixel, making the image brighter.]', tw)
@@ -8639,7 +9633,7 @@ TTSatCap = textwrap.fill('The maximum number of photoelectrons that can be produ
 TTBL = textwrap.fill('The mean pixel value of a bias frame, where no photons have reached the sensor.', tw)
 TTWL = textwrap.fill('The highest possible pixel value in the image.', tw)
 TTPS = textwrap.fill('The side length of a single pixel.', tw)
-TTQE = textwrap.fill('The maximum probability that a photon reaching the sensor will result in the production of a photoelectron.', tw)
+TTQE = textwrap.fill('The maximum probability that a photon reaching the sensor will result in the production of a photo-electron.', tw)
 TTRN = textwrap.fill('The uncertainty in the number of photoelectrons in a pixel caused by reading the sensor.', tw) + '\n\n' + textwrap.fill('[This includes the quantization error introduced by rounding to a whole number of ADUs.]', tw)
 TTDN = textwrap.fill('The uncertainty in the number of photoelectrons in a pixel produced by the randomness of the dark current.', tw)
 TTSN = textwrap.fill('The uncertainty in the number of photoelectrons in a pixel produced by the randomness of the skyglow photons.', tw)
@@ -8648,19 +9642,21 @@ TTTotN = textwrap.fill('The total uncertainty in the number of photoelectrons in
 TTStretch = textwrap.fill('[Activate to perform a histogram stretch to increase the contrast of the simulated image.]', tw)
 TTTotal = textwrap.fill('The total exposure time for all the subframes combined.', tw)
 TTMax = textwrap.fill('The maximum allowed exposure time for a subframe.', tw) + '\n\n' + textwrap.fill('[This will be limited by factors like tracking/guiding accuracy, unwanted saturation and risk of something ruining the exposure.]', tw)
+TTSet = textwrap.fill('These settings are expected to nearly maximise SNR, while keeping the exposure time as short as possible and avoiding unwanted saturation.', tw) + '\n\n' + textwrap.fill('But due to the uncertainties in the underlying data, they shouldn\'t be trusted blindly, but rather be considered as guidelines.', tw)
+TTLim = textwrap.fill('If checked, the calculated target signal will be copied to the limit signal input box of the respective tool when you click one of the transfer buttons. (For CCDs, transferring to the Plotting Tool will be unaffected.)', tw)
 
 sw = win32api.GetSystemMetrics(0) # Screen width in pixels
 sh = win32api.GetSystemMetrics(1) # Screen height in pixels
 
 scsy = scsx = sh/768.0  # Scaling after screen height
 
-# Default background color
+# Default background colour
 DEFAULT_BG = '#%02x%02x%02x' % (240, 240, 237)
 
 # Window sizes
 
 l_x = 1050 # Largest width
-l_y = 600  # Largets height
+l_y = 600  # Largest height
 
 sw_b = sw*0.9
 sh_b = sh*0.9
@@ -8881,7 +9877,7 @@ if startup_success:
         startup_success = False
         startup_error = 'Invalid last line in "telescope.txt". Must be\n"Telescope: <telescope name>".'
     
-# Run application, or show error message if an error occured
+# Run application, or show error message if an error occurred
     
 if startup_success:
     app = APLab(None if no_cdefault else CNAME.index(CDEFAULT),
