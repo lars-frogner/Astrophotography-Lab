@@ -299,30 +299,30 @@
 <br>
 <a NAME="The Plotting Tool"><font color="#373737"><h3>10. The Plotting Tool</font></h3></a>
 <p>The Plotting Tool has essentially the same purpose as the Image Simulator, namely visualizing the effect of changing certain parameters, but it does so with graphs rather than an image. To plot a single graph, choose the graph you want from the list, input the required data (or transfer it from another tool), and click "Draw graph". You can also generate comparison plots. With these you just select an imaging parameter, and the graphs related to this parameter will be plotted together. This makes it easier to see how a given parameter affects various aspects of the image.</p>
-<p>You can use the plots to find a lot of useful information. For a good example of this, take a look at Steve King's <a target="_blank" href="http://www.astronomyforum.net/astrophotography-image-processing-forum/204348-using-astrophotography-lab-determine-proper-exposure-time.html">nice tutorial</a> on determining the optimal exposure time using one of the plots. I plan to provide more information on interpreting the plots later on.</p>
+<p>You can use the plots to find a lot of useful information. For a good example of this, take a look at Steve King's <a href="http://www.astronomyforum.net/astrophotography-image-processing-forum/204348-using-astrophotography-lab-determine-proper-exposure-time.html">nice tutorial</a> on determining the optimal exposure time using one of the plots. I plan to provide more information on interpreting the plots later on.</p>
 
 <br>
 <a NAME="Reliability of the results"><font color="#373737"><h3>11. Reliability of the results</font></h3></a>
 <p>The calculations of sensor data rely on accurate measurements of photon noise in a flat frame. The noise measurements can be affected if the flat frame is not uniform. To prevent this, the program asks for two flat frames, and subtracts one from the other to remove any features in the image.</p>
 <p>If for some reason the two images are not equal (maybe a dust spot moved after the first frame was captured), then the subtracted image will not be uniform and the noise measurement will be affected. Keep this in mind when capturing the flat frames.</p>
 <p>The results given by the Image Calculator are only as accurate as the data it uses for the calculations. While the data included in the default camera and telescope profiles shouldn't be too far off the correct values, I cannot vouch for its accuracy.</p>
-<p>Most of the default DSLR data is not directly measured, but derived from other measurements performed by DxO for their <a target="_blank" href="http://www.dxomark.com/">DxOMark site</a>. The CCD data is collected from various manufacturer sites and from other people posting their measurements. On top of this, I have had to make certain assumptions about the black and white levels, simply because there isn't enough data available.</p>
+<p>Most of the default DSLR data is not directly measured, but derived from other measurements performed by DxO for their <a href="http://www.dxomark.com/">DxOMark site</a>. The CCD data is collected from various manufacturer sites and from other people posting their measurements. On top of this, I have had to make certain assumptions about the black and white levels, simply because there isn't enough data available.</p>
 <p>For these reasons, I definitely recommend that you use the Image Analyser to perform your own measurements on your camera. Capturing the test frames is simple, and you hardly have to leave your chair.</p>
-<p>When it comes to DSLRs, there is also the matter of raw frame "cooking". For many (if not all) models, additional processing is being done to the images before they are saved. For at least some Canon models, the images are darkened and the contrast is decreased for long exposure times (as described in <a target="_blank" href="http://www.stark-labs.com/craig/resources/Articles-&-Reviews/CanonLinearity.pdf">this article</a> by Craig Stark).</p>
+<p>When it comes to DSLRs, there is also the matter of raw frame "cooking". For many (if not all) models, additional processing is being done to the images before they are saved. For at least some Canon models, the images are darkened and the contrast is decreased for long exposure times (as described in <a href="http://www.stark-labs.com/craig/resources/Articles-&-Reviews/CanonLinearity.pdf">this article</a> by Craig Stark).</p>
 <p>APLab does <i>not</i> try to compensate for this kind of in-camera processing, because of insufficient knowledge of what is being done to the images. But by using measurements of noise rather than intensity in certain circumstances, the calculations are less sensitive to effects like long exposure darkening.</p>
 
 <br>
 <a NAME="Tools used"><font color="#373737"><h3>12. Tools used</font></h3></a>
 <ul>
-<li><a target="_blank" href="https://www.python.org/">Python 2.7</a></li>
-<li><a target="_blank" href="http://www.tcl.tk/">Tcl/Tk</a></li>
-<li><a target="_blank" href="http://www.numpy.org/">NumPy</a></li>
-<li><a target="_blank" href="http://matplotlib.org/">matplotlib</a></li>
-<li><a target="_blank" href="http://www.pythonware.com/products/pil/">Python Imaging Library (PIL)</a></li>
-<li><a target="_blank" href="http://www.stsci.edu/institute/software_hardware/pyfits">PyFITS</a></li>
-<li><a target="_blank" href="https://pypi.python.org/pypi/ExifRead">ExifRead</a></li>
-<li><a target="_blank" href="https://www.cybercom.net/~dcoffin/dcraw/">dcraw</a></li>
-<li><a target="_blank" href="https://github.com/pyinstaller/pyinstaller/wiki">PyInstaller</a></li>
+<li><a href="https://www.python.org/">Python 2.7</a></li>
+<li><a href="http://www.tcl.tk/">Tcl/Tk</a></li>
+<li><a href="http://www.numpy.org/">NumPy</a></li>
+<li><a href="http://matplotlib.org/">matplotlib</a></li>
+<li><a href="http://www.pythonware.com/products/pil/">Python Imaging Library (PIL)</a></li>
+<li><a href="http://www.stsci.edu/institute/software_hardware/pyfits">PyFITS</a></li>
+<li><a href="https://pypi.python.org/pypi/ExifRead">ExifRead</a></li>
+<li><a href="https://www.cybercom.net/~dcoffin/dcraw/">dcraw</a></li>
+<li><a href="https://github.com/pyinstaller/pyinstaller/wiki">PyInstaller</a></li>
 </ul>
 
 <br>
