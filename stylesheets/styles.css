@@ -2,8 +2,8 @@
 
 body {
   padding:50px;
-  font:16px/1.7 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color:#555;
+  font:16px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color:#444;
   font-weight:300;
 }
 
@@ -215,8 +215,9 @@ header ul a strong {
 }
 
 section {
-  width:670px;
+  width:560px;
   float:right;
+  padding-right:70px;
   padding-bottom:5px;
 }
 
