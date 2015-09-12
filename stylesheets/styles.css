@@ -2,8 +2,8 @@
 
 body {
   padding:50px;
-  font:15px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color:#777;
+  font:16px/1.7 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color:#222;
   font-weight:300;
 }
 
@@ -46,7 +46,7 @@ a small {
 }
 
 .wrapper {
-  width:960px;
+  width:1050px;
   margin:0 auto;
 }
 
@@ -151,7 +151,7 @@ img {
 }
 
 header {
-  width:270px;
+  width:230px;
   float:left;
   position:fixed;
 }
@@ -215,9 +215,9 @@ header ul a strong {
 }
 
 section {
-  width:550px;
+  width:670px;
   float:right;
-  padding-bottom:50px;
+  padding-bottom:15px;
 }
 
 small {
@@ -232,10 +232,10 @@ hr {
 }
 
 footer {
-  width:270px;
+  width:230px;
   float:left;
   position:fixed;
-  bottom:50px;
+  bottom:20px;
 }
 
 @media print, screen and (max-width: 960px) {
