@@ -19,9 +19,24 @@
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
     
       ga('create', 'UA-65621466-1', 'auto');
+      ga('require', 'linkid', 'linkid.js');
       ga('send', 'pageview');
     
-    </script>  
+    </script>    
+    <script>
+    /**
+    * Function that tracks a click on an outbound link in Google Analytics.
+    * This function takes a valid URL string as an argument, and uses that URL string
+    * as the event label.
+    */
+    var trackOutboundLink = function(url) {
+       ga('send', 'event', 'outbound', 'click', url, {'hitCallback':
+         function () {
+         document.location = url;
+         }
+       });
+    }
+    </script>
   </head>
   <body>
     <div class="wrapper">
@@ -30,15 +45,15 @@
         <h1>Astrophotography Lab</h1>
         <!--<p>A user friendly framework for experimenting with quantities related to astro imaging</p>-->
 
-        <a style="font-size:19px" href="index.html">Overview</a><br>
-        <a style="font-size:19px" href="userguide.html">User Guide</a><br>
-        <a style="font-size:19px" href="screenshots.html">Screenshots</a><br>
-        <a style="font-size:19px" href="download.html">Downloads</a><br>
-        <a style="font-size:19px" href="contact.html">Contact</a><br><br>
+        <a id="do" style="font-size:19px" href="index.html">Overview</a><br>
+        <a id="du" style="font-size:19px" href="userguide.html">User Guide</a><br>
+        <a id="ds" style="font-size:19px" href="screenshots.html">Screenshots</a><br>
+        <a id="dd" style="font-size:19px" href="download.html">Downloads</a><br>
+        <a id="dc" style="font-size:19px" href="contact.html">Contact</a><br><br>
         
         <img src="aplab_icon.png"/>
         
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist" onclick="trackOutboundLink('https://github.com/orderedlist'); return false;">orderedlist</a></small></p>
         
       </header>
       <section>
@@ -50,19 +65,19 @@
 <br>
 <h4>Latest version</h4>
 <ul>
-<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.3.0-win">APLab v0.3.0 Windows</a> (standalone &amp; update)</li>
+<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.3.0-win" onclick="trackOutboundLink('https://github.com/oaltais/aplab/releases/tag/v0.3.0-win'); return false;">APLab v0.3.0 Windows</a> (standalone &amp; update)</li>
 </ul>
 <h4>Older versions</h4>
 <ul>
-<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.2.1-win">APLab v0.2.1 Windows</a> (update)</li>
-<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.2.0-win">APLab v0.2.0 Windows</a> (standalone)</li>
-<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.1.1-win">APLab v0.1.1 Windows</a> (standalone)</li>
-<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.1.0-win">APLab v0.1.0 Windows</a> (standalone)</li>
+<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.2.1-win" onclick="trackOutboundLink('https://github.com/oaltais/aplab/releases/tag/v0.2.1-win'); return false;">APLab v0.2.1 Windows</a> (update)</li>
+<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.2.0-win" onclick="trackOutboundLink('https://github.com/oaltais/aplab/releases/tag/v0.2.0-win'); return false;">APLab v0.2.0 Windows</a> (standalone)</li>
+<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.1.1-win" onclick="trackOutboundLink('https://github.com/oaltais/aplab/releases/tag/v0.1.1-win'); return false;">APLab v0.1.1 Windows</a> (standalone)</li>
+<li><a href="https://github.com/oaltais/aplab/releases/tag/v0.1.0-win" onclick="trackOutboundLink('https://github.com/oaltais/aplab/releases/tag/v0.1.0-win'); return false;">APLab v0.1.0 Windows</a> (standalone)</li>
 </ul>
 <br>
 <br>
 <h5>A small reminder</h5>
-<p style="font-size:85%">Not everyone is so fortunate that they only have to worry about clouds and light pollution. Consider making a donation to <a href="http://donate.unhcr.org/international/general">The UN refugee agency</a> to help families affected by the refugee crisis.</p>
+<p style="font-size:85%">Not everyone is so fortunate that they only have to worry about clouds and light pollution. Consider making a donation to <a href="http://donate.unhcr.org/international/general" onclick="trackOutboundLink('http://donate.unhcr.org/international/general'); return false;">The UN refugee agency</a> to help families affected by the refugee crisis.</p>
 <div class="bottom2"><font color="gray"><h6>Copyright &copy; 2015 by Lars Frogner.</font></h6></div>
       </section>
       <footer>

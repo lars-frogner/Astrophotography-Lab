@@ -19,9 +19,24 @@
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
     
       ga('create', 'UA-65621466-1', 'auto');
+      ga('require', 'linkid', 'linkid.js');
       ga('send', 'pageview');
     
-    </script>  
+    </script>    
+    <script>
+    /**
+    * Function that tracks a click on an outbound link in Google Analytics.
+    * This function takes a valid URL string as an argument, and uses that URL string
+    * as the event label.
+    */
+    var trackOutboundLink = function(url) {
+       ga('send', 'event', 'outbound', 'click', url, {'hitCallback':
+         function () {
+         document.location = url;
+         }
+       });
+    }
+    </script>
   </head>
   <body>
     <div class="wrapper">
@@ -30,15 +45,15 @@
         <h1>Astrophotography Lab</h1>
         <!--<p>A user friendly framework for experimenting with quantities related to astro imaging</p>-->
 
-        <a style="font-size:19px" href="index.html">Overview</a><br>
-        <a style="font-size:19px" href="userguide.html">User Guide</a><br>
-        <a style="font-size:19px" href="screenshots.html">Screenshots</a><br>
-        <a style="font-size:19px" href="download.html">Downloads</a><br>
-        <a style="font-size:19px" href="contact.html">Contact</a><br><br>
+        <a id="so" style="font-size:19px" href="index.html">Overview</a><br>
+        <a id="su" style="font-size:19px" href="userguide.html">User Guide</a><br>
+        <a id="ss" style="font-size:19px" href="screenshots.html">Screenshots</a><br>
+        <a id="sd" style="font-size:19px" href="download.html">Downloads</a><br>
+        <a id="sc" style="font-size:19px" href="contact.html">Contact</a><br><br>
         
         <img src="aplab_icon.png"/>
         
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist" onclick="trackOutboundLink('https://github.com/orderedlist'); return false;">orderedlist</a></small></p>
         
       </header>
       <section>
