@@ -79,8 +79,12 @@
 <br>
 <h3>Table of contents</h3>
 <ol>
-<li><a id="u1" href="#Compatibility">&nbsp;Compatibility</a></li>
-<li><a id="u2" href="#Downloading and installation">&nbsp;Downloading and installation</a></li>
+<li><a id="u1" href="#Requirements">&nbsp;Requirements</a></li>
+<li><a id="u2" href="#Downloading and installation">&nbsp;Downloading and installation</a>
+    <ol>
+    <li><a id="u2.1" href="#For Windows users">&nbsp;For Windows users</a></li>
+    <li><a id="u2.2" href="#For Ubuntu users">&nbsp;For Ubuntu users</a></li>
+    </li></ol>
 <li><a id="u3" href="#Managing equipment">&nbsp;Managing equipment</a>
     <ol>
     <li><a id="u3.1" href="#The camera menu">&nbsp;The camera menu</a></li>
@@ -131,15 +135,17 @@
 </ol>
 
 <br><br>
-<a NAME="Compatibility"><font color="#373737"><h3>1. Compatibility</font></h3></a>
-<p>Astrophotography Lab is currently a Windows only program. It has been tested on Windows 7, 8.1 and 10, but should work on other Windows versions as well. No other programs are required.</p>
+<a NAME="Requirements"><font color="#373737"><h3>1. Requirements</font></h3></a>
+<p>Astrophotography Lab is available for Windows and Ubuntu. The Windows versions have been tested on Windows 7, 8.1 and 10. The Ubuntu version has been tested on Ubuntu 14.04.</p>
+<p>The program uses <a id="dcr1" href="https://www.cybercom.net/~dcoffin/dcraw/" onclick="trackOutboundLink('https://www.cybercom.net/~dcoffin/dcraw/'); return false;">dcraw</a> to convert DSLR raw images. It is included in the Windows versions, but Ubuntu users need to install it by running the following terminal command: <code>sudo apt-get install dcraw</code></p>
 
 <br>
 <a NAME="Downloading and installation"><font color="#373737"><h3>2. Downloading and installation</font></h3></a>
+<a NAME="For Windows users"><font color="#373737"><h4>2.1 For Windows users</font></h4></a>
 <p>Additional steps may be necessary depending on the version, so check the readme for the version you are installing.</p>
 <b>Installing a standalone version</b>
 <ol>
-<p><li>&nbsp;Go to the download page and locate the latest standalone version.</li></p>
+<p><li>&nbsp;Go to the download page and locate the latest Windows standalone version.</li></p>
 <p><li>&nbsp;Download "aplab-vx.x.x-win-standalone.zip" from the bottom of the page that is linked to.</li></p>
 <p><li>&nbsp;Extract the "Astrophotography Lab" folder from the zip file to whichever folder you prefer.</li></p>
 <p><li>&nbsp;The program can now used by running "APLab.exe" from the "Astrophotography Lab" folder.</li></p>
@@ -151,7 +157,16 @@
 <p><li>&nbsp;Extract "APLab.exe" from the zip file to the folder where the old version of Astrophotography Lab is located, and overwrite the existing "APLab.exe" file.</li></p>
 <p><li>&nbsp;The update is now installed.</li></p>
 </ol>
-
+<a NAME="For Ubuntu users"><font color="#373737"><h4>2.2 For Ubuntu users</font></h4></a>
+<ol>
+<p><li>&nbsp;Go to the download page and locate the latest Ubuntu standalone version.</li></p>
+<p><li>&nbsp;Download "aplab-vx.x.x-ubuntu-standalone.zip" from the bottom of the page that is linked to.</li></p>
+<p><li>&nbsp;Extract the "Astrophotography Lab" folder from "aplab-vx.x.x-ubuntu-standalone.tar.gz" to wherever you prefer.</li></p>
+<p><li>&nbsp;In the extracted folder you'll find a file named "aplab.desktop". Open it in a text editor.</li></p>
+<p><li>&nbsp;Insert the path of the folder to which you extracted the tar.gz file the two places where it says "<INSERT FILE PATH HERE>". Save and close the editor.</li></p>
+<p><li>&nbsp;Right-click on "aplab.desktop" and select "Properties". In the "Permissions" tab, check the "Allow executing file as program" checkbox.</li></p>
+<p><li>&nbsp;You can now start Astrophotography Lab by running the .desktop file, which should now be called "Astrophotography Lab" and have a blue icon.</li></p>
+</ol>
 <br>
 <a NAME="Managing equipment"><font color="#373737"><h3>3. Managing equipment</font></h3></a>
 
@@ -337,7 +352,7 @@
 <li><a href="http://www.pythonware.com/products/pil/" onclick="trackOutboundLink('http://www.pythonware.com/products/pil/'); return false;">Python Imaging Library (PIL)</a></li>
 <li><a href="http://www.stsci.edu/institute/software_hardware/pyfits" onclick="trackOutboundLink('http://www.stsci.edu/institute/software_hardware/pyfits'); return false;">PyFITS</a></li>
 <li><a href="https://pypi.python.org/pypi/ExifRead" onclick="trackOutboundLink('https://pypi.python.org/pypi/ExifRead'); return false;">ExifRead</a></li>
-<li><a href="https://www.cybercom.net/~dcoffin/dcraw/" onclick="trackOutboundLink('https://www.cybercom.net/~dcoffin/dcraw/'); return false;">dcraw</a></li>
+<li><a id="dcr2" href="https://www.cybercom.net/~dcoffin/dcraw/" onclick="trackOutboundLink('https://www.cybercom.net/~dcoffin/dcraw/'); return false;">dcraw</a></li>
 <li><a href="https://github.com/pyinstaller/pyinstaller/wiki" onclick="trackOutboundLink('https://github.com/pyinstaller/pyinstaller/wiki'); return false;">PyInstaller</a></li>
 </ul>
 
