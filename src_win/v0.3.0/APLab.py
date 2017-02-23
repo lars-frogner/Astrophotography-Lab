@@ -4698,7 +4698,7 @@ class ImageSimulator(ttk.Frame):
             lf = (convSig(self.varLF.get(), False) if self.cont.lumSignalType.get() \
                                                             else self.varLF.get())
         except ValueError:
-            self.varLF.set()
+            self.varLF.set('')
             lf = tf
             
         maxf = lf + sf + df
@@ -7997,16 +7997,27 @@ class ImageAnalyser(ttk.Frame):
         c = int(0.25*w)
         d = int(0.75*w)
         
+        # Define central crop area for bias frames
+        h2, w2 = bias1.shape
+        a2 = int(0.25*h2)
+        b2 = int(0.75*h2)
+        c2 = int(0.25*w2)
+        d2 = int(0.75*w2)
+        
         # Crop flat frames
         flat1_crop = flat1[a:b, c:d]
         flat2_crop = flat2[a:b, c:d]
         
+        # Crop bias frames
+        bias1_crop = bias1[a2:b2, c2:d2]
+        bias2_crop = bias2[a2:b2, c2:d2]
+        
         self.white_level = np.max(saturated)
         
-        self.black_level = 0.5*(np.median(bias1) + np.median(bias2))
+        self.black_level = 0.5*(np.median(bias1_crop) + np.median(bias2_crop))
         flat_level_ADU = 0.5*(np.median(flat1_crop) + np.median(flat2_crop))
         
-        delta_bias = bias1 + 30000 - bias2
+        delta_bias = bias1_crop + 30000 - bias2_crop
         delta_flat = flat1_crop + 30000 - flat2_crop
         
         read_noise_ADU = np.std(delta_bias)/np.sqrt(2)
@@ -8494,11 +8505,17 @@ class ImageAnalyser(ttk.Frame):
         
         # Calculate values in (cropped) image
         sample_val = img_crop.shape[0]*img_crop.shape[1]
-        mean_val = np.mean(img_crop)
-        median_val = np.median(img_crop)
-        std_val = np.std(img_crop)
-        max_val = np.max(img_crop)
-        min_val = np.min(img_crop)
+        try:
+            mean_val = np.mean(img_crop)
+            median_val = np.median(img_crop)
+            std_val = np.std(img_crop)
+            max_val = np.max(img_crop)
+            min_val = np.min(img_crop)
+        except MemoryError:
+            self.varMessageLabel.set('Not enough memory available. Please select a limited region ' \
+                                     + 'of the image before computing statistics.')
+            self.labelMessage.configure(foreground='crimson')
+            return None
         
         self.disableWidgets()
         self.busy = True
@@ -8742,7 +8759,15 @@ class ImageAnalyser(ttk.Frame):
                         img_crop = img
                     
                     # Calculate dark frame noise
-                    dark_val = np.std(img_crop)
+                    try:
+                        dark_val = np.std(img_crop)
+                    except MemoryError:
+                        h, w = img_crop.shape
+                        a = int(0.25*h)
+                        b = int(0.75*h)
+                        c = int(0.25*w)
+                        d = int(0.75*w)
+                        dark_val = np.std(img_crop[a:b, c:d])
                 
                 # If two dark frames have been added
                 else:
@@ -8763,7 +8788,15 @@ class ImageAnalyser(ttk.Frame):
                     
                     # Calculate dark frame noise
                     delta_dark = img1_crop + 30000 - img2_crop
-                    dark_val = np.std(delta_dark)/np.sqrt(2)
+                    try:
+                        dark_val = np.std(delta_dark)/np.sqrt(2)
+                    except MemoryError:
+                        h, w = delta_dark.shape
+                        a = int(0.25*h)
+                        b = int(0.75*h)
+                        c = int(0.25*w)
+                        d = int(0.75*w)
+                        dark_val = np.std(delta_dark[a:b, c:d])/np.sqrt(2)
             
             # If the camera is a CCD            
             else:
@@ -8781,7 +8814,15 @@ class ImageAnalyser(ttk.Frame):
                         img_crop = img
                         
                     # Calculate dark frame level
-                    dark_val = np.median(img_crop)
+                    try:
+                        dark_val = np.median(img_crop)
+                    except MemoryError:
+                        h, w = img_crop.shape
+                        a = int(0.25*h)
+                        b = int(0.75*h)
+                        c = int(0.25*w)
+                        d = int(0.75*w)
+                        dark_val = np.median(img_crop[a:b, c:d])
                     
                 else:
                 
@@ -8800,7 +8841,15 @@ class ImageAnalyser(ttk.Frame):
                         img2_crop = img2
                     
                     # Calculate dark frame noise
-                    dark_val = 0.5*(np.median(img1_crop) + np.median(img2_crop))
+                    try:
+                        dark_val = 0.5*(np.median(img1_crop) + np.median(img2_crop))
+                    except MemoryError:
+                        h, w = img1_crop.shape
+                        a = int(0.25*h)
+                        b = int(0.75*h)
+                        c = int(0.25*w)
+                        d = int(0.75*w)
+                        dark_val = 0.5*(np.median(img1_crop[a:b, c:d]) + np.median(img2_crop[a:b, c:d]))
                 
             # Transfer data to dark input widget and set checkbutton state
             calframe = self.cont.frames[ImageCalculator]
