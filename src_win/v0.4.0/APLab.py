@@ -7920,7 +7920,8 @@ class ImageAnalyser(ttk.Frame):
                             # Shift info from label 2 to label 1 if label 2 is removed
                         
                             if label is self.labelBias1:
-                                self.labelBias1.stretched_img = self.labelBias2.stretched_img[:, :]
+                                self.labelBias1.stretched_img[:, :] = self.labelBias2.stretched_img
+                                self.labelBias2.stretched_img = None
                                 self.labelBias1.exposure = self.labelBias2.exposure
                                 self.labelBias1.iso = self.labelBias2.iso
                                 self.varBias1Label.set(self.varBias2Label.get())
@@ -7960,7 +7961,8 @@ class ImageAnalyser(ttk.Frame):
                         elif self.displayed_dark == 2:
                         
                             if label is self.labelDark1:
-                                self.labelDark1.stretched_img = self.labelDark2.stretched_img[:, :]
+                                self.labelDark1.stretched_img[:, :] = self.labelDark2.stretched_img
+                                self.labelDark2.stretched_img = None
                                 self.labelDark1.exposure = self.labelDark2.exposure
                                 self.labelDark1.iso = self.labelDark2.iso
                                 self.varDark1Label.set(self.varDark2Label.get())
@@ -8000,7 +8002,8 @@ class ImageAnalyser(ttk.Frame):
                         elif self.displayed_flat == 2:
                         
                             if label is self.labelFlat1:
-                                self.labelFlat1.stretched_img = self.labelFlat2.stretched_img[:, :]
+                                self.labelFlat1.stretched_img[:, :] = self.labelFlat2.stretched_img
+                                self.labelFlat2.stretched_img = None
                                 self.labelFlat1.exposure = self.labelFlat2.exposure
                                 self.labelFlat1.iso = self.labelFlat2.iso
                                 self.varFlat1Label.set(self.varFlat2Label.get())
@@ -8073,17 +8076,7 @@ class ImageAnalyser(ttk.Frame):
                 elif self.displayed_light == 1:
                     self.showImage(self.labelLight)
                 elif self.displayed_saturated == 0:
-                    self.useGreen = None
-                    self.CFAPattern = None
-                    self.currentImage = None
-                    self.noInput = True
-                    self.canvasDisplay.delete(self.currentImage)
-                    self.canvasDisplay.pack_forget()
-                    self.scrollbarCanvHor.pack_forget()
-                    self.scrollbarCanvVer.pack_forget()
-                    self.labelCanv.pack(expand=True)
-                    self.varImInfo.set('')
-                    self.varFOV.set('')
+                    self.clearFiles()
             else:
                 self.getSelectedLabel().configure(style='leftselectedfile.TLabel')
         
@@ -9346,7 +9339,7 @@ class ImageAnalyser(ttk.Frame):
         ttk.Button(frameButtons3, text='Apply changes',
                    command=apply).pack(side='left', padx=(20*scsx, 10*scsx))
         ttk.Button(frameButtons3, text='Close',
-                   command=lambda: topHist.destroy()).pack(side='right', padx=(0, 20*scsx))
+                   command=lambda: self.closeHist(topHist)).pack(side='right', padx=(0, 20*scsx))
         
         self.wait_window(topHist)
         
@@ -9360,6 +9353,11 @@ class ImageAnalyser(ttk.Frame):
         
         self.menuActive = False
         
+    def closeHist(self, toplevel):
+
+        self.orig_stretched = None
+        toplevel.destroy()
+
     def updateHistStretch(self, m):
     
         '''Update the displayed stretch function.'''
