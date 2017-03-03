@@ -7317,7 +7317,6 @@ class ImageAnalyser(ttk.Frame):
         
         self.useGreen = None
         self.CFAPattern = None
-        self.currentImage = None
         
         self.displayed_bias = 0
         self.displayed_dark = 0
@@ -7330,6 +7329,9 @@ class ImageAnalyser(ttk.Frame):
             label.leftselected = False
             label.rightselected = False
             label.pack_forget()
+
+        self.photo_img = None
+        self.photo_img_res = None
 
         self.deleteTemp(False)
         
@@ -7360,6 +7362,8 @@ class ImageAnalyser(ttk.Frame):
         self.scrollbarCanvHor.pack_forget()
         self.scrollbarCanvVer.pack_forget()
         self.labelCanv.pack(expand=True)
+
+        self.currentImage = None
         
     def getImage(self, label, filepath, filename, type, splitCFA=False, compare=False):
     
@@ -7560,23 +7564,21 @@ class ImageAnalyser(ttk.Frame):
             if (self.CFAPattern == 'GB/RG' and self.useGreen) \
                or (self.CFAPattern == 'GR/BG' and self.useGreen) \
                or (self.CFAPattern == 'RG/GB' and not self.useGreen):
-                new_img = img[0:(h-1):2, 0:(w-1):2] # Quadrant 1
+                img = img[0:(h-1):2, 0:(w-1):2] # Quadrant 1
             elif (self.CFAPattern == 'RG/GB' and self.useGreen) \
                  or (self.CFAPattern == 'BG/GR' and self.useGreen) \
                  or (self.CFAPattern == 'GR/BG' and not self.useGreen):
-                new_img = img[0:(h-1):2, 1:w:2] # Quadrant 2
+                img = img[0:(h-1):2, 1:w:2] # Quadrant 2
             elif self.CFAPattern == 'GB/RG' and not self.useGreen:
-                new_img = img[1:h:2, 0:(w-1):2] # Quadrant 3
+                img = img[1:h:2, 0:(w-1):2] # Quadrant 3
             elif self.CFAPattern == 'BG/GR' and not self.useGreen:
-                new_img = img[1:h:2, 1:w:2] # Quadrant 4
+                img = img[1:h:2, 1:w:2] # Quadrant 4
                 
             if type == 'light':
                 self.labelLight.isSplitted = True
         
         # If image is mono or is to keep all pixels
         else:
-            
-            new_img = img
             
             if type == 'light':
                 self.labelLight.isSplitted = False
@@ -7586,7 +7588,7 @@ class ImageAnalyser(ttk.Frame):
         self.labelMessage.update_idletasks()
         
         # Show error if the image size if different from the previously added image
-        if compare and new_img.shape != compare.stretched_img.shape:
+        if compare and img.shape != compare.stretched_img.shape:
             self.varMessageLabel.set('The dimensions of "%s" does not match ' % filename \
                                      + 'those of the other added frame.')
             self.labelMessage.configure(foreground='crimson')
@@ -7598,13 +7600,14 @@ class ImageAnalyser(ttk.Frame):
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
-        np.save(self.labelNames[label], new_img)
+        np.save(self.labelNames[label], img)
             
         self.varMessageLabel.set('%s - Applying screen stretch..' % filename)
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
-        label.stretched_img = autostretch(new_img)
+        label.stretched_img = autostretch(img)
+        img = None
         
         self.varMessageLabel.set('%s - Creating temporary image file..' % filename)
         self.labelMessage.configure(foreground='navy')
@@ -8494,7 +8497,7 @@ class ImageAnalyser(ttk.Frame):
         '''Redraw selection box to follow mouse movement when held down.'''
     
         if self.menuActive: return None
-        
+
         x = event.widget.canvasx(event.x)
         y = event.widget.canvasy(event.y)
         
@@ -9422,6 +9425,8 @@ class ImageAnalyser(ttk.Frame):
     
         # Save data as temporary image
         plt.imsave(self.labelNames[label] + '.jpg', label.stretched_img, cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
+
+        plt.close('all')
         
         # Create resized version of image if necessary
         if fromHist: self.loadImage(label)
@@ -9439,6 +9444,7 @@ class ImageAnalyser(ttk.Frame):
                 pass
    
         if exit: self.cont.destroy()
+
 
 class FOVCalculator(ttk.Frame):
 
@@ -10851,12 +10857,12 @@ def autostretch(img):
         new_mean = 0.25
         mean = np.mean(img/65535.0)
         m = mean*(new_mean - 1)/(2*new_mean*mean - new_mean - mean)
-        new_img = stretch(img, m)
+        img = stretch(img, m)
     
     else:
-        new_img = 65535*np.ones(img.shape, dtype='uint16')
+        img = 65535*np.ones(img.shape, dtype='uint16')
     
-    return new_img
+    return img
     
 def convSig(val, toMag):
 
