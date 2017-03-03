@@ -5298,6 +5298,9 @@ class PlottingTool(ttk.Frame):
         self.p8 = 'Dynamic range vs. skyglow'
         self.p6 = 'Dynamic range vs. ISO'
         self.p11 = 'Saturation capacity vs. gain'
+        self.p12 = 'Saturation capacity vs. ISO'
+        self.p13 = 'Read noise vs. ISO'
+        self.p14 = 'Gain vs. ISO'
         
         self.pc1 = 'Sub exposure time'
         self.pc2 = 'Number of subframes'
@@ -5308,7 +5311,8 @@ class PlottingTool(ttk.Frame):
         if self.varPlotMode.get() == 'single':
             if self.cont.isDSLR:
                 self.plotList = [self.p1, self.p7, self.p10, self.p2, self.p3,
-                                 self.p4, self.p5, self.p9, self.p8, self.p6, self.p11]
+                                 self.p4, self.p5, self.p9, self.p8, self.p6,
+                                 self.p11, self.p12, self.p13, self.p14]
             else:
                 self.plotList = [self.p1, self.p7, self.p10, self.p2, self.p3, self.p4, self.p9, 
                                  self.p8]
@@ -5601,6 +5605,60 @@ class PlottingTool(ttk.Frame):
             self.entryLF.configure(state='disabled')
             
         elif type == self.p11:
+        
+            self.useExp = False
+            self.useTotal = False
+            self.useMax = False
+            self.useFlux = False
+            self.useLim = False
+            
+            self.optionISO.configure(state='disabled')
+            self.optionGain.configure(state='disabled')
+            self.entryExp.configure(state='disabled')
+            self.entryTotal.configure(state='disabled')
+            self.entryMax.configure(state='disabled')
+            self.entryDF.configure(state='disabled')
+            self.entrySF.configure(state='disabled')
+            self.entryTF.configure(state='disabled')
+            self.entryLF.configure(state='disabled')
+            
+        elif type == self.p12:
+        
+            self.useExp = False
+            self.useTotal = False
+            self.useMax = False
+            self.useFlux = False
+            self.useLim = False
+            
+            self.optionISO.configure(state='disabled')
+            self.optionGain.configure(state='disabled')
+            self.entryExp.configure(state='disabled')
+            self.entryTotal.configure(state='disabled')
+            self.entryMax.configure(state='disabled')
+            self.entryDF.configure(state='disabled')
+            self.entrySF.configure(state='disabled')
+            self.entryTF.configure(state='disabled')
+            self.entryLF.configure(state='disabled')
+            
+        elif type == self.p13:
+        
+            self.useExp = False
+            self.useTotal = False
+            self.useMax = False
+            self.useFlux = False
+            self.useLim = False
+            
+            self.optionISO.configure(state='disabled')
+            self.optionGain.configure(state='disabled')
+            self.entryExp.configure(state='disabled')
+            self.entryTotal.configure(state='disabled')
+            self.entryMax.configure(state='disabled')
+            self.entryDF.configure(state='disabled')
+            self.entrySF.configure(state='disabled')
+            self.entryTF.configure(state='disabled')
+            self.entryLF.configure(state='disabled')
+            
+        elif type == self.p14:
         
             self.useExp = False
             self.useTotal = False
@@ -6079,11 +6137,75 @@ class PlottingTool(ttk.Frame):
                 return None
             
             self.ax.cla()
-            self.ax.plot(np.log10(gain)/np.log10(2.0), np.log10(sat_cap)/np.log10(2.0), '-o',
-                         color='darkviolet')
+            self.ax.plot(gain, sat_cap, '-o', color='darkviolet')
             self.ax.set_title(self.p11, name='Tahoma', weight='heavy', fontsize=medium_fs)
-            self.ax.set_xlabel('log2(gain)', name='Tahoma', fontsize=small_fs)
-            self.ax.set_ylabel('log2(saturation capacity)', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xlabel('Gain [e-/ADU]', name='Tahoma', fontsize=small_fs)
+            self.ax.set_ylabel('Saturation capacity [e-]', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xscale('log')
+            self.ax.set_yscale('log')
+            self.canvas.draw()
+            
+        elif type == self.p12:
+        
+            iso = ISO[self.cont.cnum]
+            
+            if len(iso) < 2:
+                self.varMessageLabel.set('At least two ISO values required.')
+                self.labelMessage.configure(foreground='crimson')
+                return None
+
+            sat_cap = SAT_CAP[self.cont.cnum][0]
+
+            xvals = np.linspace(0, 1, len(iso))
+            self.ax.cla()
+            self.ax.plot(xvals, sat_cap, 'o-', color='darkviolet')
+            self.ax.set_title(self.p12, name='Tahoma', weight='heavy', fontsize=medium_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xticks(xvals)
+            self.ax.set_xticklabels([str(i) for i in iso])
+            self.ax.set_ylabel('Saturation capacity [e-]', name='Tahoma', fontsize=small_fs)
+            self.canvas.draw()
+            
+        elif type == self.p13:
+        
+            iso = ISO[self.cont.cnum]
+            
+            if len(iso) < 2:
+                self.varMessageLabel.set('At least two ISO values required.')
+                self.labelMessage.configure(foreground='crimson')
+                return None
+
+            rn = RN[self.cont.cnum][0]
+
+            xvals = np.linspace(0, 1, len(iso))
+            self.ax.cla()
+            self.ax.plot(xvals, rn, 'o-', color='greenyellow')
+            self.ax.set_title(self.p13, name='Tahoma', weight='heavy', fontsize=medium_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xticks(xvals)
+            self.ax.set_xticklabels([str(i) for i in iso])
+            self.ax.set_ylabel('Read noise [e-]', name='Tahoma', fontsize=small_fs)
+            self.canvas.draw()
+            
+        elif type == self.p14:
+        
+            iso = ISO[self.cont.cnum]
+            
+            if len(iso) < 2:
+                self.varMessageLabel.set('At least two ISO values required.')
+                self.labelMessage.configure(foreground='crimson')
+                return None
+
+            gain = GAIN[self.cont.cnum][0]
+
+            xvals = np.linspace(0, 1, len(iso))
+            self.ax.cla()
+            self.ax.plot(xvals, gain, 'o-', color='slategray')
+            self.ax.set_title(self.p14, name='Tahoma', weight='heavy', fontsize=medium_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xticks(xvals)
+            self.ax.set_xticklabels([str(i) for i in iso])
+            self.ax.set_ylabel('Gain [e-/ADU]', name='Tahoma', fontsize=small_fs)
             self.canvas.draw()
             
         elif type == self.pc1:
