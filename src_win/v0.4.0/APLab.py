@@ -6289,6 +6289,8 @@ class ImageAnalyser(ttk.Frame):
         
         self.cont = controller
         
+        self.cont.protocol('WM_DELETE_WINDOW', lambda: self.deleteTemp(True))
+        
         # List of supported file formats
         self.supportedformats = [('DSLR RAW files', ('*.3fr', '*.R3D', '*.arw', '*.bay', '*.cap',
                                                      '*.cr2', '*.crw', '*.dcr', '*.dcs', '*.dng',
@@ -6559,6 +6561,11 @@ class ImageAnalyser(ttk.Frame):
         self.labelList = [self.labelBias1, self.labelBias2, self.labelDark1, self.labelDark2,
                           self.labelFlat1, self.labelFlat2, self.labelLight, self.labelSaturated]
                           
+        self.labelNames = {self.labelBias1 : 'temp_bias1', self.labelBias2 : 'temp_bias2', 
+                           self.labelDark1 : 'temp_dark1', self.labelDark2 : 'temp_dark2',
+                           self.labelFlat1 : 'temp_flat1', self.labelFlat2 : 'temp_flat2', 
+                           self.labelLight : 'temp_light', self.labelSaturated : 'temp_saturated'}
+                          
         # *** Right-click menu ***
         
         self.menuRC = tk.Menu(self.canvasDisplay, tearoff=0)
@@ -6579,7 +6586,6 @@ class ImageAnalyser(ttk.Frame):
             label.rightselected = False
             label.exposure = None
             label.iso = None
-            label.photo_img_res = None
     
     def useFullImage(self):
     
@@ -6598,18 +6604,31 @@ class ImageAnalyser(ttk.Frame):
         
         self.showImage(self.getSelectedLabel())
         
-    def createResImage(self, label):
+    def loadImage(self, label, filename=False):
     
         '''Create an image resized to fit the window.'''
-    
-        w, h = label.pil_img.size
         
-        f = np.min([(self.scrollbarCanvHor.winfo_width() - 17.0)/w,
-                    self.scrollbarCanvVer.winfo_height()/float(h)])
+        self.varMessageLabel.set('Reading temporary image file..' if not filename \
+                                               else '%s - Reading temporary image file..' % filename)
+        self.labelMessage.configure(foreground='navy')
+        self.labelMessage.update_idletasks()
+        
+        pil_img = Image.open(self.labelNames[label] + '.jpg')
+        
+        self.photo_img = ImageTk.PhotoImage(pil_img)
+        
+        if self.showResized:
+            
+            self.varMessageLabel.set('Resizing..' if not filename else '%s - Resizing..' % filename)
+            self.labelMessage.configure(foreground='navy')
+            self.labelMessage.update_idletasks()
+            
+            w, h = pil_img.size
+            f = np.min([(self.scrollbarCanvHor.winfo_width() - 17.0)/w,
+                        self.scrollbarCanvVer.winfo_height()/float(h)])
                         
-        label.photo_img_res = ImageTk.PhotoImage(label.pil_img.resize((int(round(f*w)),
-                                                                       int(round(f*h))),
-                                                                      Image.ANTIALIAS))
+            self.photo_img_res = ImageTk.PhotoImage(pil_img.resize((int(round(f*w)), int(round(f*h))), 
+                                                    Image.ANTIALIAS))
         
     def useResImage(self):
     
@@ -6637,11 +6656,7 @@ class ImageAnalyser(ttk.Frame):
     
         '''Clear label attributes, including the images related to the label.'''
     
-        label.raw_img = None
         label.stretched_img = None
-        label.pil_img = None
-        label.photo_img = None
-        label.photo_img_res = None
         label.exposure = None
         label.iso = None
     
@@ -6715,7 +6730,7 @@ class ImageAnalyser(ttk.Frame):
                     # Show canvas if this is the first added file
                     if self.noInput: self.showCanvas()
             
-                    self.showImage(self.labelBias1)
+                    self.showImage(self.labelBias1, filename=filename)
                     
                     self.varMessageLabel.set('Bias frame added.')
                     self.labelMessage.configure(foreground='navy')
@@ -6751,7 +6766,7 @@ class ImageAnalyser(ttk.Frame):
                     
                     self.labelBias2.pack(side='top', fill='x', anchor='w')
                     
-                    self.showImage(self.labelBias2)
+                    self.showImage(self.labelBias2, filename=filename)
                     
                     # Cycle image type optionmenu to flat frames
                     self.varImType.set('Flat')
@@ -6789,7 +6804,7 @@ class ImageAnalyser(ttk.Frame):
                 
                 if self.noInput: self.showCanvas()
                 
-                self.showImage(self.labelBias1)
+                self.showImage(self.labelBias1, filename=filename1)
                     
                 self.update() # Update window to show changes
                 
@@ -6806,7 +6821,7 @@ class ImageAnalyser(ttk.Frame):
                 
                 self.labelBias2.pack(side='top', fill='x', anchor='w')
                 
-                self.showImage(self.labelBias2)
+                self.showImage(self.labelBias2, filename=filename2)
                 
                 self.varImType.set('Flat')
                 self.updateFrameButtonText('Flat')
@@ -6862,7 +6877,7 @@ class ImageAnalyser(ttk.Frame):
                     
                     if self.noInput: self.showCanvas()
             
-                    self.showImage(self.labelDark1)
+                    self.showImage(self.labelDark1, filename=filename)
                     
                     self.varMessageLabel.set('Dark frame added.')
                     self.labelMessage.configure(foreground='navy')
@@ -6893,7 +6908,7 @@ class ImageAnalyser(ttk.Frame):
                     
                     self.labelDark2.pack(side='top', fill='x', anchor='w')
                     
-                    self.showImage(self.labelDark2)
+                    self.showImage(self.labelDark2, filename=filename)
                     
                     self.varImType.set('Light')
                     self.updateFrameButtonText('Light')
@@ -6926,7 +6941,7 @@ class ImageAnalyser(ttk.Frame):
                 
                 if self.noInput: self.showCanvas()
                 
-                self.showImage(self.labelDark1)
+                self.showImage(self.labelDark1, filename=filename1)
                 
                 self.update()
                     
@@ -6943,7 +6958,7 @@ class ImageAnalyser(ttk.Frame):
                 
                 self.labelDark2.pack(side='top', fill='x', anchor='w')
                 
-                self.showImage(self.labelDark2)
+                self.showImage(self.labelDark2, filename=filename2)
                     
                 self.varImType.set('Light')
                 self.updateFrameButtonText('Light')
@@ -7003,7 +7018,7 @@ class ImageAnalyser(ttk.Frame):
                     
                     if self.noInput: self.showCanvas()
                     
-                    self.showImage(self.labelFlat1)
+                    self.showImage(self.labelFlat1, filename=filename)
                     
                     self.varMessageLabel.set('Flat frame added.')
                     self.labelMessage.configure(foreground='navy')
@@ -7038,7 +7053,7 @@ class ImageAnalyser(ttk.Frame):
                     
                     self.labelFlat2.pack(side='top', fill='x', anchor='w')
                     
-                    self.showImage(self.labelFlat2)
+                    self.showImage(self.labelFlat2, filename=filename)
                     
                     self.varImType.set('Saturated')
                     self.updateFrameButtonText('Saturated')
@@ -7075,7 +7090,7 @@ class ImageAnalyser(ttk.Frame):
                 
                 if self.noInput: self.showCanvas()
                 
-                self.showImage(self.labelFlat1)
+                self.showImage(self.labelFlat1, filename=filename1)
                     
                 self.update()
                     
@@ -7093,7 +7108,7 @@ class ImageAnalyser(ttk.Frame):
                 
                 self.labelFlat2.pack(side='top', fill='x', anchor='w')
                 
-                self.showImage(self.labelFlat2)
+                self.showImage(self.labelFlat2, filename=filename2)
                     
                 self.varImType.set('Saturated')
                 self.updateFrameButtonText('Saturated')
@@ -7147,7 +7162,7 @@ class ImageAnalyser(ttk.Frame):
                     
             if self.noInput: self.showCanvas()
                     
-            self.showImage(self.labelLight)
+            self.showImage(self.labelLight, filename=filename)
                     
             self.varImType.set('Dark')
             self.updateFrameButtonText('Dark')
@@ -7197,7 +7212,7 @@ class ImageAnalyser(ttk.Frame):
                     
             if self.noInput: self.showCanvas()
                     
-            self.showImage(self.labelSaturated)
+            self.showImage(self.labelSaturated, filename=filename)
                     
             self.varImType.set('Bias')
             self.updateFrameButtonText('Bias')
@@ -7315,6 +7330,8 @@ class ImageAnalyser(ttk.Frame):
             label.leftselected = False
             label.rightselected = False
             label.pack_forget()
+
+        self.deleteTemp(False)
         
         self.varBias1Label.set('')
         self.varBias2Label.set('')
@@ -7569,14 +7586,19 @@ class ImageAnalyser(ttk.Frame):
         self.labelMessage.update_idletasks()
         
         # Show error if the image size if different from the previously added image
-        if compare and new_img.shape != compare.raw_img.shape:
+        if compare and new_img.shape != compare.stretched_img.shape:
             self.varMessageLabel.set('The dimensions of "%s" does not match ' % filename \
                                      + 'those of the other added frame.')
             self.labelMessage.configure(foreground='crimson')
             raise Exception
         
         # Store raw image data as label attribute
-        label.raw_img = new_img[:, :]
+        
+        self.varMessageLabel.set('%s - Creating temporary raw data file..' % filename)
+        self.labelMessage.configure(foreground='navy')
+        self.labelMessage.update_idletasks()
+        
+        np.save(self.labelNames[label], new_img)
             
         self.varMessageLabel.set('%s - Applying screen stretch..' % filename)
         self.labelMessage.configure(foreground='navy')
@@ -7584,10 +7606,10 @@ class ImageAnalyser(ttk.Frame):
         
         label.stretched_img = autostretch(new_img)
         
-        self.varMessageLabel.set('%s - Converting to JPEG..' % filename)
+        self.varMessageLabel.set('%s - Creating temporary image file..' % filename)
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
-        self.updateDisplayedImage(label, filename=filename)
+        self.updateDisplayedImage(label)
                 
     def checkExp(self, isTiff, metadata, compare, label, type):
     
@@ -7764,7 +7786,7 @@ class ImageAnalyser(ttk.Frame):
     
         if not self.busy: self.showImage(event.widget)
         
-    def showImage(self, label):
+    def showImage(self, label, filename=False):
     
         '''Change background of given label to blue and show the photoimage of the label.'''
         
@@ -7780,6 +7802,8 @@ class ImageAnalyser(ttk.Frame):
             if other_label is not label:
                 other_label.leftselected = False
                 other_label.configure(style='file.TLabel')
+
+        self.loadImage(label, filename=filename)
             
         # Create canvas image and store image dimensions
         self.canvasDisplay.delete(self.currentImage)
@@ -7789,39 +7813,31 @@ class ImageAnalyser(ttk.Frame):
         if self.showResized:
         
             # Show the resized version of the image
-        
-            # Create a resized image if none exist
-            if label.photo_img_res is None:
-                self.createResImage(label)
             
-            w = label.photo_img_res.width()
-            h = label.photo_img_res.height()
+            w = self.photo_img_res.width()
+            h = self.photo_img_res.height()
             cw = self.scrollbarCanvHor.winfo_width() - 17.0
             ch = self.scrollbarCanvVer.winfo_height()
-            
-            # Create new resized image if the window has changed enough
-            if not (np.abs(cw - w) <= 0.01*(cw + w) or np.abs(ch - h) <= 0.01*(ch + h)):
-                self.createResImage(label)
                 
             self.imageSize = (w, h)
             
             self.currentImage = self.canvasDisplay.create_image(cw/2, ch/2,
-                                                                image=label.photo_img_res,
+                                                                image=self.photo_img_res,
                                                                 anchor='center')
                                                                 
             self.canvasDisplay.configure(scrollregion=(0, 0, 0, 0))
             
             # Display the FOV of the non-resized light frame
             if label is self.labelLight:
-                self.setFOV(0, label.photo_img.width(), 0, label.photo_img.height(), False)
+                self.setFOV(0, self.photo_img.width(), 0, self.photo_img.height(), False)
             else:
                 self.varFOV.set('')
                                                                 
         else:
         
-            self.imageSize = (label.photo_img.width(), label.photo_img.height())
+            self.imageSize = (self.photo_img.width(), self.photo_img.height())
         
-            self.currentImage = self.canvasDisplay.create_image(0, 0, image=label.photo_img,
+            self.currentImage = self.canvasDisplay.create_image(0, 0, image=self.photo_img,
                                                                 anchor='nw')
         
             self.canvasDisplay.configure(scrollregion=(0, 0, self.imageSize[0], self.imageSize[1]))
@@ -7855,6 +7871,10 @@ class ImageAnalyser(ttk.Frame):
                     self.canvasDisplay.unbind('<ButtonRelease-1>')
                 
             self.menuRC.entryconfig(4, state='disabled')
+
+        self.varMessageLabel.set('Done.')
+        self.labelMessage.configure(foreground='navy')
+        self.labelMessage.update_idletasks()
             
         self.menuActive = False
                 
@@ -7882,6 +7902,8 @@ class ImageAnalyser(ttk.Frame):
                         if self.displayed_bias == 1:
                         
                             self.forgetAttributes(self.labelBias1)
+                            os.remove(self.labelNames[self.labelBias1] + '.npy')
+                            os.remove(self.labelNames[self.labelBias1] + '.jpg')
                             
                             self.labelBias1.pack_forget()
                             self.varBias1Label.set('')
@@ -7895,14 +7917,17 @@ class ImageAnalyser(ttk.Frame):
                             # Shift info from label 2 to label 1 if label 2 is removed
                         
                             if label is self.labelBias1:
-                                self.labelBias1.raw_img = self.labelBias2.raw_img[:, :]
                                 self.labelBias1.stretched_img = self.labelBias2.stretched_img[:, :]
-                                self.labelBias1.photo_img = self.labelBias2.photo_img
-                                self.labelBias1.pil_img = self.labelBias2.pil_img
-                                self.labelBias1.photo_img_res = self.labelBias2.photo_img_res
                                 self.labelBias1.exposure = self.labelBias2.exposure
                                 self.labelBias1.iso = self.labelBias2.iso
                                 self.varBias1Label.set(self.varBias2Label.get())
+                                os.remove(self.labelNames[self.labelBias1] + '.npy')
+                                os.rename(self.labelNames[self.labelBias2] + '.npy', 
+                                          self.labelNames[self.labelBias1] + '.npy')
+                                          
+                                os.remove(self.labelNames[self.labelBias1] + '.jpg')
+                                os.rename(self.labelNames[self.labelBias2] + '.jpg', 
+                                          self.labelNames[self.labelBias1] + '.jpg')
                                 if self.labelBias2.leftselected:
                                     self.showImage(self.labelBias1)
                             
@@ -7919,6 +7944,8 @@ class ImageAnalyser(ttk.Frame):
                         if self.displayed_dark == 1:
                         
                             self.forgetAttributes(self.labelDark1)
+                            os.remove(self.labelNames[self.labelDark1] + '.npy')
+                            os.remove(self.labelNames[self.labelDark1] + '.jpg')
                             
                             self.labelDark1.pack_forget()
                             self.varDark1Label.set('')
@@ -7930,14 +7957,17 @@ class ImageAnalyser(ttk.Frame):
                         elif self.displayed_dark == 2:
                         
                             if label is self.labelDark1:
-                                self.labelDark1.raw_img = self.labelDark2.raw_img[:, :]
                                 self.labelDark1.stretched_img = self.labelDark2.stretched_img[:, :]
-                                self.labelDark1.photo_img = self.labelDark2.photo_img
-                                self.labelDark1.pil_img = self.labelDark2.pil_img
-                                self.labelDark1.photo_img_res = self.labelDark2.photo_img_res
                                 self.labelDark1.exposure = self.labelDark2.exposure
                                 self.labelDark1.iso = self.labelDark2.iso
                                 self.varDark1Label.set(self.varDark2Label.get())
+                                os.remove(self.labelNames[self.labelDark1] + '.npy')
+                                os.rename(self.labelNames[self.labelDark2] + '.npy',
+                                          self.labelNames[self.labelDark1] + '.npy')
+                                
+                                os.remove(self.labelNames[self.labelDark1] + '.jpg')
+                                os.rename(self.labelNames[self.labelDark2] + '.jpg',
+                                          self.labelNames[self.labelDark1] + '.jpg')
                                 if self.labelDark2.leftselected:
                                     self.showImage(self.labelDark1)
                             
@@ -7954,6 +7984,8 @@ class ImageAnalyser(ttk.Frame):
                         if self.displayed_flat == 1:
                         
                             self.forgetAttributes(self.labelFlat1)
+                            os.remove(self.labelNames[self.labelFlat1] + '.npy')
+                            os.remove(self.labelNames[self.labelFlat1] + '.jpg')
                             
                             self.labelFlat1.pack_forget()
                             self.varFlat1Label.set('')
@@ -7965,14 +7997,17 @@ class ImageAnalyser(ttk.Frame):
                         elif self.displayed_flat == 2:
                         
                             if label is self.labelFlat1:
-                                self.labelFlat1.raw_img = self.labelFlat2.raw_img[:, :]
                                 self.labelFlat1.stretched_img = self.labelFlat2.stretched_img[:, :]
-                                self.labelFlat1.photo_img = self.labelFlat2.photo_img
-                                self.labelFlat1.pil_img = self.labelFlat2.pil_img
-                                self.labelFlat1.photo_img_res = self.labelFlat2.photo_img_res
                                 self.labelFlat1.exposure = self.labelFlat2.exposure
                                 self.labelFlat1.iso = self.labelFlat2.iso
                                 self.varFlat1Label.set(self.varFlat2Label.get())
+                                os.remove(self.labelNames[self.labelFlat1] + '.npy')
+                                os.rename(self.labelNames[self.labelFlat2] + '.npy', 
+                                          self.labelNames[self.labelFlat1] + '.npy')
+                                
+                                os.remove(self.labelNames[self.labelFlat1] + '.jpg')
+                                os.rename(self.labelNames[self.labelFlat2] + '.jpg', 
+                                          self.labelNames[self.labelFlat1] + '.jpg')
                                 if self.labelFlat2.leftselected:
                                     self.showImage(self.labelFlat1)
                             
@@ -7987,6 +8022,8 @@ class ImageAnalyser(ttk.Frame):
                     elif label is self.labelLight:
                     
                         self.forgetAttributes(self.labelLight)
+                        os.remove(self.labelNames[self.labelLight] + '.npy')
+                        os.remove(self.labelNames[self.labelLight] + '.jpg')
                         
                         self.labelLight.pack_forget()
                         self.varLightLabel.set('')
@@ -7997,6 +8034,8 @@ class ImageAnalyser(ttk.Frame):
                     elif label is self.labelSaturated:
                     
                         self.forgetAttributes(self.labelSaturated)
+                        os.remove(self.labelNames[self.labelSaturated] + '.npy')
+                        os.remove(self.labelNames[self.labelSaturated] + '.jpg')
                         
                         self.labelSaturated.pack_forget()
                         self.varSaturatedLabel.set('')
@@ -8081,7 +8120,7 @@ class ImageAnalyser(ttk.Frame):
                     return False
                     
                 # Use light frame as saturated frame
-                saturated = self.labelLight.raw_img
+                saturated = np.load(self.labelNames[self.labelLight] + '.npy')
                 useLight = True
             
             # Show message if required files haven't been added
@@ -8092,14 +8131,14 @@ class ImageAnalyser(ttk.Frame):
                 return None
         else:
         
-            saturated = self.labelSaturated.raw_img
+            saturated = np.load(self.labelNames[self.labelSaturated] + '.npy')
             useLight = False
             
         # Get raw image data
-        bias1 = self.labelBias1.raw_img
-        bias2 = self.labelBias2.raw_img
-        flat1 = self.labelFlat1.raw_img
-        flat2 = self.labelFlat2.raw_img
+        bias1 = np.load(self.labelNames[self.labelBias1] + '.npy')
+        bias2 = np.load(self.labelNames[self.labelBias2] + '.npy')
+        flat1 = np.load(self.labelNames[self.labelFlat1] + '.npy')
+        flat2 = np.load(self.labelNames[self.labelFlat2] + '.npy')
         
         # Define central crop area for flat frames
         h, w = flat1.shape
@@ -8107,17 +8146,28 @@ class ImageAnalyser(ttk.Frame):
         b = int(0.75*h)
         c = int(0.25*w)
         d = int(0.75*w)
+
+        # Define central crop area for bias frames
+        h2, w2 = bias1.shape
+        a2 = int(0.25*h2)
+        b2 = int(0.75*h2)
+        c2 = int(0.25*w2)
+        d2 = int(0.75*w2)
         
         # Crop flat frames
         flat1_crop = flat1[a:b, c:d]
         flat2_crop = flat2[a:b, c:d]
+
+        # Crop bias frames
+        bias1_crop = bias1[a2:b2, c2:d2]
+        bias2_crop = bias2[a2:b2, c2:d2]
         
         self.white_level = np.max(saturated)
         
-        self.black_level = 0.5*(np.median(bias1) + np.median(bias2))
+        self.black_level = 0.5*(np.median(bias1_crop) + np.median(bias2_crop))
         flat_level_ADU = 0.5*(np.median(flat1_crop) + np.median(flat2_crop))
         
-        delta_bias = bias1 + 30000 - bias2
+        delta_bias = bias1_crop + 30000 - bias2_crop
         delta_flat = flat1_crop + 30000 - flat2_crop
         
         read_noise_ADU = np.std(delta_bias)/np.sqrt(2)
@@ -8561,8 +8611,8 @@ class ImageAnalyser(ttk.Frame):
             
         # Compensate for any resizing
         if self.showResized:
-            dx *= float(self.labelLight.photo_img.width())/self.imageSize[0]
-            dy *= float(self.labelLight.photo_img.height())/self.imageSize[1]
+            dx *= float(self.photo_img.width())/self.imageSize[0]
+            dy *= float(self.photo_img.height())/self.imageSize[1]
             
         deg_r = np.sqrt(dx**2 + dy**2)/3600.0
         
@@ -8594,7 +8644,7 @@ class ImageAnalyser(ttk.Frame):
         '''Show topwindow with statistics of selected area or entire image.'''
         
         # Get raw image data
-        img = self.getSelectedLabel().raw_img
+        img = np.load(self.labelNames[self.getSelectedLabel()] + '.npy')
         
         # Crop image if a selection box has been drawn
         if self.localSelection:
@@ -8605,11 +8655,17 @@ class ImageAnalyser(ttk.Frame):
         
         # Calculate values in (cropped) image
         sample_val = img_crop.shape[0]*img_crop.shape[1]
-        mean_val = np.mean(img_crop)
-        median_val = np.median(img_crop)
-        std_val = np.std(img_crop)
-        max_val = np.max(img_crop)
-        min_val = np.min(img_crop)
+        try:
+            mean_val = np.mean(img_crop)
+            median_val = np.median(img_crop)
+            std_val = np.std(img_crop)
+            max_val = np.max(img_crop)
+            min_val = np.min(img_crop)
+        except MemoryError:
+            self.varMessageLabel.set('Not enough memory available. Please select a limited region ' \
+                                     + 'of the image before computing statistics.')
+            self.labelMessage.configure(foreground='crimson')
+            return None
         
         self.disableWidgets()
         self.busy = True
@@ -8754,8 +8810,8 @@ class ImageAnalyser(ttk.Frame):
             calframe = self.cont.frames[ImageCalculator]
               
             # Get raw data of selected area
-            img_crop = label.raw_img[self.selectionArea[1]:self.selectionArea[3],
-                                     self.selectionArea[0]:self.selectionArea[2]]
+            img_crop = np.load(self.labelNames[label] + '.npy')[self.selectionArea[1]:self.selectionArea[3],
+                                                                self.selectionArea[0]:self.selectionArea[2]]
             
             # Calculate required values and transfer to corresponding widgets
             if varBGRegion.get():
@@ -8843,7 +8899,7 @@ class ImageAnalyser(ttk.Frame):
                         return None
                     
                     # Get raw image data
-                    img = label.raw_img
+                    img = np.load(self.labelNames[label] + '.npy')
                     
                     # Crop image if a selection box has been drawn
                     if self.localSelection:
@@ -8853,14 +8909,22 @@ class ImageAnalyser(ttk.Frame):
                         img_crop = img
                     
                     # Calculate dark frame noise
-                    dark_val = np.std(img_crop)
+                    try:
+                        dark_val = np.std(img_crop)
+                    except MemoryError:
+                        h, w = img_crop.shape
+                        a = int(0.25*h)
+                        b = int(0.75*h)
+                        c = int(0.25*w)
+                        d = int(0.75*w)
+                        dark_val = np.std(img_crop[a:b, c:d])
                 
                 # If two dark frames have been added
                 else:
                 
                     # Get raw data of images
-                    img1 = self.labelDark1.raw_img
-                    img2 = self.labelDark2.raw_img
+                    img1 = np.load(self.labelNames[self.labelDark1] + '.npy')
+                    img2 = np.load(self.labelNames[self.labelDark2] + '.npy')
                     
                     # Crop images if a selection box has been drawn
                     if self.localSelection:
@@ -8874,7 +8938,15 @@ class ImageAnalyser(ttk.Frame):
                     
                     # Calculate dark frame noise
                     delta_dark = img1_crop + 30000 - img2_crop
-                    dark_val = np.std(delta_dark)/np.sqrt(2)
+                    try:
+                        dark_val = np.std(delta_dark)/np.sqrt(2)
+                    except MemoryError:
+                        h, w = delta_dark.shape
+                        a = int(0.25*h)
+                        b = int(0.75*h)
+                        c = int(0.25*w)
+                        d = int(0.75*w)
+                        dark_val = np.std(delta_dark[a:b, c:d])/np.sqrt(2)
             
             # If the camera is a CCD            
             else:
@@ -8882,7 +8954,7 @@ class ImageAnalyser(ttk.Frame):
                 if self.displayed_dark == 1:
             
                     # Get raw image data
-                    img = label.raw_img
+                    img = np.load(self.labelNames[label] + '.npy')
                     
                     # Crop image if a selection box has been drawn
                     if self.localSelection:
@@ -8892,13 +8964,21 @@ class ImageAnalyser(ttk.Frame):
                         img_crop = img
                         
                     # Calculate dark frame level
-                    dark_val = np.median(img_crop)
+                    try:
+                        dark_val = np.median(img_crop)
+                    except MemoryError:
+                        h, w = img_crop.shape
+                        a = int(0.25*h)
+                        b = int(0.75*h)
+                        c = int(0.25*w)
+                        d = int(0.75*w)
+                        dark_val = np.median(img_crop[a:b, c:d])
                     
                 else:
                 
                     # Get raw data of images
-                    img1 = self.labelDark1.raw_img
-                    img2 = self.labelDark2.raw_img
+                    img1 = np.load(self.labelNames[self.labelDark1] + '.npy')
+                    img2 = np.load(self.labelNames[self.labelDark2] + '.npy')
                     
                     # Crop images if a selection box has been drawn
                     if self.localSelection:
@@ -8911,7 +8991,15 @@ class ImageAnalyser(ttk.Frame):
                         img2_crop = img2
                     
                     # Calculate dark frame noise
-                    dark_val = 0.5*(np.median(img1_crop) + np.median(img2_crop))
+                    try:
+                        dark_val = 0.5*(np.median(img1_crop) + np.median(img2_crop))
+                    except MemoryError:
+                        h, w = img1_crop.shape
+                        a = int(0.25*h)
+                        b = int(0.75*h)
+                        c = int(0.25*w)
+                        d = int(0.75*w)
+                        dark_val = 0.5*(np.median(img1_crop[a:b, c:d]) + np.median(img2_crop[a:b, c:d]))
                 
             # Transfer data to dark input widget and set checkbutton state
             calframe = self.cont.frames[ImageCalculator]
@@ -9037,8 +9125,8 @@ class ImageAnalyser(ttk.Frame):
         if np.abs(self.measurePoints[2] - self.measurePoints[0]) <= 1 \
            and np.abs(self.measurePoints[3] - self.measurePoints[1]) <= 1:
             event.widget.delete(self.measureLine)
-            self.setFOV(0, self.labelLight.photo_img.width(),
-                        0, self.labelLight.photo_img.height(), False)
+            self.setFOV(0, self.photo_img.width(),
+                        0, self.photo_img.height(), False)
         else:
             self.setAngle(self.measurePoints[0], self.measurePoints[2],
                           self.measurePoints[1], self.measurePoints[3])
@@ -9053,8 +9141,8 @@ class ImageAnalyser(ttk.Frame):
             
                 if np.abs(self.measurePoints[2] - self.measurePoints[0]) <= 1 \
                    and np.abs(self.measurePoints[3] - self.measurePoints[1]) <= 1:
-                    self.setFOV(0, self.labelLight.photo_img.width(),
-                                0, self.labelLight.photo_img.height(), False)
+                    self.setFOV(0, self.photo_img.width(),
+                                0, self.photo_img.height(), False)
                 else:
                     self.setAngle(self.measurePoints[0], self.measurePoints[2],
                                   self.measurePoints[1], self.measurePoints[3])
@@ -9065,8 +9153,8 @@ class ImageAnalyser(ttk.Frame):
                     self.setFOV(self.selectionArea[0], self.selectionArea[2],
                                 self.selectionArea[1], self.selectionArea[3], True)
                 else:
-                    self.setFOV(0, self.labelLight.photo_img.width(),
-                                0, self.labelLight.photo_img.height(), False)
+                    self.setFOV(0, self.photo_img.width(),
+                                0, self.photo_img.height(), False)
     
     def useSelectMode(self):
     
@@ -9305,14 +9393,14 @@ class ImageAnalyser(ttk.Frame):
     
         '''Redraw an auto-stretched version of the histogram.'''
     
-        label.stretched_img = autostretch(label.raw_img)
+        label.stretched_img = autostretch(np.load(self.labelNames[label] + '.npy'))
         self.updateHist(label)
     
     def resetToLinear(self, label):
     
         '''Show the histogram of the linear image.'''
     
-        label.stretched_img = label.raw_img
+        label.stretched_img = np.load(self.labelNames[label] + '.npy')
         self.updateHist(label)
         
     def updateHist(self, label):
@@ -9328,29 +9416,29 @@ class ImageAnalyser(ttk.Frame):
         self.updateHistStretch(0.5)
         self.histcanvas.draw()
     
-    def updateDisplayedImage(self, label, filename=None, fromHist=False):
+    def updateDisplayedImage(self, label, fromHist=False):
     
         '''Create a photo image from the raw image of the label.'''
     
         # Save data as temporary image
-        plt.imsave('temp.jpg', label.stretched_img, cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
-            
-        # Open as PIL image and store as label attribute
-        label.pil_img = Image.open('temp.jpg')
-        
-        # Store Photo Image as label attribute
-        label.photo_img = ImageTk.PhotoImage(label.pil_img)
+        plt.imsave(self.labelNames[label] + '.jpg', label.stretched_img, cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
         
         # Create resized version of image if necessary
-        if self.showResized or fromHist:
-        
-            if not fromHist:
-                self.varMessageLabel.set('%s - Resizing..' % filename)
-                self.labelMessage.configure(foreground='navy')
-                self.labelMessage.update_idletasks()
-                
-            self.createResImage(label)
+        if fromHist: self.loadImage(label)
    
+    def deleteTemp(self, exit):
+    
+        for file in self.labelNames.values():
+            try:
+                os.remove(file + '.npy')
+            except WindowsError:
+                pass
+            try:
+                os.remove(file + '.jpg')
+            except WindowsError:
+                pass
+   
+        if exit: self.cont.destroy()
 
 class FOVCalculator(ttk.Frame):
 
