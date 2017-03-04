@@ -9655,7 +9655,7 @@ class FOVCalculator(ttk.Frame):
         l_spgl = [i for i in all if self.obType[i] == 'Spiral Galaxy']
         l_elgl = [i for i in all if self.obType[i] == 'Elliptical Galaxy']
         l_legl = [i for i in all if self.obType[i] == 'Lenticular Galaxy']
-        l_otds = [i for i in all if (self.obType[i] in ['Binary Star', 'Milky Way Patch'])]
+        l_otds = [i for i in all if (self.obType[i] in ['Binary Star', 'Milky Way Patch', 'Asterism'])]
         l_pl = [i for i in all if (self.obType[i] in ['Terrestrial Planet', 'Gas Giant'])]
         l_tp = [i for i in all if self.obType[i] == 'Terrestrial Planet']
         l_gg = [i for i in all if self.obType[i] == 'Gas Giant']
