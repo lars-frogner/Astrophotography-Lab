@@ -230,7 +230,7 @@ class ErrorWindow(tk.Tk):
         strs = error_message.split('\n')
         lens = [len(str) for str in strs]
         
-        apc.setupWindow(self, (errfont.measure(strs[lens.index(max(lens))]) + 20), 300)
+        setupWindow(self, (errfont.measure(strs[lens.index(max(lens))]) + 20), 300)
         
         self.wm_attributes('-topmost', 1)
         self.focus_force()
