@@ -63,7 +63,7 @@ class FOVCalculator(ttk.Frame):
         
         self.obDes = []
         self.obName = []
-        self.imWidth = []
+        self.imArcsecDens = []
         self.obRA = []
         self.obDec = []
         self.obMag = []
@@ -76,7 +76,7 @@ class FOVCalculator(ttk.Frame):
             
             self.obDes.append(line[0])
             self.obName.append(line[0] + line[1])
-            self.imWidth.append(float(line[2]))
+            self.imArcsecDens.append(float(line[2]))
             self.obRA.append([float(line[3]), float(line[4])])
             self.obDec.append([float(line[5]), float(line[6])])
             self.obMag.append(line[7])
@@ -466,13 +466,16 @@ class FOVCalculator(ttk.Frame):
         self.varName.set(self.obName[self.obj_idx])
         self.varType.set(self.obType[self.obj_idx])
         
+        im = Image.open(path)
+        im_pix_w, im_pix_h = im.size
+        
         if not self.obj_idx in self.groups['Solar system']:
             self.varMag.set(self.obMag[self.obj_idx])
             self.varRADec.set(u'%dh %02dm | %d\u00B0 %02d\'' % (self.obRA[self.obj_idx][0], 
                                                                 round(self.obRA[self.obj_idx][1]), 
                                                                 self.obDec[self.obj_idx][0], 
                                                                 round(self.obDec[self.obj_idx][1])))
-            im_ang_w = self.imWidth[self.obj_idx]
+            im_ang_w = self.imArcsecDens[self.obj_idx]*im_pix_w
         
         else:
         
@@ -491,20 +494,70 @@ class FOVCalculator(ttk.Frame):
             else:
                 self.labelPhase1.grid_forget()
                 self.labelPhase2.grid_forget()
-        
-        im = Image.open(path)
-        im_pix_w, im_pix_h = im.size
-        
-        self.canvasView.configure(bg='#%02x%02x%02x' \
-                           % tuple(np.median(list(im.getdata())[:30*im_pix_w], axis=0).astype(int)))
+
+            self.canvasView.configure(bg='#%02x%02x%02x' % (0, 0, 0))
         
         view_ang_w = C.RES_X[self.cont.cnum][0]*self.cont.ISVal
         
         im_new_pix_w = im_ang_w*canv_w/view_ang_w
-        im_new_pix_h = im_new_pix_w*float(im_pix_h)/im_pix_w
-        
-        self.im_res = ImageTk.PhotoImage(im.resize((int(round(im_new_pix_w)),
-                                                    int(round(im_new_pix_h))), Image.ANTIALIAS))
+        im_new_pix_h = int(round(im_new_pix_w*float(im_pix_h)/im_pix_w))
+        im_new_pix_w = int(round(im_new_pix_w))
+
+        resized_im = im.resize((im_new_pix_w, im_new_pix_h), Image.ANTIALIAS)
+
+        if not self.obj_idx in self.groups['Solar system']:
+
+            if im_new_pix_w < canv_w or im_new_pix_h < canv_h:
+
+                bg_mask = np.array(list(resized_im.convert('L').getdata())) < 35
+
+                if not bg_mask.any():
+                    bg_colour = [0, 0, 0]
+                else:
+                    bg_colour = np.median(np.array(list(resized_im.getdata()))[bg_mask], axis=0).astype(int)
+
+                resized_im = resized_im.convert('RGBA')
+
+            else:
+                bg_colour = [0, 0, 0]
+            
+            self.canvasView.configure(bg='#%02x%02x%02x' % tuple(bg_colour))
+
+            if im_new_pix_w < canv_w:
+
+                bordersize_w = im_new_pix_w/10
+
+                im_pixels = resized_im.load()
+
+                for i in xrange(bordersize_w+1):
+
+                    x = float(i)/bordersize_w
+
+                    for j in xrange(im_new_pix_h):
+
+                        valsl = im_pixels[i, j]
+                        im_pixels[i, j] = (valsl[0], valsl[1], valsl[2], int(valsl[3]*x))
+
+                        valsr = im_pixels[im_new_pix_w-1-i, j]
+                        im_pixels[im_new_pix_w-1-i, j] = (valsr[0], valsr[1], valsr[2], int(valsr[3]*x))
+
+            if im_new_pix_h < canv_h:
+
+                bordersize_h = im_new_pix_h/10
+
+                for j in xrange(bordersize_h+1):
+
+                    x = float(j)/bordersize_h
+
+                    for i in xrange(im_new_pix_w):
+
+                        valsl = im_pixels[i, j]
+                        im_pixels[i, j] = (valsl[0], valsl[1], valsl[2], int(valsl[3]*x))
+
+                        valsr = im_pixels[i, im_new_pix_h-1-j]
+                        im_pixels[i, im_new_pix_h-1-j] = (valsr[0], valsr[1], valsr[2], int(valsr[3]*x))
+
+        self.im_res = ImageTk.PhotoImage(resized_im)
                                                     
         self.currentImage = self.canvasView.create_image(0.5*canv_w, 0.5*canv_h, image=self.im_res,
                                                          anchor='center')
