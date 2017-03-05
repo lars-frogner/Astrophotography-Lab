@@ -799,7 +799,7 @@ class ImageSimulator(ttk.Frame):
         
         # Save linear and non-linear version of the simulated image
         plt.imsave('sim.jpg', img, cmap=plt.get_cmap('gray'), vmin = 0.0, vmax = 1.0)
-        plt.imsave('sim_str.jpg', autostretch(img), cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
+        plt.imsave('sim_str.jpg', apc.autostretch(img), cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
         
         # Open as PIL images
         im = Image.open('sim.jpg')

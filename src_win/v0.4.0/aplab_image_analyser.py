@@ -1346,7 +1346,7 @@ class ImageAnalyser(ttk.Frame):
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
-        label.stretched_img = autostretch(img)
+        label.stretched_img = apc.autostretch(img)
         img = None
         
         self.varMessageLabel.set('%s - Creating temporary image file..' % filename)
@@ -3134,7 +3134,7 @@ class ImageAnalyser(ttk.Frame):
     
         '''Redraw an auto-stretched version of the histogram.'''
     
-        label.stretched_img = autostretch(np.load(self.labelNames[label] + '.npy'))
+        label.stretched_img = apc.autostretch(np.load(self.labelNames[label] + '.npy'))
         self.updateHist(label)
     
     def resetToLinear(self, label):
