@@ -2851,6 +2851,7 @@ class ToolManager(tk.Tk):
         self.degAngleUnit.set(0)
         
         self.frames[ImageAnalyser].updateAngle()
+        self.frames[FOVCalculator].setFOV()
     
     def setDegAngleUnit(self):
     
@@ -2865,4 +2866,5 @@ class ToolManager(tk.Tk):
         self.degAngleUnit.set(1)
         
         self.frames[ImageAnalyser].updateAngle()
+        self.frames[FOVCalculator].setFOV()
    
