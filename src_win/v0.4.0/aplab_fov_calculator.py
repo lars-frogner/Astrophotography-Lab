@@ -56,8 +56,6 @@ class FOVCalculator(ttk.Frame):
         lines = file.read().split('\n')
         file.close()
         
-        self.obj_idx = 0
-        
         self.validDate = True
         self.validTime = True
         
@@ -84,6 +82,8 @@ class FOVCalculator(ttk.Frame):
             self.imCred.append(','.join(line[9:]))
         
         all = range(len(self.obDes))
+
+        self.obj_idx = self.obDes.index('Moon')
         
         l_messier = all[:-11]
         l_ic = []
@@ -139,7 +139,7 @@ class FOVCalculator(ttk.Frame):
         self.varMag = tk.StringVar()
         self.varRADec = tk.StringVar()
         self.varAzAlt = tk.StringVar()
-        self.varPhase = tk.StringVar()
+        self.varIllum = tk.StringVar()
         
         self.varVis = tk.IntVar()
         self.varVis.set(0)
@@ -208,7 +208,7 @@ class FOVCalculator(ttk.Frame):
         self.entryTime = ttk.Entry(frameInput, textvariable=self.varTime, width=5,
                                    foreground='forestgreen', validate='key',
                                    validatecommand=(self.register(self.valTime), '%P', '%S'))
-        buttonCurrent = ttk.Button(frameInput, text='Now', command=self.setCurrentDT, width=4)
+        buttonCurrent = ttk.Button(frameInput, text='Now', command=lambda: self.setCurrentDT(activate=True), width=4)
         labelDate = ttk.Label(frameInput, text='Date: ')
         self.entryDate = ttk.Entry(frameInput, textvariable=self.varDate, width=10, 
                                    foreground='forestgreen', validate='key',
@@ -225,6 +225,11 @@ class FOVCalculator(ttk.Frame):
                                   foreground='forestgreen', validate='key',
                                   validatecommand=(self.register(self.valLon), '%P'))
         labelLon2 = ttk.Label(frameInput, text=u'\u00B0')
+
+        self.entryTime.bind('<Return>', self.selectObjectController)
+        self.entryDate.bind('<Return>', self.selectObjectController)
+        self.entryLat.bind('<Return>', self.selectObjectController)
+        self.entryLon.bind('<Return>', self.selectObjectController)
         
         self.setCurrentDT(set=False)
         
@@ -273,7 +278,7 @@ class FOVCalculator(ttk.Frame):
             self.listboxObjects.insert('end', self.obName[idx])
             
         scrollbarObjects.config(command=self.listboxObjects.yview) # Add scrollbar to listbox
-        
+
         self.listboxObjects.bind('<ButtonRelease-1>', self.selectObjectController)
         
         self.listboxObjects.activate(self.obj_idx)
@@ -320,8 +325,8 @@ class FOVCalculator(ttk.Frame):
         labelAzAlt1 = ttk.Label(frameInfo, text='Az | Alt: ')
         labelAzAlt2 = ttk.Label(frameInfo, textvariable=self.varAzAlt)
         
-        self.labelPhase1 = ttk.Label(frameInfo, text='Phase: ')
-        self.labelPhase2 = ttk.Label(frameInfo, textvariable=self.varPhase)
+        self.labelIllum1 = ttk.Label(frameInfo, text='Illumination: ')
+        self.labelIllum2 = ttk.Label(frameInfo, textvariable=self.varIllum)
         
         frameInfo.pack(side='top', pady=(10*C.scsy, 5*C.scsy), fill='x')
         
@@ -384,53 +389,59 @@ class FOVCalculator(ttk.Frame):
     
         if self.obName[idx] == 'Sun':
             body = ephem.Sun()
-            phase = False
+            illum = False
         elif self.obName[idx] == 'Mercury':
             body = ephem.Mercury()
-            phase = True
+            illum = True
         elif self.obName[idx] == 'Venus':
             body = ephem.Venus()
-            phase = True
+            illum = True
         elif self.obName[idx] == 'Moon':
             body = ephem.Moon()
-            phase = True
+            illum = True
         if self.obName[idx] == 'Mars':
             body = ephem.Mars()
-            phase = False
+            illum = False
         if self.obName[idx] == 'Ceres':
             body = ephem.readdb('Ceres,e,10.58392,80.49834,73.93568,2.7656737,0,0.0780542,' \
                                 + '292.3363,1/22/1999,2000.0,3.34,0.12')
-            phase = False
+            illum = False
         if self.obName[idx] == 'Jupiter':
             body = ephem.Jupiter()
-            phase = False
+            illum = False
         if self.obName[idx] == 'Saturn':
             body = ephem.Saturn()
-            phase = False
+            illum = False
         if self.obName[idx] == 'Uranus':
             body = ephem.Uranus()
-            phase = False
+            illum = False
         if self.obName[idx] == 'Neptune':
             body = ephem.Neptune()
-            phase = False
+            illum = False
         if self.obName[idx] == 'Pluto':
             body = ephem.Pluto()
-            phase = False
+            illum = False
                 
         if self.validDate and self.validTime:
-            
+
             date = self.varDate.get().split('-')
             time = self.varTime.get().split(':')
                 
             ut = datetime.datetime(int(date[0]), int(date[1]), int(date[2]),
                                    hour=int(time[0]), minute=int(time[1])) - self.utcOffset
-                                       
-            body.compute('%d/%d/%d %d:%d' % (ut.year, ut.month, ut.day, ut.hour, ut.minute))
+
+            ephem_date = ephem.Date('%d/%d/%d %d:%d' % (ut.year, ut.month, ut.day, ut.hour, ut.minute))
                                        
         else:
+            ephem_date = ephem.now()
                 
-            body.compute()
-                
+        body.compute(ephem_date)
+
+        if self.obName[idx] == 'Moon':
+            phaseangle = 2*np.pi*(ephem_date - ephem.previous_full_moon(ephem_date))/(ephem.next_full_moon(ephem_date) - ephem.previous_full_moon(ephem_date))
+        else:
+            phaseangle = 0
+
         ra = body.a_ra.__str__().split(':')
         dec = body.a_dec.__str__().split(':')
         ra_h = int(ra[0])
@@ -438,9 +449,9 @@ class FOVCalculator(ttk.Frame):
         ra_m = round(float(ra[1]) + float(ra[2])/60.0)
         dec_am = round(float(dec[1]) + float(dec[2])/60.0)
         
-        if phase: phase = body.phase
+        if illum: illum = body.phase
         
-        return [ra_h, ra_m, dec_d, dec_am, body.size, body.mag, phase]
+        return [ra_h, ra_m, dec_d, dec_am, body.size, body.mag, illum, phaseangle]
     
     def selectObject(self, idx):
     
@@ -479,7 +490,7 @@ class FOVCalculator(ttk.Frame):
         
         else:
         
-            ra_h, ra_m, dec_d, dec_am, size, mag, phase = self.getSSAttr(self.obj_idx)
+            ra_h, ra_m, dec_d, dec_am, size, mag, illum, phaseangle = self.getSSAttr(self.obj_idx)
                 
             self.varMag.set('%.1f' % mag)
             
@@ -487,13 +498,13 @@ class FOVCalculator(ttk.Frame):
                 
             im_ang_w = size*2.05 if self.obName[self.obj_idx] == 'Saturn' else size
             
-            if phase:
-                self.labelPhase1.grid(row=5, column=0, sticky='W')
-                self.labelPhase2.grid(row=5, column=1)
-                self.varPhase.set('%.1f%%' % phase)
+            if illum:
+                self.labelIllum1.grid(row=5, column=0, sticky='W')
+                self.labelIllum2.grid(row=5, column=1)
+                self.varIllum.set('%.1f%%' % illum)
             else:
-                self.labelPhase1.grid_forget()
-                self.labelPhase2.grid_forget()
+                self.labelIllum1.grid_forget()
+                self.labelIllum2.grid_forget()
 
             self.canvasView.configure(bg='#%02x%02x%02x' % (0, 0, 0))
         
@@ -556,6 +567,62 @@ class FOVCalculator(ttk.Frame):
 
                         valsr = im_pixels[i, im_new_pix_h-1-j]
                         im_pixels[i, im_new_pix_h-1-j] = (valsr[0], valsr[1], valsr[2], int(valsr[3]*x))
+
+        elif self.obName[self.obj_idx] == 'Moon':
+
+            N = min(im_new_pix_w, im_new_pix_h)
+            y = np.arange(N)
+
+            alpha = 30
+            terminator_width = 0.25
+
+            phaseangle_lead = phaseangle + terminator_width/2.0
+            phaseangle_trail = phaseangle - terminator_width/2.0
+
+            if phaseangle <= np.pi:
+                if phaseangle_lead > np.pi:
+                    phaseangle_lead = np.pi
+                if phaseangle_trail < 0:
+                    phaseangle_trail = 0.0
+            else:
+                if phaseangle_lead > 2*np.pi:
+                    phaseangle_lead = 2*np.pi
+                if phaseangle_trail < np.pi:
+                    phaseangle_trail = np.pi
+
+            x_lead = ((np.cos(phaseangle_lead)*np.sin(np.arccos(2*(y/(N - 1.0) - 0.5))) + 1)*0.5*(N-1)).astype(int)
+            x_trail = ((np.cos(phaseangle_trail)*np.sin(np.arccos(2*(y/(N - 1.0) - 0.5))) + 1)*0.5*(N-1)).astype(int)
+
+            resized_im = resized_im.convert('RGBA')
+            im_pixels = resized_im.load()
+
+            if phaseangle <= np.pi:
+
+                for i in xrange(N):
+
+                    for j in xrange(x_lead[i], x_trail[i]):
+                        vals = im_pixels[j, i]
+                        im_pixels[j, i] = (vals[0], vals[1], vals[2], int(255 + (alpha - 255)*apc.smoothstep(x_lead[i], x_trail[i], j)))
+
+                    for j in xrange(x_trail[i], N):
+                        vals = im_pixels[j, i]
+                        im_pixels[j, i] = (vals[0], vals[1], vals[2], alpha)
+
+            else:
+
+                x_lead = N-1 - x_lead
+                x_trail = N-1 - x_trail
+
+                for i in xrange(N):
+
+                    for j in xrange(x_lead[i]):
+                        vals = im_pixels[j, i]
+                        im_pixels[j, i] = (vals[0], vals[1], vals[2], alpha)
+
+                    for j in xrange(x_lead[i], x_trail[i]):
+                        vals = im_pixels[j, i]
+                        im_pixels[j, i] = (vals[0], vals[1], vals[2], int(alpha + (255 - alpha)*apc.smoothstep(x_lead[i], x_trail[i], j)))
+
 
         self.im_res = ImageTk.PhotoImage(resized_im)
                                                     
@@ -780,7 +847,7 @@ class FOVCalculator(ttk.Frame):
         
         return ok
     
-    def setCurrentDT(self, set=True):
+    def setCurrentDT(self, set=True, activate=False):
     
         tm = time.localtime()
         self.varDate.set('%d-%02d-%02d' % (tm[0], tm[1], tm[2]))
@@ -795,6 +862,9 @@ class FOVCalculator(ttk.Frame):
         if set:
             self.adjustAlt(True)
             self.setAzAlt()
+
+        if activate:
+            self.selectObjectController(None)
     
     def getAzAlt(self, idx):
         
