@@ -465,4 +465,10 @@ def itpData(datastring, d_type):
     
     return [vals, um]
      
-      
+def smoothstep(edge0, edge1, x):
+
+    # Scale, bias and saturate x to 0..1 range
+    x = max(0.0, min((float(x) - edge0)/(edge1 - edge0), 1.0))
+
+    # Evaluate polynomial
+    return x*x*(3 - 2*x)

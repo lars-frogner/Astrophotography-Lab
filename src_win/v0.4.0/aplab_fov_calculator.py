@@ -63,7 +63,7 @@ class FOVCalculator(ttk.Frame):
         
         self.obDes = []
         self.obName = []
-        self.imArcsecDens = []
+        self.imScale = []
         self.obRA = []
         self.obDec = []
         self.obMag = []
@@ -76,7 +76,7 @@ class FOVCalculator(ttk.Frame):
             
             self.obDes.append(line[0])
             self.obName.append(line[0] + line[1])
-            self.imArcsecDens.append(float(line[2]))
+            self.imScale.append(float(line[2]))
             self.obRA.append([float(line[3]), float(line[4])])
             self.obDec.append([float(line[5]), float(line[6])])
             self.obMag.append(line[7])
@@ -475,7 +475,7 @@ class FOVCalculator(ttk.Frame):
                                                                 round(self.obRA[self.obj_idx][1]), 
                                                                 self.obDec[self.obj_idx][0], 
                                                                 round(self.obDec[self.obj_idx][1])))
-            im_ang_w = self.imArcsecDens[self.obj_idx]*im_pix_w
+            im_ang_w = self.imScale[self.obj_idx]*im_pix_w
         
         else:
         
@@ -509,7 +509,7 @@ class FOVCalculator(ttk.Frame):
 
             if im_new_pix_w < canv_w or im_new_pix_h < canv_h:
 
-                bg_mask = np.array(list(resized_im.convert('L').getdata())) < 35
+                bg_mask = np.array(list(resized_im.convert('L').getdata())) < 30
 
                 if not bg_mask.any():
                     bg_colour = [0, 0, 0]
