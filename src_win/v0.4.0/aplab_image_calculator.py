@@ -362,7 +362,7 @@ class ImageCalculator(ttk.Frame):
         
         labelInput = ttk.Label(frameUpMiddle, text='Image data', font=medium_font, anchor='center')
         
-        self.labelISO = ttk.Label(frameUpMiddle, text='C.ISO:')
+        self.labelISO = ttk.Label(frameUpMiddle, text='ISO:')
         self.optionISO = ttk.OptionMenu(frameUpMiddle, self.varISO, None, *C.ISO[self.cont.cnum],
                                         command=self.updateISO)
                                         
@@ -494,7 +494,7 @@ class ImageCalculator(ttk.Frame):
     
         '''Set all relevant class attributes to their default values.'''
         
-        # Variables to keep track of currently selected C.ISO, gain or read noise in the optionmenus
+        # Variables to keep track of currently selected ISO, gain or read noise in the optionmenus
         self.gain_idx = 0
         self.rn_idx = 0
         
@@ -573,7 +573,7 @@ class ImageCalculator(ttk.Frame):
             
         if self.cont.isDSLR:
                 
-            # DSLRs use the C.ISO optionmenu and the background noise entry
+            # DSLRs use the ISO optionmenu and the background noise entry
                 
             self.labelISO.grid(row=1, column=0, sticky='W')
             self.optionISO.grid(row=1, column=1)
@@ -600,7 +600,7 @@ class ImageCalculator(ttk.Frame):
 
     def updateISO(self, selected_iso):
         
-        '''Update index of selected C.ISO and update sensor labels.'''
+        '''Update index of selected ISO and update sensor labels.'''
         
         self.gain_idx = int(np.where(C.ISO[self.cont.cnum] == selected_iso)[0])
         self.rn_idx = self.gain_idx
@@ -617,7 +617,7 @@ class ImageCalculator(ttk.Frame):
     
     def updateRN(self, selected_rn):
             
-        '''Update index of selected C.ISO and update sensor labels.'''
+        '''Update index of selected ISO and update sensor labels.'''
         
         self.rn_idx = int(np.where(C.RN[self.cont.cnum][0] == selected_rn)[0])
         
@@ -627,7 +627,7 @@ class ImageCalculator(ttk.Frame):
     
         '''
         Update labels with the gain, read noise and saturation
-        level values of currently selected C.ISO/gain/C.RN.
+        level values of currently selected ISO/gain/RN.
         '''
     
         self.varGainInfo.set('%.3g' % C.GAIN[self.cont.cnum][0][self.gain_idx])

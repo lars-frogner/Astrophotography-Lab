@@ -1158,7 +1158,7 @@ class ImageAnalyser(ttk.Frame):
                 
                 if len(isovals) > 0 and isovals[1:] == isovals[:-1] and not iso in isovals:
                     
-                    warning = 'This frame has C.ISO %d, whereas the\nother added frames have C.ISO %d.' \
+                    warning = 'This frame has ISO %d, whereas the\nother added frames have ISO %d.' \
                                % (iso, isovals[0]) + '\nStill proceed?' 
                     
                     if not self.showWarning('Warning', warning, 'Yes', 'Cancel', lambda: None):
@@ -1587,7 +1587,7 @@ class ImageAnalyser(ttk.Frame):
             
             self.setFOV(0, self.imageSize[0], 0, self.imageSize[1], False)
         
-        # Update C.ISO and exposure time labels
+        # Update ISO and exposure time labels
         
         if label.exposure is not None:
             self.varImInfo.set('Exposure time: %.4g s' % label.exposure)
@@ -1596,9 +1596,9 @@ class ImageAnalyser(ttk.Frame):
             
         if self.cont.isDSLR:
             if label.iso is not None:
-                self.varImInfo.set('C.ISO: %d        %s' % (label.iso, self.varImInfo.get()))
+                self.varImInfo.set('ISO: %d        %s' % (label.iso, self.varImInfo.get()))
             else:
-                self.varImInfo.set('C.ISO: Not detected        %s' % (self.varImInfo.get()))
+                self.varImInfo.set('ISO: Not detected        %s' % (self.varImInfo.get()))
         
         # Disable image interaction for resized images, except for measuring in the light frame
         if label is self.labelLight:
@@ -2024,11 +2024,11 @@ class ImageAnalyser(ttk.Frame):
                 if con_iso:
                     iso = str(con_iso)
                 else:
-                    # Get inputted C.ISO value for DSLR
+                    # Get inputted ISO value for DSLR
                     try:
                         iso = str(int(varISO.get()))
                     except ValueError:
-                        varMessageLabel.set('Invalid C.ISO input. Must be an integer.')
+                        varMessageLabel.set('Invalid ISO input. Must be an integer.')
                         return None
             
             # Read camera data file            
@@ -2187,7 +2187,7 @@ class ImageAnalyser(ttk.Frame):
             apc.setupWindow(self.topCamInfo, 300, 140)
             self.topCamInfo.focus_force()
             
-            ttk.Label(self.topCamInfo, text='Input the C.ISO used for the images:')\
+            ttk.Label(self.topCamInfo, text='Input the ISO used for the images:')\
                      .pack(side='top', pady=(15*C.scsy, 5*C.scsy), expand=True)
             
             ttk.Entry(self.topCamInfo, textvariable=varISO, font=self.cont.small_font,
@@ -2571,7 +2571,7 @@ class ImageAnalyser(ttk.Frame):
             if self.labelLight.iso is not None and self.labelLight.iso in list(C.ISO[self.cont.cnum]):
                 calframe.varISO.set(self.labelLight.iso)
                 calframe.updateISO(self.labelLight.iso)
-                isostr = ' C.ISO set to %d.' % (self.labelLight.iso)
+                isostr = ' ISO set to %d.' % (self.labelLight.iso)
                 
             if self.labelLight.exposure is not None:
                 calframe.varExp.set('%.4g' % (self.labelLight.exposure))
@@ -2762,7 +2762,7 @@ class ImageAnalyser(ttk.Frame):
             
                 calframe.varISO.set(isovals[0])
                 calframe.updateISO(isovals[0])
-                isostr = ' C.ISO set to %d.' % isovals[0]
+                isostr = ' ISO set to %d.' % isovals[0]
                     
             if len(expvals) == 1 or (len(expvals) == 2 and not self.tooDiff(*expvals)):
             

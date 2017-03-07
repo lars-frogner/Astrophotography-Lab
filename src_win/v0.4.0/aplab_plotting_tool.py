@@ -146,7 +146,7 @@ class PlottingTool(ttk.Frame):
         labelInput = ttk.Label(frameLowLeft, text='Imaging parameters', font=medium_font,
                                anchor='center')
         
-        self.labelISO = ttk.Label(frameLowLeft, text='C.ISO:')
+        self.labelISO = ttk.Label(frameLowLeft, text='ISO:')
         self.optionISO = ttk.OptionMenu(frameLowLeft, self.varISO, None, *C.ISO[self.cont.cnum],
                                         command=self.updateISO)
         
@@ -265,7 +265,7 @@ class PlottingTool(ttk.Frame):
     
         '''Set all relevant class attributes to their default values.'''
         
-        # Variables to keep track of currently selected C.ISO, gain or read noise in the optionmenus
+        # Variables to keep track of currently selected ISO, gain or read noise in the optionmenus
         self.gain_idx = 0
         self.rn_idx = 0
         
@@ -276,19 +276,19 @@ class PlottingTool(ttk.Frame):
         self.p2 = 'Stack SNR vs. sub exposure time'
         self.p3 = 'Stack SNR vs. number of subframes'
         self.p4 = 'Stack SNR increase vs. number of subframes'
-        self.p5 = 'Maximum stack SNR vs. C.ISO'
+        self.p5 = 'Maximum stack SNR vs. ISO'
         self.p9 = 'Dynamic range vs. sub exposure time'
         self.p8 = 'Dynamic range vs. skyglow'
-        self.p6 = 'Dynamic range vs. C.ISO'
+        self.p6 = 'Dynamic range vs. ISO'
         self.p11 = 'Saturation capacity vs. gain'
-        self.p12 = 'Saturation capacity vs. C.ISO'
-        self.p13 = 'Read noise vs. C.ISO'
-        self.p14 = 'Gain vs. C.ISO'
+        self.p12 = 'Saturation capacity vs. ISO'
+        self.p13 = 'Read noise vs. ISO'
+        self.p14 = 'Gain vs. ISO'
         
         self.pc1 = 'Sub exposure time'
         self.pc2 = 'Number of subframes'
         self.pc3 = 'Skyglow'
-        self.pc4 = 'C.ISO'
+        self.pc4 = 'ISO'
         
         # Set list of available plot types depending on camera type
         if self.varPlotMode.get() == 'single':
@@ -355,7 +355,7 @@ class PlottingTool(ttk.Frame):
                 
         if self.cont.isDSLR:
         
-            # DSLRs use the C.ISO optionmenu and max exposure entry
+            # DSLRs use the ISO optionmenu and max exposure entry
             
             self.labelISO.grid(row=1, column=0, sticky='W')
             self.optionISO.grid(row=1, column=1)
@@ -386,7 +386,7 @@ class PlottingTool(ttk.Frame):
     
     def updateISO(self, selected_iso):
     
-        '''Update index of selected C.ISO.'''
+        '''Update index of selected ISO.'''
     
         self.gain_idx = int(np.where(C.ISO[self.cont.cnum] == selected_iso)[0])
         self.rn_idx = self.gain_idx
@@ -910,7 +910,7 @@ class PlottingTool(ttk.Frame):
             iso = C.ISO[self.cont.cnum]
             
             if len(iso) < 2:
-                self.varMessageLabel.set('At least two C.ISO values required.')
+                self.varMessageLabel.set('At least two ISO values required.')
                 self.labelMessage.configure(foreground='crimson')
                 return None
                 
@@ -944,7 +944,7 @@ class PlottingTool(ttk.Frame):
                          transform=self.ax.transAxes, name='Tahoma', fontsize=self.cont.tt_fs)
             
             self.ax.set_title(self.p5, name='Tahoma', weight='heavy', fontsize=medium_fs)
-            self.ax.set_xlabel('C.ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
             self.ax.set_ylabel('Maximum stack SNR', name='Tahoma', fontsize=small_fs)
@@ -955,7 +955,7 @@ class PlottingTool(ttk.Frame):
             iso = C.ISO[self.cont.cnum]
             
             if len(iso) < 2:
-                self.varMessageLabel.set('At least two C.ISO values required.')
+                self.varMessageLabel.set('At least two ISO values required.')
                 self.labelMessage.configure(foreground='crimson')
                 return None
             
@@ -970,7 +970,7 @@ class PlottingTool(ttk.Frame):
             self.ax.cla()
             self.ax.plot(xvals, dr, 'o-', color='navy')
             self.ax.set_title(self.p6, name='Tahoma', weight='heavy', fontsize=medium_fs)
-            self.ax.set_xlabel('C.ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
             self.ax.set_ylabel('Dynamic range [stops]', name='Tahoma', fontsize=small_fs)
@@ -1115,7 +1115,7 @@ class PlottingTool(ttk.Frame):
             sat_cap = C.SAT_CAP[self.cont.cnum][0]
             
             if len(gain) < 2:
-                self.varMessageLabel.set('At least two C.ISO values required.')
+                self.varMessageLabel.set('At least two ISO values required.')
                 self.labelMessage.configure(foreground='crimson')
                 return None
             
@@ -1133,7 +1133,7 @@ class PlottingTool(ttk.Frame):
             iso = C.ISO[self.cont.cnum]
             
             if len(iso) < 2:
-                self.varMessageLabel.set('At least two C.ISO values required.')
+                self.varMessageLabel.set('At least two ISO values required.')
                 self.labelMessage.configure(foreground='crimson')
                 return None
 
@@ -1143,7 +1143,7 @@ class PlottingTool(ttk.Frame):
             self.ax.cla()
             self.ax.plot(xvals, sat_cap, 'o-', color='darkviolet')
             self.ax.set_title(self.p12, name='Tahoma', weight='heavy', fontsize=medium_fs)
-            self.ax.set_xlabel('C.ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
             self.ax.set_ylabel('Saturation capacity [e-]', name='Tahoma', fontsize=small_fs)
@@ -1154,7 +1154,7 @@ class PlottingTool(ttk.Frame):
             iso = C.ISO[self.cont.cnum]
             
             if len(iso) < 2:
-                self.varMessageLabel.set('At least two C.ISO values required.')
+                self.varMessageLabel.set('At least two ISO values required.')
                 self.labelMessage.configure(foreground='crimson')
                 return None
 
@@ -1164,7 +1164,7 @@ class PlottingTool(ttk.Frame):
             self.ax.cla()
             self.ax.plot(xvals, rn, 'o-', color='greenyellow')
             self.ax.set_title(self.p13, name='Tahoma', weight='heavy', fontsize=medium_fs)
-            self.ax.set_xlabel('C.ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
             self.ax.set_ylabel('Read noise [e-]', name='Tahoma', fontsize=small_fs)
@@ -1175,7 +1175,7 @@ class PlottingTool(ttk.Frame):
             iso = C.ISO[self.cont.cnum]
             
             if len(iso) < 2:
-                self.varMessageLabel.set('At least two C.ISO values required.')
+                self.varMessageLabel.set('At least two ISO values required.')
                 self.labelMessage.configure(foreground='crimson')
                 return None
 
@@ -1185,7 +1185,7 @@ class PlottingTool(ttk.Frame):
             self.ax.cla()
             self.ax.plot(xvals, gain, 'o-', color='slategray')
             self.ax.set_title(self.p14, name='Tahoma', weight='heavy', fontsize=medium_fs)
-            self.ax.set_xlabel('C.ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
             self.ax.set_ylabel('Gain [e-/ADU]', name='Tahoma', fontsize=small_fs)
@@ -1312,7 +1312,7 @@ class PlottingTool(ttk.Frame):
             iso = C.ISO[self.cont.cnum]
             
             if len(iso) < 2:
-                self.varMessageLabel.set('At least two C.ISO values required.')
+                self.varMessageLabel.set('At least two ISO values required.')
                 self.labelMessage.configure(foreground='crimson')
                 return None
                 
@@ -1342,7 +1342,7 @@ class PlottingTool(ttk.Frame):
             self.ax.legend(loc='best', fontsize=small_fs)
             self.ax.set_title(self.pc4 + ' comparison plot', name='Tahoma', weight='heavy', 
                               fontsize=medium_fs)
-            self.ax.set_xlabel('C.ISO', name='Tahoma', fontsize=small_fs)
+            self.ax.set_xlabel('ISO', name='Tahoma', fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
             self.ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])

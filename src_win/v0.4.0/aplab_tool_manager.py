@@ -263,7 +263,7 @@ class ToolManager(tk.Tk):
                 
         else:
             self.isDSLR = C.TYPE[self.cnum] == 'DSLR'  # Set new camera type
-            self.hasQE = C.QE[self.cnum][0] != 'NA'    # Set new C.QE state
+            self.hasQE = C.QE[self.cnum][0] != 'NA'    # Set new QE state
             self.noData = C.GAIN[self.cnum][0][0] == 0 # Determine if camera data exists
             
             self.varCamName.set('Camera: ' + C.CNAME[self.cnum])
@@ -719,7 +719,7 @@ class ToolManager(tk.Tk):
                 
                 frame.dataCalculated = False # Previously calculated data is no longer valid
                 frame.toggleDarkInputMode() # Change to the dark input mode that was used for the data
-                frame.updateSensorLabels() # Update sensor info labels in case the C.ISO has changed
+                frame.updateSensorLabels() # Update sensor info labels in case the ISO has changed
                 frame.emptyInfoLabels() # Clear other info labels
                 frame.varMessageLabel.set('Image data loaded.')
                 frame.labelMessage.configure(foreground='navy')
@@ -746,7 +746,7 @@ class ToolManager(tk.Tk):
                     self.setElectronSignalType()
             
                 frame.dataCalculated = False # Previously calculated data is no longer valid
-                frame.updateSensorLabels() # Update sensor info labels in case the C.ISO has changed
+                frame.updateSensorLabels() # Update sensor info labels in case the ISO has changed
                 frame.emptyInfoLabels() # Clear other info labels
                 frame.varMessageLabel.set('Image data loaded.' if int(data[3]) else \
                 'Note: loaded signal data does not contain a separate value for dark current.')
@@ -1173,7 +1173,7 @@ class ToolManager(tk.Tk):
         anframe = self.frames[ImageAnalyser]
             
         self.isDSLR = C.TYPE[self.cnum] == 'DSLR' # Set new camera type
-        self.hasQE = C.QE[self.cnum][0] != 'NA' # Set new C.QE state
+        self.hasQE = C.QE[self.cnum][0] != 'NA' # Set new QE state
         self.noData = C.GAIN[self.cnum][0][0] == 0
         
         if not self.hasQE: self.setElectronSignalType()
@@ -1599,6 +1599,7 @@ class ToolManager(tk.Tk):
             self.frames[ImageCalculator].updateOpticsLabels()
             self.frames[ImageSimulator].updateOpticsLabels()
             self.frames[ImageAnalyser].updateAngle()
+            self.frames[FOVCalculator].selectObjectController(None)
             
             topChangeFLMod.destroy()
         
@@ -1698,9 +1699,9 @@ class ToolManager(tk.Tk):
         self.varErrorModifyC = tk.StringVar()
         
         # List of modifyable parameters
-        paramlist = ['Gain', 'Read noise', 'Sat. cap.', 'Black level', 'White level', 'C.QE',
+        paramlist = ['Gain', 'Read noise', 'Sat. cap.', 'Black level', 'White level', 'QE',
                      'Pixel size']
-        self.isolist = self.currentCValues[11].split('-') if self.isDSLR else ['0'] # List of C.ISO values
+        self.isolist = self.currentCValues[11].split('-') if self.isDSLR else ['0'] # List of ISO values
         self.gainlist = self.currentCValues[2].split('-')                          # List of gain values
         self.rnlist = self.currentCValues[3].split('-')     # List of read noise values
         self.satcaplist = self.currentCValues[4].split('-') # List of saturation capacity values
@@ -1722,7 +1723,7 @@ class ToolManager(tk.Tk):
         optionParam = ttk.OptionMenu(frameParam, self.varCParam, None, *paramlist,
                                      command=self.updateCamParam)
                                      
-        self.labelISO = ttk.Label(frameParam, text='C.ISO:', anchor='center', width=11)
+        self.labelISO = ttk.Label(frameParam, text='ISO:', anchor='center', width=11)
         self.optionISO = ttk.OptionMenu(frameParam, self.varISO, None, *self.isolist,
                                         command=self.updateParamISO)
         
@@ -1730,7 +1731,7 @@ class ToolManager(tk.Tk):
         self.optionGain = ttk.OptionMenu(frameParam, self.varGain, None, *self.gainlist,
                                          command=self.updateParamGain)
         
-        self.labelRN = ttk.Label(frameParam, text='C.RN:', anchor='center', width=11)
+        self.labelRN = ttk.Label(frameParam, text='RN:', anchor='center', width=11)
         self.optionRN = ttk.OptionMenu(frameParam, self.varRN, None, *self.rnlist,
                                        command=self.updateParamRN)
         
@@ -1851,7 +1852,7 @@ class ToolManager(tk.Tk):
             self.varCurrentCParamVal.set('Current value: ' + self.wllist[0].split('*')[0] + ' ADU' \
                                          + (' (modified)' if '*' in self.wllist[0] else ''))
             
-        elif selected_param == 'C.QE':
+        elif selected_param == 'QE':
         
             if self.hasQE:
                 self.varCurrentCParamVal.set('Current value: ' + self.currentCValues[7].split('*')[0] \
@@ -1877,7 +1878,7 @@ class ToolManager(tk.Tk):
     
     def updateParamISO(self, selected_iso):
     
-        '''Update the label showing the current gain or read noise value when a new C.ISO is selected.'''
+        '''Update the label showing the current gain or read noise value when a new ISO is selected.'''
     
         # Store index of selected iso
         self.gain_idx = self.isolist.index(selected_iso)
@@ -2003,7 +2004,7 @@ class ToolManager(tk.Tk):
             C.WHITE_LEVEL[self.cnum][1][self.gain_idx] = 1
             self.varCurrentCParamVal.set('Current value: ' + newval + ' ADU (modified)')
             
-        elif self.varCParam.get() == 'C.QE':
+        elif self.varCParam.get() == 'QE':
         
             file.write('\n%s,%s,%s' % (','.join(self.currentCValues[:7]),
                                        newval + '*',
@@ -2278,7 +2279,7 @@ class ToolManager(tk.Tk):
             simframe.varSubs.set(1)
             
             simframe.dataCalculated = False # Previously calculated data is no longer valid
-            simframe.updateSensorLabels() # Update sensor info labels in case the C.ISO has changed
+            simframe.updateSensorLabels() # Update sensor info labels in case the ISO has changed
             simframe.emptyInfoLabels() # Clear other info labels
             calframe.varMessageLabel.set('Data transferred to Image Simulator.' \
                                          if calframe.varUseDark.get() \
@@ -2327,7 +2328,7 @@ class ToolManager(tk.Tk):
             
             simframe.varSubs.set(1)
             
-            simframe.updateSensorLabels() # Update sensor info labels in case the C.ISO has changed
+            simframe.updateSensorLabels() # Update sensor info labels in case the ISO has changed
             simframe.emptyInfoLabels() # Clear other info labels
             plotframe.varMessageLabel.set('Input transferred to Image Simulator.')
             plotframe.labelMessage.configure(foreground='navy')
@@ -2519,7 +2520,7 @@ class ToolManager(tk.Tk):
         if not self.hasQE:
             self.lumSignalType.set(0)
             self.currentFrame().varMessageLabel\
-                                .set('Camera doesn\'t have C.QE data. Cannot estimate luminance.')
+                                .set('Camera doesn\'t have QE data. Cannot estimate luminance.')
             self.currentFrame().labelMessage.configure(foreground='crimson')
             return None
             
