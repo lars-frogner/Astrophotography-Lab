@@ -65,6 +65,7 @@ class FOVCalculator(ttk.Frame):
         self.obRA = []
         self.obDec = []
         self.obMag = []
+        self.obSB = []
         self.obType = []
         self.imCred = []
         
@@ -78,8 +79,9 @@ class FOVCalculator(ttk.Frame):
             self.obRA.append([float(line[3]), float(line[4])])
             self.obDec.append([float(line[5]), float(line[6])])
             self.obMag.append(line[7])
-            self.obType.append(line[8])
-            self.imCred.append(','.join(line[9:]))
+            self.obSB.append(line[8])
+            self.obType.append(line[9])
+            self.imCred.append(','.join(line[10:]))
         
         all = range(len(self.obDes))
 
@@ -137,6 +139,7 @@ class FOVCalculator(ttk.Frame):
         self.varName = tk.StringVar()
         self.varType = tk.StringVar()
         self.varMag = tk.StringVar()
+        self.varSB = tk.StringVar()
         self.varRADec = tk.StringVar()
         self.varAzAlt = tk.StringVar()
         self.varIllum = tk.StringVar()
@@ -319,13 +322,16 @@ class FOVCalculator(ttk.Frame):
         labelMag1 = ttk.Label(frameInfo, text='App. mag.: ')
         labelMag2 = ttk.Label(frameInfo, textvariable=self.varMag)
         
+        self.labelSB1 = ttk.Label(frameInfo, text='Surf. br.: ')
+        self.labelSB2 = ttk.Label(frameInfo, textvariable=self.varSB)
+        
         labelRADec1 = ttk.Label(frameInfo, text='RA | Dec: ')
         labelRADec2 = ttk.Label(frameInfo, textvariable=self.varRADec)
         
         labelAzAlt1 = ttk.Label(frameInfo, text='Az | Alt: ')
         labelAzAlt2 = ttk.Label(frameInfo, textvariable=self.varAzAlt)
         
-        self.labelIllum1 = ttk.Label(frameInfo, text='Illumination: ')
+        self.labelIllum1 = ttk.Label(frameInfo, text='Illum.: ')
         self.labelIllum2 = ttk.Label(frameInfo, textvariable=self.varIllum)
         
         frameInfo.pack(side='top', pady=(10*C.scsy, 5*C.scsy), fill='x')
@@ -339,11 +345,11 @@ class FOVCalculator(ttk.Frame):
         labelMag1.grid(row=2, column=0, sticky='W')
         labelMag2.grid(row=2, column=1)
         
-        labelRADec1.grid(row=3, column=0, sticky='W')
-        labelRADec2.grid(row=3, column=1)
+        labelRADec1.grid(row=4, column=0, sticky='W')
+        labelRADec2.grid(row=4, column=1)
         
-        labelAzAlt1.grid(row=4, column=0, sticky='W')
-        labelAzAlt2.grid(row=4, column=1)
+        labelAzAlt1.grid(row=5, column=0, sticky='W')
+        labelAzAlt2.grid(row=5, column=1)
         
         self.buttonPlot = ttk.Button(frameLeft, text='Plot altitude', command=self.plotAlt)
         self.buttonPlot.pack(side='top', pady=(10*C.scsy, 10*C.scsy), expand=True)
@@ -487,6 +493,20 @@ class FOVCalculator(ttk.Frame):
                                                                 self.obDec[self.obj_idx][0], 
                                                                 round(self.obDec[self.obj_idx][1])))
             im_ang_w = self.imScale[self.obj_idx]*im_pix_w
+
+            if self.obj_idx in (self.types['Nebula'] + self.types['Galaxy']):
+
+                self.labelSB1.grid(row=3, column=0, sticky='W')
+                self.labelSB2.grid(row=3, column=1)
+                self.varSB.set('%s' % (self.obSB[self.obj_idx]))
+
+            else:
+
+                self.labelSB1.grid_forget()
+                self.labelSB2.grid_forget()
+
+            self.labelIllum1.grid_forget()
+            self.labelIllum2.grid_forget()
         
         else:
         
@@ -499,12 +519,15 @@ class FOVCalculator(ttk.Frame):
             im_ang_w = size*2.05 if self.obName[self.obj_idx] == 'Saturn' else size
             
             if illum:
-                self.labelIllum1.grid(row=5, column=0, sticky='W')
-                self.labelIllum2.grid(row=5, column=1)
+                self.labelIllum1.grid(row=6, column=0, sticky='W')
+                self.labelIllum2.grid(row=6, column=1)
                 self.varIllum.set('%.1f%%' % illum)
             else:
                 self.labelIllum1.grid_forget()
                 self.labelIllum2.grid_forget()
+
+            self.labelSB1.grid_forget()
+            self.labelSB2.grid_forget()
 
             self.canvasView.configure(bg='#%02x%02x%02x' % (0, 0, 0))
         
