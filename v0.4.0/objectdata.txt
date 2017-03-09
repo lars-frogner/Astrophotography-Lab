@@ -1,0 +1,122 @@
+Group designation,Name,Image scale (arcsec/pixel),R.A. hours,R.A. minutes,Dec degrees,Dec arcminutes,Apparent visual magnitude,Surface brightness [mag/arcsec^2],Type,Image credit
+M1, (Crab Nebula),0.42767,05,34.5,+22,01,8.4,12.13,Supernova Remnant,Image credit: NASA, ESA, J. Hester and A. Loll (Arizona State University)
+M2,,1.0217,21,33.5,-00,49,6.5,,Globular Cluster,Image credit: Doug Williams, REU Program/NOAO/AURA/NSF
+M3,,1.6305,13,42.2,+28,23,6.2,,Globular Cluster,Image credit: Adam Block/Mount Lemmon SkyCenter/University of Arizona
+M4,,1.9881,16,23.6,-26,32,5.6,,Globular Cluster,Image credit: ESO
+M5,,1.3376,15,18.6,+02,05,5.6,,Globular Cluster,Image credit: Adam Block, Mt. Lemmon SkyCenter, University of Arizona
+M6, (Butterfly Cluster),5.2396,17,40.1,-32,13,4.2,,Open Cluster,Image credit: Ole Nielsen
+M7, (Ptolemy Cluster),2.1448,17,53.9,-34,49,4.1,,Open Cluster,Image credit: ESO
+M8, (Lagoon Nebula),3.4871,18,03.8,-24,23,6.0,15.41,Starforming Nebula,Image credit: ESO/VPHAS+ team
+M9,,6.9688,17,19.2,-18,31,7.7,,Globular Cluster,Image credit: NASA, ESA
+M10,,2.0734,16,57.1,-04,06,6.6,,Globular Cluster,Image credit: Hunter Wilson
+M11, (Wild Duck Cluster),1.7765,18,51.1,-06,16,6.3,,Open Cluster,Image credit: ESO
+M12,,1.8125,16,47.2,-01,57,6.7,,Globular Cluster,Image credit: Wade Van Arsdale (Central Arkansas Astronomical Society)
+M13, (Hercules Globular Cluster),3.419,16,41.7,+36,28,5.8,,Globular Cluster,Image credit: Rainer Zmaritsch
+M14,,1.5121,17,37.6,-03,15,7.6,,Globular Cluster,Image credit: Hunter Wilson
+M15,,1.6587,21,30.0,+12,10,6.2,,Globular Cluster,Image credit: Hunter Wilson
+M16, (Eagle Nebula),2.6481,18,18.8,-13,47,6.4,,Open Cluster,Image credit: T.A.Rector (NRAO/AUI/NSF and NOAO/AURA/NSF) and B.A.Wolpa (NOAO/AURA/NSF)
+M17, (Omega Nebula),3.5639,18,20.8,-16,11,7.0,14.15,Starforming Nebula,Image credit: ESO/INAF-VST/OmegaCAM
+M18,,1.6432,18,19.9,-17,08,7.5,,Open Cluster,Image credit: Hillary Mathis, REU program/NOAO/AURA/NSF
+M19,,1.6544,17,02.6,-26,16,6.8,,Globular Cluster,Image credit: Hunter Wilson
+M20, (Trifid Nebula),3.0786,18,02.6,-23,02,9.0,13.45,Starforming Nebula,Image credit: Hunter Wilson
+M21,,2.1859,18,04.6,-22,30,6.5,,Open Cluster,Image credit: REU program/NOAO/AURA/NSF
+M22, (Sagittarius Cluster),3.1108,18,36.4,-23,54,5.1,,Globular Cluster,Image credit: Hunter Wilson
+M23,,3.4505,17,56.8,-19,01,6.9,,Open Cluster,Image credit: Sergio Equivar of Buenos Aires Skies
+M24, (Sagittarius Star Cloud),9.5969,18,16.9,-18,29,4.6,,Milky Way Patch,Image credit: Tomas Mazon
+M25,,3.5666,18,31.6,-19,15,4.6,,Open Cluster,Image credit: Sergio Eguivar of Buenos Aires Skies
+M26,,2.3498,18,45.2,-09,24,8.0,,Open Cluster,Image credit: Jim Thommes
+M27, (Dumbbell Nebula),2.5234,19,59.6,+22,43,7.4,13.85,Planetary Nebula,Image credit: Charlemagne920
+M28,,0.6876,18,24.5,-24,52,6.8,,Globular Cluster,Image credit: AURA, NSF, NOAO
+M29, (Cooling Tower),3.5457,20,23.9,+38,32,7.1,,Open Cluster,Image credit: Jon K. Olson
+M30,,1.2197,21,40.4,-23,11,7.2,,Globular Cluster,Image credit: REU program, AURA, NSF, NOAO
+M31, (Andromeda Galaxy),9.4522,00,42.7,+41,16,3.4,14.59,Spiral Galaxy,Image credit: Adam Evans
+M32,,1.8997,00,42.7,+40,52,8.1,12.44,Elliptical Galaxy,Image credit: Bayfordbury Observatory
+M33, (Triangulum Galaxy),2.9699,01,33.9,+30,39,5.7,14.50,Spiral Galaxy,Image credit: Alexander Meleg
+M34, (Spiral cluster),7.6784,02,42.0,+42,47,5.5,,Open Cluster,Image credit: Dick Miller
+M35,,2.8994,06,08.9,+24,20,5.3,,Open Cluster,Image credit: Jorge Garcia
+M36,,1.3634,05,36.1,+34,08,6.3,,Open Cluster,Image credit: NOAO/AURA/NSF
+M37,,5.4903,05,52.4,+32,33,6.2,,Open Cluster,Image credit: Ole Nielsen
+M38, (Starfish Cluster),3.0871,05,28.4,+35,50,7.4,,Open Cluster,Image credit: NOAO/AURA/NSF
+M39,,5.33,21,32.2,+48,26,4.6,,Open Cluster,Image credit: John (J.C.) Mirtle
+M40, (Winnecke 4),0.78375,12,22.4,+58,05,8.4,,Binary Star,Image credit: NOAO/AURA/NSF
+M41,,2.4664,06,46.0,-20,44,4.6,,Open Cluster,Image credit: Twin City Amateur Astronomers
+M42, (Orion Nebula),2.0069,05,35.4,-05,27,4.0,12.94,Starforming Nebula,Image credit: NASA, ESA, M. Robberto and the Hubble Space Telescope Orion Treasury Project Team
+M43, (De Mairan's Nebula),0.55288,05,35.6,-05,16,9.0,15.34,Starforming Nebula,Image credit: NASA, ESA, M. Robberto and the Hubble Space Telescope Orion Treasury Project Team
+M44, (Beehive Cluster),13.81,08,40.1,+19,59,3.7,,Open Cluster,Image credit: Mike Sherick
+M45, (Pleiades),4.9442,03,47.0,+24,07,1.6,,Open Cluster,Image credit: NASA, ESA, AURA/Caltech, Palomar Observatory
+M46,,4.1909,07,41.8,-14,49,6.0,,Open Cluster,Image credit: W. Garrett Grainger, Jr
+M47,,2.8974,07,36.6,-14,30,5.2,,Open Cluster,Image credit: Donald P. Waid
+M48,,3.429,08,13.8,-05,48,5.5,,Open Cluster,Image credit: Neil Fleming
+M49,,1.8119,12,29.8,+08,00,8.4,12.98,Elliptical Galaxy,Image credit: Ole Nielsen
+M50, (Heart-shaped Cluster),5.4186,07,03.2,-08,20,6.3,,Open Cluster,Image credit: Ole Nielsen
+M51, (Whirlpool Galaxy),1.5495,13,29.9,+47,12,8.4,13.10,Spiral Galaxy,Image credit: Adam Block/Mount Lemmon SkyCenter/University of Arizona
+M52,,2.0021,23,24.2,+61,35,7.3,,Open Cluster,Image credit: Two Micron All Sky Survey
+M53,,1.2639,13,12.9,+18,10,7.6,,Globular Cluster,Image credit: http://www.teacher.aedocenter.com/mysite-Me/Me-05.htm
+M54,,2.6693,18,55.1,-30,29,7.6,,Globular Cluster,Image credit: ESO
+M55,,2.4253,19,40.0,-30,58,6.3,,Globular Cluster,Image credit: Hillary Mathis, REU Program/NOAO/AURA/NSF
+M56,,1.7028,19,16.6,+30,11,8.3,,Globular Cluster,Image credit: Hunter Wilson
+M57, (Ring Nebula),0.1378,18,53.6,+33,02,8.8,10.83,Planetary Nebula,Image credit: The Hubble Heritage Team (AURA/STScI/NASA)
+M58,,0.5904,12,37.7,+11,49,9.7,13.30,Spiral Galaxy,Image credit: Adam Block/Mount Lemmon SkyCenter/University of Arizona
+M59,,0.8115,12,42.0,+11,39,9.6,13.18,Elliptical Galaxy,Image credit: NOAO/AURA/NSF
+M60,,1.2854,12,43.7,+11,33,8.8,12.92,Elliptical Galaxy,Image credit: Adam Block/Mount Lemmon Sky Center/University of Arizona
+M61,,0.5041,12,21.9,+4,28,10.2,13.43,Spiral Galaxy,Image credit: Adam Block/NOAO/AURA/NSF
+M62,,2.8339,17,1.2,-30,7,7.4,,Globular Cluster,Image credit: Hewholooks at wikipedia.org
+M63, (Sunflower Galaxy),1.3506,13,15.8,+42,2,9.3,13.89,Spiral Galaxy,Image credit: Fryns at wikipedia.org
+M64, (Black Eye Galaxy),0.3672,12,56.7,+21,41,9.4,13.18,Spiral Galaxy,Image credit: Jyri Näränen and Brian Krog, Nordic Optical Telescope
+M65, (Leo Triplet),0.6668,11,18.9,+13,6,10.3,14.14,Spiral Galaxy,Image credit: Chuck Greenberg & Scott Tucker/Adam Block/AURA/NOAO/NSF
+M66, (Leo Triplet),0.4999,11,20.2,+12,60,8.9,13.54,Spiral Galaxy,Image credit: Jeff Hapeman/Adam Block/NOAO/AURA/NSF
+M67,,4.2495,8,51.3,+11,49,6.1,,Open Cluster,Image credit: Wikisky
+M68,,2.2419,12,39.5,-26,45,9.7,,Globular Cluster,Image credit: Antilhue at Astrosurf
+M69,,0.33555,18,31.4,-32,21,8.3,,Globular Cluster,Image credit: REU program/NOAO/AURA/NSF
+M70,,2.1773,18,43.2,-32,18,9.1,,Globular Cluster,Image credit: Jim Mazur
+M71,,2.1822,19,53.8,+18,47,6.1,,Globular Cluster,Image credit: Bernhard Hubl
+M72,,0.478,20,53.5,-12,32,9.4,,Globular Cluster,Image credit: REU program/NOAO/AURA/NSF
+M73,,1.532,20,58.9,-12,38,9.0,,Asterism,Image credit: REU program/NOAO/AURA/NSF
+M74,,1.7219,1,36.7,+15,47,10.0,14.08,Spiral Galaxy,Image credit: ROSA observatories
+M75,,0.5447,20,6.1,-21,55,9.2,,Globular Cluster,Image credit: NOAO/AURA/NSF
+M76, (Little Dumbbell Nebula),0.86229,1,42.4,+51,35,10.1,15.24,Planetary Nebula,Image credit: Vanderbei at wikipedia.org
+M77, (Cetus A),1.5281,62,42.7,-0,1,9.0,12.83,Spiral Galaxy,Image credit: Ken Crawford
+M78,,4.2046,5,46.8,+0,1,8.3,12.35,Reflection Nebula,Image credit: Thomas V. Davis
+M79,,1.1341,5,24.2,-24,31,8.6,,Globular Cluster,Image credit: Circumferenceofaturtle at wikipedia.org
+M80,,0.9203,16,17.0,-22,59,7.9,,Globular Cluster,Image credit: Misti Mountain Observatory
+M81, (Bode's Galaxy),1.9375,09,55.6,69,3.9,6.9,13.79,Spiral Galaxy,Image credit: Ken Crawford
+M82, (Cigar Galaxy),0.4801,9,55.9,+69,41,8.4,13.48,Starburst Galaxy,Image credit: NASA, ESA, and The Hubble Heritage Team (STScI/AURA)
+M83, (Southern Pinwheel Galaxy),1.9044,13,37.0,-29,52,7.5,12.68,Spiral Galaxy,Image credit: Fred Calvert / Cold Spring Observatory
+M84, (Markarian's Chain),1.0131,12,25.1,+12,53,10.1,12.63,Lenticular Galaxy,Image credit: Courtney Seligman
+M85,,0.76161,12,25.4,+18,11,10.0,13.29,Lenticular Galaxy,Image credit: NOAO/AURA/NSF
+M86,,3.0401,12,26.2,+12,57,9.8,13.38,Lenticular Galaxy,Image credit: Rick Beno
+M87, (Virgo A),5.6294,12,30.8,+12,23,9.6,12.72,Elliptical Galaxy,Image credit: Chris Mihos (Case Western Reserve University)/ESO
+M88,,0.7565,12,32.0,+14,25,10.4,13.53,Spiral Galaxy,Image credit: Adam Block/Mount Lemmon SkyCenter/University of Arizona
+M89,,0.89438,12,35.7,+12,33,10.7,12.75,Elliptical Galaxy,Image credit: Friendlystar at wikipedia.org
+M90,,1.0584,12,36.8,+13,10,10.3,14.23,Spiral Galaxy,Image credit: Wikisky
+M91,,0.68066,12,35.4,+14,30,11.0,13.70,Spiral Galaxy,Image credit: NOAO/AURA/NSF
+M92,,1.39,17,17.1,+43,8,6.3,,Globular Cluster,Image credit: Adam Block/Mount Lemmon SkyCenter/University of Arizona
+M93,,2.1296,7,44.6,-23,52,6.0,,Open Cluster,Image credit: Wikisky
+M94,,1.0634,12,50.9,+41,7,9.0,13.24,Spiral Galaxy,Image credit: R Jay Gabany (Blackbird Obs.)
+M95,,0.5648,10,44.0,+11,42,11.4,13.88,Spiral Galaxy,Image credit: Jschulman555 at wikipedia.org
+M96,,0.39893,10,46.8,+11,49,10.1,13.29,Spiral Galaxy,Image credit: ESO/Oleg Maliy
+M97, (Owl Nebula),1.0327,11,14.8,+55,1,9.9,13.56,Planetary Nebula,Image credit: Stargazer Observatory
+M98,,0.3416,12,13.8,+14,54,11.0,14.83,Spiral Galaxy,Image credit: ESO / Jbarring
+M99, (Pinwheel Nebula),0.75426,12,18.8,+14,25,10.4,13.30,Spiral Galaxy,Image credit: Adam Block/Mount Lemmon SkyCenter/University of Arizona
+M100, (Blowdryer Galaxy),0.95811,12,22.9,+15,49,10.1,13.43,Spiral Galaxy,Image credit: Jschulman555 at wikipedia.org
+M101, (Pinwheel Galaxy),1.7408,14,3.2,+54,21,7.9,14.69,Spiral Galaxy,Image credit: Ken Crawford
+M102, (Spindle Galaxy),0.33906,15,6.5,+55,46,10.7,13.42,Lenticular Galaxy,Image credit: NOAO/AURA/NSF
+M103,,2.1049,1,33.2,60,42,7.4,,Open Cluster,Image credit: Wikisky
+M104, (Sombrero Galaxy),0.5771,12,40.0,-11,37,9.0,12.88,Spiral Galaxy,Image credit: NASA/ESA and The Hubble Heritage Team (STScI/AURA)
+M105,,1.0453,10,47.8,+12,35,10.2,12.40,Elliptical Galaxy,Image credit: Wikisky
+M106,,2.9773,12,19.0,+47,18,9.1,14.44,Spiral Galaxy,Image credit: Ken Crawford (Rancho Del Sol Observatory)
+M107,,1.6271,16,32.5,-13,3,8.9,,Globular Cluster,Image credit: ESO/ESO Imaging Survey
+M108, (Surfboard Galaxy),0.5149,11,11.5,+55,40,10.7,14.53,Spiral Galaxy,Image credit: Ken Crawford at Rancho Del Sol Observatory
+M109, (Vacuum Cleaner Galaxy),1.4445,11,57.6,+53,22,10.6,14.04,Spiral Galaxy,Image credit: Bob Franke of Focal Pointe Observatory
+M110,,1.1586,0,40.4,+41,41,9.0,14.04,Elliptical Galaxy,Image credit: NOAO/AURA/NSF
+Sun,,0,0,0,0,0,0,,Star,Image credit: NASA Goddard Space Flight Center, Solar Dynamics Observatory
+Mercury,,0,0,0,0,0,0,,Terrestrial Planet,Image credit: NASA-APL
+Venus,,0,0,0,0,0,0,,Terrestrial Planet,Image credit: NASA/Goddard Space Flight Center Scientific Visualization Studio
+Moon,,0,0,0,0,0,0,,Moon,Image credit: Lars Frogner
+Mars,,0,0,0,0,0,0,,Terrestrial Planet,Image credit: NASA, ESA, and The Hubble Heritage Team (STScI/AURA)
+Ceres,,0,0,0,0,0,0,,Dwarf Planet,Image credit: NASA/JPL-Caltech/UCLA/MPS/DLR/IDA
+Jupiter,,0,0,0,0,0,0,,Gas Giant,Image credit: NASA, ESA, and A. Simon (Goddard Space Flight Center)
+Saturn,,0,0,0,0,0,0,,Gas Giant,Image credit: NASA, ESA, J. Clarke (Boston University), and Z. Levay (STScI)
+Uranus,,0,0,0,0,0,0,,Gas Giant,Image credit: NASA/JPL-Caltech
+Neptune,,0,0,0,0,0,0,,Gas Giant,Image credit: NASA
+Pluto,,0,0,0,0,0,0,,Dwarf Planet,Image credit: NASA / Johns Hopkins University Applied Physics Laboratory / Southwest Research Institute
