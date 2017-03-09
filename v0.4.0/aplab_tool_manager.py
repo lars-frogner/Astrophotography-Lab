@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import Tkinter as tk
-import ttk
-import tkFont
+import tkinter as tk
+import tkinter.ttk as ttk
+import tkinter.font as tkfont
 import webbrowser
 import numpy as np
 import aplab_common as apc
@@ -59,10 +59,10 @@ class ToolManager(tk.Tk):
         self.large_fs = fs + 2
 
         # Define fonts
-        self.small_font = tkFont.Font(root=self, family=C.gfont, size=self.small_fs)
-        self.smallbold_font = tkFont.Font(root=self, family=C.gfont, size=self.small_fs, weight='bold')
-        self.medium_font = tkFont.Font(root=self, family=C.gfont, size=self.medium_fs, weight='bold')
-        self.large_font = tkFont.Font(root=self, family=C.gfont, size=self.large_fs, weight='bold')
+        self.small_font = tkfont.Font(root=self, family=C.gfont, size=self.small_fs)
+        self.smallbold_font = tkfont.Font(root=self, family=C.gfont, size=self.small_fs, weight='bold')
+        self.medium_font = tkfont.Font(root=self, family=C.gfont, size=self.medium_fs, weight='bold')
+        self.large_font = tkfont.Font(root=self, family=C.gfont, size=self.large_fs, weight='bold')
         
         # Configure widget styles
         style = ttk.Style(None)
@@ -338,7 +338,7 @@ class ToolManager(tk.Tk):
     
     def showUserGuide(self):
     
-        webbrowser.open('http://oaltais.github.io/aplab/userguide.html')
+        webbrowser.open('http://lars-frogner.github.io/Astrophotography-Lab/userguide.html')
     
     def enterPlotFrame(self):
     
@@ -581,7 +581,7 @@ class ToolManager(tk.Tk):
             
             frame = self.frames[ImageCalculator]
                 
-            file.write('%s,%s,%d,%d,%g,%d,%g,%g,%g,%g,%d,%.3f,%.3f,%.3f,0\n' % (C.CNAME[self.cnum],
+            file.write('{},{},{:d},{:d},{:g},{:d},{:g},{:g},{:g},{:g},{:d},{:.3f},{:.3f},{:.3f},0\n'.format(C.CNAME[self.cnum],
                                                                               keywords,
                                                                               frame.gain_idx,
                                                                               frame.rn_idx,
@@ -933,15 +933,15 @@ class ToolManager(tk.Tk):
             
             for i in range(linenum):
             
-                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
-                               % tuple([names[i]] + [keywords[i]] + datafull[i]))
+                    file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
+                               .format(*tuple([names[i]] + [keywords[i]] + datafull[i])))
                 
             if linenum < len(keywords):
                 
                 for i in range(linenum+1, len(keywords)):
                 
-                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
-                               % tuple([names[i]] + [keywords[i]] + datafull[i]))
+                    file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
+                               .format(*tuple([names[i]] + [keywords[i]] + datafull[i])))
                       
                         
             file.close()
@@ -974,19 +974,19 @@ class ToolManager(tk.Tk):
             
             for i in range(linenum):
                 
-                file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
-                           % tuple([names[i]] + [keywords[i]] + datafull[i]))
+                file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
+                           .format(*tuple([names[i]] + [keywords[i]] + datafull[i])))
 
-            file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%.3f\n' \
-                       % tuple([names[linenum]] + [keywords[linenum]] + datafull[linenum][:-1] \
-                               + [self.convSig(calframe.tf, True) if self.hasQE else calframe.tf]))
+            file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{:.3f}\n' \
+                       .format(*tuple([names[linenum]] + [keywords[linenum]] + datafull[linenum][:-1] \
+                               + [self.convSig(calframe.tf, True) if self.hasQE else calframe.tf])))
             
             if linenum < len(keywords):
                 
                 for i in range(linenum+1, len(keywords)):
 
-                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
-                               % tuple([names[i]] + [keywords[i]] + datafull[i]))
+                    file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
+                               .format(*tuple([names[i]] + [keywords[i]] + datafull[i])))
                          
             file.close()
             
@@ -1037,18 +1037,18 @@ class ToolManager(tk.Tk):
             
             for i in range(linenum):
                 
-                file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
-                           % tuple([names[i]] + [keywords[i]] + datafull[i]))
+                file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
+                           .format(tuple([names[i]] + [keywords[i]] + datafull[i])))
 
-            file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
-                       % tuple([names[linenum]] + [self.varNewname.get()] + datafull[linenum]))
+            file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
+                       .format(tuple([names[linenum]] + [self.varNewname.get()] + datafull[linenum])))
             
             if linenum < len(keywords):
                 
                 for i in range(linenum+1, len(keywords)):
 
-                    file.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
-                               % tuple([names[i]] + [keywords[i]] + datafull[i]))
+                    file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
+                               .format(tuple([names[i]] + [keywords[i]] + datafull[i])))
                          
             file.close()
             
@@ -1290,7 +1290,7 @@ class ToolManager(tk.Tk):
             
             # Create new line in cameradata.txt
             file.write('\n' + '\n'.join(lines[1:-1]))
-            file.write('\n%s,%s,0,0,0,0,0,NA,%g*,%d*,%d*' % (name, type, ps, rx, ry))
+            file.write('\n{},{},0,0,0,0,0,NA,{:g}*,{:d}*,{:d}*'.format(name, type, ps, rx, ry))
             if type == 'DSLR': file.write(',0')
             file.write('\n' + lines[-1])
             file.close()
@@ -1524,7 +1524,7 @@ class ToolManager(tk.Tk):
             
             # Create new line in telescopedata.txt
             file.write('\n' + '\n'.join(lines[1:-1]))
-            file.write('\n%s,%g*,%g*' % (name, fl, aperture))
+            file.write('\n{},{:g}*,{:g}*'.format(name, fl, aperture))
             file.write('\n' + lines[-1])
             file.close()
             
@@ -1591,7 +1591,7 @@ class ToolManager(tk.Tk):
                 varMessageLabel.set('Invalid input.')
                 return None
                 
-            self.varFLMod.set('Focal length modifier: %gx' % FLModVal)
+            self.varFLMod.set('Focal length modifier: {:g}x'.format(FLModVal))
             self.FLModVal = FLModVal
             
             self.currentFrame().varMessageLabel.set('Focal length modifier changed.')
@@ -1967,7 +1967,7 @@ class ToolManager(tk.Tk):
         if self.varCParam.get() == 'Gain':
         
             self.gainlist[self.gain_idx] = newval + '*'
-            file.write('\n%s,%s,%s' % (','.join(self.currentCValues[:2]),
+            file.write('\n{},{},{}'.format(','.join(self.currentCValues[:2]),
                                        '-'.join(self.gainlist),
                                        ','.join(self.currentCValues[3:])))
             C.GAIN[self.cnum][0][self.gain_idx] = float(newval)
@@ -1977,7 +1977,7 @@ class ToolManager(tk.Tk):
         elif self.varCParam.get() == 'Read noise':
         
             self.rnlist[self.rn_idx] = newval + '*'
-            file.write('\n%s,%s,%s' % (','.join(self.currentCValues[:3]),
+            file.write('\n{},{},{}'.format(','.join(self.currentCValues[:3]),
                                        '-'.join(self.rnlist),
                                        ','.join(self.currentCValues[4:])))
             C.RN[self.cnum][0][self.rn_idx] = float(newval)
@@ -1987,7 +1987,7 @@ class ToolManager(tk.Tk):
         elif self.varCParam.get() == 'Sat. cap.':
         
             self.satcaplist[self.gain_idx] = newval + '*'
-            file.write('\n%s,%s,%s' % (','.join(self.currentCValues[:4]),
+            file.write('\n{},{},{}'.format(','.join(self.currentCValues[:4]),
                                        '-'.join(self.satcaplist),
                                        ','.join(self.currentCValues[5:])))
             C.SAT_CAP[self.cnum][0][self.gain_idx] = int(newval)
@@ -1996,7 +1996,7 @@ class ToolManager(tk.Tk):
         
         elif self.varCParam.get() == 'Black level':
             self.bllist[self.gain_idx] = newval + '*'
-            file.write('\n%s,%s,%s' % (','.join(self.currentCValues[:5]),
+            file.write('\n{},{},{}'.format(','.join(self.currentCValues[:5]),
                                        '-'.join(self.bllist),
                                        ','.join(self.currentCValues[6:])))
             C.BLACK_LEVEL[self.cnum][0][self.gain_idx] = int(newval)
@@ -2006,7 +2006,7 @@ class ToolManager(tk.Tk):
         elif self.varCParam.get() == 'White level':
             
             self.wllist[self.gain_idx] = newval + '*'
-            file.write('\n%s,%s,%s' % (','.join(self.currentCValues[:6]),
+            file.write('\n{},{},{}'.format(','.join(self.currentCValues[:6]),
                                        '-'.join(self.wllist),
                                        ','.join(self.currentCValues[7:])))
             C.WHITE_LEVEL[self.cnum][0][self.gain_idx] = int(newval)
@@ -2015,7 +2015,7 @@ class ToolManager(tk.Tk):
             
         elif self.varCParam.get() == 'QE':
         
-            file.write('\n%s,%s,%s' % (','.join(self.currentCValues[:7]),
+            file.write('\n{},{},{}'.format(','.join(self.currentCValues[:7]),
                                        newval + '*',
                                        ','.join(self.currentCValues[8:])))
             C.QE[self.cnum][0] = float(newval)
@@ -2024,7 +2024,7 @@ class ToolManager(tk.Tk):
             
         elif self.varCParam.get() == 'Pixel size':
         
-            file.write('\n%s,%s,%s' % (','.join(self.currentCValues[:8]),
+            file.write('\n{},{},{}'.format(','.join(self.currentCValues[:8]),
                                        newval + '*',
                                        ','.join(self.currentCValues[9:])))
                 
@@ -2034,7 +2034,7 @@ class ToolManager(tk.Tk):
             
         elif self.varCParam.get() == 'Horizontal resolution':
         
-            file.write('\n%s,%d*,%s' % (','.join(self.currentCValues[:9]),
+            file.write('\n{},{:d}*,{}'.format(','.join(self.currentCValues[:9]),
                                        float(newval),
                                        ','.join(self.currentCValues[10:])))
                 
@@ -2044,8 +2044,8 @@ class ToolManager(tk.Tk):
             
         elif self.varCParam.get() == 'Vertical resolution':
         
-            file.write('\n%s,%d*' % (','.join(self.currentCValues[:10]), float(newval)))
-            if self.isDSLR: file.write(',%s' % (self.currentCValues[11]))
+            file.write('\n{},{:d}*'.format(','.join(self.currentCValues[:10]), float(newval)))
+            if self.isDSLR: file.write(',{}'.format(self.currentCValues[11]))
                 
             C.RES_Y[self.cnum][0] = int(float(newval))
             C.RES_Y[self.cnum][1] = 1
@@ -2213,7 +2213,7 @@ class ToolManager(tk.Tk):
             
         if self.varTParam.get() == 'Focal length':
         
-            file.write('\n%s,%s,%s' % (self.currentTValues[0], newval + '*', self.currentTValues[2]))
+            file.write('\n{},{},{}'.format(self.currentTValues[0], newval + '*', self.currentTValues[2]))
                 
             C.FOCAL_LENGTH[self.tnum][0] = float(newval)
             C.FOCAL_LENGTH[self.tnum][1] = 1
@@ -2221,7 +2221,7 @@ class ToolManager(tk.Tk):
         
         elif self.varTParam.get() == 'Aperture':
         
-            file.write('\n%s,%s,%s' % (self.currentTValues[0], self.currentTValues[1], newval + '*'))
+            file.write('\n{},{},{}'.format(self.currentTValues[0], self.currentTValues[1], newval + '*'))
                 
             C.APERTURE[self.tnum][0] = float(newval)
             C.APERTURE[self.tnum][1] = 1
@@ -2266,10 +2266,10 @@ class ToolManager(tk.Tk):
                 return None
         
             if calframe.varTransfLim.get():
-                simframe.varLF.set('%g' % (self.convSig(calframe.tf, True) if self.lumSignalType.get() \
+                simframe.varLF.set('{:g}'.format(self.convSig(calframe.tf, True) if self.lumSignalType.get() \
                                    else calframe.tf))
                 calframe.varMessageLabel.set('Target flux transferred as limit flux to Image Simulator.')
-                calframe.labelMessage.configure(foreground='crimson')
+                calframe.labelMessage.configure(foreground='navy')
                 return None
         
             # Set values
@@ -2278,12 +2278,12 @@ class ToolManager(tk.Tk):
             simframe.varISO.set(C.ISO[self.cnum][calframe.gain_idx])
             simframe.varGain.set(C.GAIN[self.cnum][0][calframe.gain_idx])
             simframe.varRN.set(C.RN[self.cnum][0][calframe.rn_idx])
-            simframe.varExp.set('%g' % calframe.exposure)
-            simframe.varDF.set('%g' % calframe.df)
-            simframe.varSF.set('%g' % (self.convSig(calframe.sf, True) if self.lumSignalType.get() \
+            simframe.varExp.set('{:g}'.format(calframe.exposure))
+            simframe.varDF.set('{:g}'.format(calframe.df))
+            simframe.varSF.set('{:g}'.format(self.convSig(calframe.sf, True) if self.lumSignalType.get() \
                                                                     else calframe.sf))
             if calframe.tf != 0:
-                simframe.varTF.set('%g' % (self.convSig(calframe.tf, True) if self.lumSignalType.get() \
+                simframe.varTF.set('{:g}'.format(self.convSig(calframe.tf, True) if self.lumSignalType.get() \
                                                                               else calframe.tf))
             simframe.varSubs.set(1)
             
@@ -2311,28 +2311,28 @@ class ToolManager(tk.Tk):
             
             
             try:
-                simframe.varExp.set('%g' % plotframe.varExp.get())
-            except ValueError:
+                simframe.varExp.set('{:g}'.format(plotframe.varExp.get()))
+            except tk.TclError:
                 pass
         
             try:
-                simframe.varDF.set('%g' % plotframe.varDF.get())
-            except ValueError:
+                simframe.varDF.set('{:g}'.format(plotframe.varDF.get()))
+            except tk.TclError:
                 pass
         
             try:
-                simframe.varSF.set('%g' % plotframe.varSF.get())
-            except ValueError:
+                simframe.varSF.set('{:g}'.format(plotframe.varSF.get()))
+            except tk.TclError:
                 pass
             
             try:
-                simframe.varTF.set('%g' % plotframe.varTF.get())
-            except ValueError:
+                simframe.varTF.set('{:g}'.format(plotframe.varTF.get()))
+            except tk.TclError:
                 pass
             
             try:
-                simframe.varLF.set('%g' % plotframe.varLF.get())
-            except ValueError:
+                simframe.varLF.set('{:g}'.format(plotframe.varLF.get()))
+            except tk.TclError:
                 pass
             
             simframe.varSubs.set(1)
@@ -2360,7 +2360,7 @@ class ToolManager(tk.Tk):
                 return None
         
             if calframe.varTransfLim.get() and self.isDSLR:
-                plotframe.varLF.set('%g' % (self.convSig(calframe.tf, True) if self.lumSignalType.get() \
+                plotframe.varLF.set('{:g}'.format(self.convSig(calframe.tf, True) if self.lumSignalType.get() \
                                    else calframe.tf))
                 calframe.varMessageLabel.set('Target flux transferred as limit flux to Plotting Tool.')
                 calframe.labelMessage.configure(foreground='navy')
@@ -2372,12 +2372,12 @@ class ToolManager(tk.Tk):
             plotframe.varISO.set(C.ISO[self.cnum][calframe.gain_idx])
             plotframe.varGain.set(C.GAIN[self.cnum][0][calframe.gain_idx])
             plotframe.varRN.set(C.RN[self.cnum][0][calframe.rn_idx])
-            plotframe.varExp.set('%g' % calframe.exposure)
-            plotframe.varDF.set('%g' % calframe.df)
-            plotframe.varSF.set('%g' % (self.convSig(calframe.sf, True) if self.lumSignalType.get() \
+            plotframe.varExp.set('{:g}'.format(calframe.exposure))
+            plotframe.varDF.set('{:g}'.format(calframe.df))
+            plotframe.varSF.set('{:g}'.format(self.convSig(calframe.sf, True) if self.lumSignalType.get() \
                                                                      else calframe.sf))
             plotframe.varTF.set(0 if calframe.tf == 0 \
-                                else ('%g' % (self.convSig(calframe.tf, True) if self.lumSignalType.get() \
+                                else ('{:g}'.format(self.convSig(calframe.tf, True) if self.lumSignalType.get() \
                                                                           else calframe.tf)))
             
             plotframe.ax.cla() # Clear plot
@@ -2401,28 +2401,28 @@ class ToolManager(tk.Tk):
             plotframe.varRN.set(C.RN[self.cnum][0][simframe.rn_idx])
             
             try:
-                plotframe.varExp.set('%g' % simframe.varExp.get())
-            except ValueError:
+                plotframe.varExp.set('{:g}'.format(simframe.varExp.get()))
+            except tk.TclError:
                 pass
         
             try:
-                plotframe.varDF.set('%g' % simframe.varDF.get())
-            except ValueError:
+                plotframe.varDF.set('{:g}'.format(simframe.varDF.get()))
+            except tk.TclError:
                 pass
         
             try:
-                plotframe.varSF.set('%g' % simframe.varSF.get())
-            except ValueError:
+                plotframe.varSF.set('{:g}'.format(simframe.varSF.get()))
+            except tk.TclError:
                 pass
             
             try:
-                plotframe.varTF.set('%g' % simframe.varTF.get())
-            except ValueError:
+                plotframe.varTF.set('{:g}'.format(simframe.varTF.get()))
+            except tk.TclError:
                 pass
             
             try:
-                plotframe.varLF.set('%g' % simframe.varLF.get())
-            except ValueError:
+                plotframe.varLF.set('{:g}'.format(simframe.varLF.get()))
+            except tk.TclError:
                 pass
             
             plotframe.ax.cla() # Clear plot
@@ -2471,45 +2471,45 @@ class ToolManager(tk.Tk):
         
         # Change displayed flux values if they have been calculated
         if calframe.dataCalculated:
-            calframe.varSFInfo.set('%.3g' % (calframe.sf)) 
-            calframe.varTFInfo.set('-' if calframe.tf == 0 else '%.3g' % (calframe.tf))
+            calframe.varSFInfo.set('{:.3g}'.format(calframe.sf)) 
+            calframe.varTFInfo.set('-' if calframe.tf == 0 else '{:.3g}'.format(calframe.tf))
             
             calframe.labelSF2.configure(background=C.DEFAULT_BG, foreground='black')
             calframe.labelTF2.configure(background=C.DEFAULT_BG, foreground='black')
             
         try:
             sig = simframe.varSF.get()
-            simframe.varSF.set('%.3g' % self.convSig(sig, False))
+            simframe.varSF.set('{:.3g}'.format(self.convSig(sig, False)))
         except:
             pass
                 
         try:
             sig = simframe.varTF.get()
-            simframe.varTF.set('%.3g' % self.convSig(sig, False))
+            simframe.varTF.set('{:.3g}'.format(self.convSig(sig, False)))
         except:
             pass
                 
         try:
             sig = simframe.varLF.get()
-            simframe.varLF.set('%.3g' % self.convSig(sig, False))
+            simframe.varLF.set('{:.3g}'.format(self.convSig(sig, False)))
         except:
             pass
                
         try:
             sig = plotframe.varSF.get()
-            plotframe.varSF.set('%.3g' % self.convSig(sig, False))
+            plotframe.varSF.set('{:.3g}'.format(self.convSig(sig, False)))
         except:
             pass
                 
         try:
             sig = plotframe.varTF.get()
-            plotframe.varTF.set('%.3g' % self.convSig(sig, False))
+            plotframe.varTF.set('{:.3g}'.format(self.convSig(sig, False)))
         except:
             pass
                
         try:
             sig = plotframe.varLF.get()
-            plotframe.varLF.set('%.3g' % self.convSig(sig, False))
+            plotframe.varLF.set('{:.3g}'.format(self.convSig(sig, False)))
         except:
             pass
             
@@ -2568,7 +2568,7 @@ class ToolManager(tk.Tk):
         if calframe.dataCalculated:
         
             sf = self.convSig(calframe.sf, True)
-            calframe.varSFInfo.set('%.4g' % sf)
+            calframe.varSFInfo.set('{:.4f}'.format(sf))
             calframe.setLumColour(sf, calframe.labelSF2)
             
             if calframe.tf == 0:
@@ -2576,42 +2576,42 @@ class ToolManager(tk.Tk):
                 calframe.labelTF2.configure(background=C.DEFAULT_BG, foreground='black')
             else:
                 tf = self.convSig(calframe.tf, True)
-                calframe.varTFInfo.set('%.4g' % tf)
+                calframe.varTFInfo.set('{:.4f}'.format(tf))
                 calframe.setLumColour(tf, calframe.labelTF2) 
                 
         try:
             sig = simframe.varSF.get()
-            simframe.varSF.set('%.4g' % self.convSig(sig, True))
+            simframe.varSF.set('{:.4f}'.format(self.convSig(sig, True)))
         except:
             pass
                 
         try:
             sig = simframe.varTF.get()
-            simframe.varTF.set('%.4g' % self.convSig(sig, True))
+            simframe.varTF.set('{:.4f}'.format(self.convSig(sig, True)))
         except:
             pass
                 
         try:
             sig = simframe.varLF.get()
-            simframe.varLF.set('%.4g' % self.convSig(sig, True))
+            simframe.varLF.set('{:.4f}'.format(self.convSig(sig, True)))
         except:
             pass
                
         try:
             sig = plotframe.varSF.get()
-            plotframe.varSF.set('%.4g' % self.convSig(sig, True))
+            plotframe.varSF.set('{:.4f}'.format(self.convSig(sig, True)))
         except:
             pass
                 
         try:
             sig = plotframe.varTF.get()
-            plotframe.varTF.set('%.4g' % self.convSig(sig, True))
+            plotframe.varTF.set('{:.4f}'.format(self.convSig(sig, True)))
         except:
             pass
                
         try:
             sig = plotframe.varLF.get()
-            plotframe.varLF.set('%.4g' % self.convSig(sig, True))
+            plotframe.varLF.set('{:.4f}'.format(self.convSig(sig, True)))
         except:
             pass
             
@@ -2641,9 +2641,9 @@ class ToolManager(tk.Tk):
         
         factor = 10*np.log(2.0)/np.log(10.0)
         
-        if calframe.dataCalculated: calframe.varDRInfo.set('%.1f' % (calframe.dr*factor))
+        if calframe.dataCalculated: calframe.varDRInfo.set('{:.1f}'.format(calframe.dr*factor))
             
-        if simframe.dataCalculated: simframe.varDRInfo.set('%.1f' % (simframe.dr*factor))
+        if simframe.dataCalculated: simframe.varDRInfo.set('{:.1f}'.format(simframe.dr*factor))
     
     def setStopsDRUnit(self):
         
@@ -2665,9 +2665,9 @@ class ToolManager(tk.Tk):
         
         # Convert existing DR values from dB to stops
         
-        if calframe.dataCalculated: calframe.varDRInfo.set('%.1f' % calframe.dr)
+        if calframe.dataCalculated: calframe.varDRInfo.set('{:.1f}'.format(calframe.dr))
             
-        if simframe.dataCalculated: simframe.varDRInfo.set('%.1f' % simframe.dr)
+        if simframe.dataCalculated: simframe.varDRInfo.set('{:.1f}'.format(simframe.dr))
         
     def addIcon(self, window):
     
@@ -2929,7 +2929,7 @@ def setNewFS(app, cnum, tnum, fs):
     for line in lines[:-1]:
         file.write(line + '\n')
         
-    file.write(','.join(lines[-1].split(',')[0:2]) + ', Fontsize: %d' % fs)
+    file.write(','.join(lines[-1].split(',')[0:2]) + ', Fontsize: {:d}'.format(fs))
     file.close()
     
     app.destroy()

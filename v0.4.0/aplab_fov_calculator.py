@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import Tkinter as tk
-import ttk
+import tkinter as tk
+import tkinter.ttk as ttk
 import os
+import atexit
 import time
 import datetime
 import numpy as np
 import matplotlib
-import FileDialog # Needed for matplotlib
 from PIL import Image, ImageTk
 import sidereal
 import ephem
@@ -38,7 +38,8 @@ class FOVCalculator(ttk.Frame):
         self.varLat = tk.StringVar()
         self.varLon = tk.StringVar()
         
-        self.cont.protocol('WM_DELETE_WINDOW', self.saveCoords)
+        #self.cont.protocol('WM_DELETE_WINDOW', self.saveCoords)
+        atexit.register(self.saveCoords)
         
         file = open('coordinates.txt', 'r')
         coords = file.read().split(',')
@@ -155,7 +156,7 @@ class FOVCalculator(ttk.Frame):
         
         self.sinfo = 'Search for object'
         self.varST.set(self.sinfo)
-        self.varResults.set('%d objects listed' % len(all))
+        self.varResults.set('{:d} objects listed'.format(len(all)))
         
         self.varMessageLabel = tk.StringVar()
         
@@ -387,9 +388,9 @@ class FOVCalculator(ttk.Frame):
     def saveCoords(self):
         
         file = open('coordinates.txt', 'w')
-        file.write('%s,%s' % (self.varLat.get() if self.validLat else '', self.varLon.get() if self.validLon else ''))
+        file.write('{},{}'.format(self.varLat.get() if self.validLat else '', self.varLon.get() if self.validLon else ''))
         file.close()
-        self.cont.destroy()
+        #self.cont.destroy()
     
     def changeFilter(self, var):
     
@@ -444,7 +445,7 @@ class FOVCalculator(ttk.Frame):
             ut = datetime.datetime(int(date[0]), int(date[1]), int(date[2]),
                                    hour=int(time[0]), minute=int(time[1])) - self.utcOffset
 
-            ephem_date = ephem.Date('%d/%d/%d %d:%d' % (ut.year, ut.month, ut.day, ut.hour, ut.minute))
+            ephem_date = ephem.Date('{:d}/{:d}/{:d} {:d}:{:d}'.format(ut.year, ut.month, ut.day, ut.hour, ut.minute))
                                        
         else:
             ephem_date = ephem.now()
@@ -484,7 +485,7 @@ class FOVCalculator(ttk.Frame):
         self.obj_idx = idx
         
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            'Objects%s%s.jpg' % (os.sep, self.obDes[self.obj_idx]))
+                            'Objects{}{}.jpg'.format(os.sep, self.obDes[self.obj_idx]))
         
         self.varCredit.set(self.imCred[self.obj_idx])
         
@@ -496,7 +497,7 @@ class FOVCalculator(ttk.Frame):
         
         if not self.obj_idx in self.groups['Solar system']:
             self.varMag.set(self.obMag[self.obj_idx])
-            self.varRADec.set(u'%dh %02dm | %d\u00B0 %02d\'' % (self.obRA[self.obj_idx][0], 
+            self.varRADec.set(u'{}h {:02d}m | {}\u00B0 {:02d}\''.format(self.obRA[self.obj_idx][0], 
                                                                 round(self.obRA[self.obj_idx][1]), 
                                                                 self.obDec[self.obj_idx][0], 
                                                                 round(self.obDec[self.obj_idx][1])))
@@ -506,7 +507,7 @@ class FOVCalculator(ttk.Frame):
 
                 self.labelSB1.grid(row=3, column=0, sticky='W')
                 self.labelSB2.grid(row=3, column=1)
-                self.varSB.set('%s' % (self.obSB[self.obj_idx]) + u' mag/arcsec\u00B2')
+                self.varSB.set('{}'.format(self.obSB[self.obj_idx]) + u' mag/arcsec\u00B2')
 
                 self.buttonTransfer.configure(state='normal')
 
@@ -524,9 +525,9 @@ class FOVCalculator(ttk.Frame):
         
             ra_h, ra_m, dec_d, dec_am, size, mag, illum, phaseangle = self.getSSAttr(self.obj_idx)
                 
-            self.varMag.set('%.1f' % mag)
+            self.varMag.set('{:.1f}'.format(mag))
             
-            self.varRADec.set(u'%dh %02dm | %d\u00B0 %02d\'' % (ra_h, ra_m, dec_d, dec_am))
+            self.varRADec.set(u'{:d}h {:02d}m | {:d}\u00B0 {:02d}\''.format(ra_h, ra_m, dec_d, dec_am))
                 
             im_ang_w = size*2.05 if self.obName[self.obj_idx] == 'Saturn' else size
             
@@ -537,10 +538,10 @@ class FOVCalculator(ttk.Frame):
                 if self.obName[self.obj_idx] == 'Moon':
 
                     state = 'waxing' if phaseangle >= np.pi else 'waning'
-                    self.varIllum.set('%.1f%% (%s)' % (illum, state))
+                    self.varIllum.set('{:.1f}%% ({})'.format(illum, state))
 
                 else:
-                    self.varIllum.set('%.1f%%' % illum)
+                    self.varIllum.set('{:.1f}%%'.format(illum))
             else:
                 self.labelIllum1.grid_forget()
                 self.labelIllum2.grid_forget()
@@ -550,7 +551,7 @@ class FOVCalculator(ttk.Frame):
 
             self.buttonTransfer.configure(state='disabled')
 
-            self.canvasView.configure(bg='#%02x%02x%02x' % (0, 0, 0))
+            self.canvasView.configure(bg='#{:02x}{:02x}{:02x}'.format(0, 0, 0))
         
         view_ang_w = C.RES_X[self.cont.cnum][0]*self.cont.ISVal
         
@@ -576,19 +577,19 @@ class FOVCalculator(ttk.Frame):
             else:
                 bg_colour = [0, 0, 0]
             
-            self.canvasView.configure(bg='#%02x%02x%02x' % tuple(bg_colour))
+            self.canvasView.configure(bg='#{:02x}{:02x}{:02x}'.format(*tuple(bg_colour)))
 
             if im_new_pix_w < canv_w:
 
-                bordersize_w = im_new_pix_w/10
+                bordersize_w = im_new_pix_w//10
 
                 im_pixels = resized_im.load()
 
-                for i in xrange(bordersize_w+1):
+                for i in range(bordersize_w+1):
 
                     x = float(i)/bordersize_w
 
-                    for j in xrange(im_new_pix_h):
+                    for j in range(im_new_pix_h):
 
                         valsl = im_pixels[i, j]
                         im_pixels[i, j] = (valsl[0], valsl[1], valsl[2], int(valsl[3]*x))
@@ -598,13 +599,13 @@ class FOVCalculator(ttk.Frame):
 
             if im_new_pix_h < canv_h:
 
-                bordersize_h = im_new_pix_h/10
+                bordersize_h = im_new_pix_h//10
 
-                for j in xrange(bordersize_h+1):
+                for j in range(bordersize_h+1):
 
                     x = float(j)/bordersize_h
 
-                    for i in xrange(im_new_pix_w):
+                    for i in range(im_new_pix_w):
 
                         valsl = im_pixels[i, j]
                         im_pixels[i, j] = (valsl[0], valsl[1], valsl[2], int(valsl[3]*x))
@@ -642,13 +643,13 @@ class FOVCalculator(ttk.Frame):
 
             if phaseangle <= np.pi:
 
-                for i in xrange(N):
+                for i in range(N):
 
-                    for j in xrange(x_lead[i], x_trail[i]):
+                    for j in range(x_lead[i], x_trail[i]):
                         vals = im_pixels[j, i]
                         im_pixels[j, i] = (vals[0], vals[1], vals[2], int(255 + (alpha - 255)*apc.smoothstep(x_lead[i], x_trail[i], j)))
 
-                    for j in xrange(x_trail[i], N):
+                    for j in range(x_trail[i], N):
                         vals = im_pixels[j, i]
                         im_pixels[j, i] = (vals[0], vals[1], vals[2], alpha)
 
@@ -657,13 +658,13 @@ class FOVCalculator(ttk.Frame):
                 x_lead = N-1 - x_lead
                 x_trail = N-1 - x_trail
 
-                for i in xrange(N):
+                for i in range(N):
 
-                    for j in xrange(x_lead[i]):
+                    for j in range(x_lead[i]):
                         vals = im_pixels[j, i]
                         im_pixels[j, i] = (vals[0], vals[1], vals[2], alpha)
 
-                    for j in xrange(x_lead[i], x_trail[i]):
+                    for j in range(x_lead[i], x_trail[i]):
                         vals = im_pixels[j, i]
                         im_pixels[j, i] = (vals[0], vals[1], vals[2], int(alpha + (255 - alpha)*apc.smoothstep(x_lead[i], x_trail[i], j)))
 
@@ -698,12 +699,12 @@ class FOVCalculator(ttk.Frame):
             sec_x = (min_x - min_xi)*60
             sec_y = (min_y - min_yi)*60
                    
-            self.varFOV.set(u'Field of view: %d\u00B0 %d\' %.1f\'\' x %d\u00B0 %d\' %.1f\'\'' \
-                            % (deg_xi, min_xi, sec_x, deg_yi, min_yi, sec_y))
+            self.varFOV.set(u'Field of view: {:d}\u00B0 {:d}\' {:.1f}\'\' x {:d}\u00B0 {:d}\' {:.1f}\'\'' \
+                            .format(deg_xi, min_xi, sec_x, deg_yi, min_yi, sec_y))
                             
         else:
         
-            self.varFOV.set(u'Field of view: %.3g\u00B0 x %.3g\u00B0' % (deg_x, deg_y))
+            self.varFOV.set(u'Field of view: {:.3g}\u00B0 x {:.3g}\u00B0'.format(deg_x, deg_y))
     
     def prepSearch(self, event):
     
@@ -737,7 +738,7 @@ class FOVCalculator(ttk.Frame):
                     s += 1
                     self.listboxObjects.insert('end', obj)
         
-        self.varResults.set('%d object%s listed' % (s, ('s' if s != 1 else '')))
+        self.varResults.set('{:d} object{} listed'.format(s, ('s' if s != 1 else '')))
         
         if s > 0:
             name = self.obName[self.obj_idx]
@@ -758,7 +759,7 @@ class FOVCalculator(ttk.Frame):
         simframe = self.cont.frames[ImageSimulator]
 
         simframe.varTF.set(self.obSB[self.obj_idx] if self.cont.lumSignalType.get() else \
-                           '%g' % (self.cont.convSig(float(self.obSB[self.obj_idx]), False)))
+                           '{:g}'.format(self.cont.convSig(float(self.obSB[self.obj_idx]), False)))
 
         simframe.dataCalculated = False
 
@@ -908,8 +909,8 @@ class FOVCalculator(ttk.Frame):
     def setCurrentDT(self, set=True, activate=False):
     
         tm = time.localtime()
-        self.varDate.set('%d-%02d-%02d' % (tm[0], tm[1], tm[2]))
-        self.varTime.set('%02d:%02d' % (tm[3], tm[4]))
+        self.varDate.set('{:d}-{:02d}-{:02d}'.format(tm[0], tm[1], tm[2]))
+        self.varTime.set('{:02d}:{:02d}'.format(tm[3], tm[4]))
         
         self.entryDate.configure(foreground='forestgreen')
         self.entryTime.configure(foreground='forestgreen')
@@ -1006,7 +1007,7 @@ class FOVCalculator(ttk.Frame):
         N = 289
         dt = datetime.timedelta(minutes=5)
         
-        ut_times = [start_ut + dt*i for i in xrange(N)]
+        ut_times = [start_ut + dt*i for i in range(N)]
         
         times = []
         ob_alts = np.zeros(N, dtype='float')
@@ -1071,7 +1072,7 @@ class FOVCalculator(ttk.Frame):
         
         ha0 = ob_RD.hourAngle(start_ut, eLong)*12/np.pi
         
-        ha0_next_whole = np.ceil(ha0)
+        ha0_next_whole = int(np.ceil(ha0))
         ha_offset = ha0_next_whole - ha0
         
         return [current_lt, times, ha0_next_whole, ha_offset, ob_alts, sun_alts, moon_alts]
@@ -1149,7 +1150,7 @@ class FOVCalculator(ttk.Frame):
         current_t = current_lt.hour + current_lt.minute/60.0 + current_lt.second/3600.0
         
         t0 = times[0].hour + times[0].minute/60.0 + times[0].second/3600.0
-        t0_next_whole = np.ceil(t0)
+        t0_next_whole = int(np.ceil(t0))
         t_offset = t0_next_whole - t0
         
         if (alts > 0).all():
@@ -1186,7 +1187,7 @@ class FOVCalculator(ttk.Frame):
         
         self.ax1.plot(xvals, alts, '-', color='mediumblue', zorder=2)
         p1, = self.ax1.plot([xvals[144]], [alts[144]], '8', color='mediumblue', zorder=4,
-                           label=u'Altitude: %.1f\u00B0 at %02d:%02d' % (alts[144], times[144].hour, 
+                           label=u'Altitude: {:.1f}\u00B0 at {:02d}:{:02d}'.format(alts[144], times[144].hour, 
                                                                          times[144].minute))
                
         ymin, ymax = self.ax1.get_ylim()
@@ -1194,15 +1195,15 @@ class FOVCalculator(ttk.Frame):
         self.ax2.set_ylim([ymin, ymax])
         self.ax1.plot([24 - t0, 24 - t0], [ymin, ymax], '-', color='darkslategray', label='Midnight', zorder=1)
         
-        leftdate = '%d-%02d-%02d' % (times[0].year, times[0].month, times[0].day)
-        rightdate = '%d-%02d-%02d' % (times[-1].year, times[-1].month, times[-1].day)
+        leftdate = '{:d}-{:02d}-{:02d}'.format(times[0].year, times[0].month, times[0].day)
+        rightdate = '{:d}-{:02d}-{:02d}'.format(times[-1].year, times[-1].month, times[-1].day)
         self.ax1.text(24 - t0 + 0.47, ymin + 0.80*(ymax - ymin), rightdate, ha='center', va='bottom', 
                      rotation=90, name=C.gfont, size=self.cont.tt_fs, color='darkslategray', zorder=2)
         self.ax1.text(24 - t0 - 0.3, ymin + 0.80*(ymax - ymin), leftdate, ha='center', va='bottom', 
                      rotation=90, name=C.gfont, size=self.cont.tt_fs, color='darkslategray', zorder=2)
         
         p2, = self.ax1.plot([xvals[top_idx]], [alts[top_idx]], '.', color='navy', zorder=3,
-                           label=u'Culmination: %.1f\u00B0 at %02d:%02d' % (alts[top_idx], 
+                           label=u'Culmination: {:.1f}\u00B0 at {:02d}:{:02d}'.format(alts[top_idx], 
                                                                             times[top_idx].hour, 
                                                                             times[top_idx].minute))
         
@@ -1212,9 +1213,9 @@ class FOVCalculator(ttk.Frame):
         p0, = self.ax1.plot([], [], color='white', label=(self.obName[self.obj_idx]))
         if state == 'rs':
             p3, = self.ax1.plot([xvals[set_idx]], [alts[set_idx]], marker=7, color='navy', zorder=3,
-                               label='Set time: %02d:%02d' % (times[set_idx].hour, times[set_idx].minute))
+                               label='Set time: {:02d}:{:02d}'.format(times[set_idx].hour, times[set_idx].minute))
             p4, = self.ax1.plot([xvals[rise_idx]], [alts[rise_idx]], marker=6, color='navy', 
-                               zorder=3, label='Rise time: %02d:%02d' % (times[rise_idx].hour, 
+                               zorder=3, label='Rise time: {:02d}:{:02d}'.format(times[rise_idx].hour, 
                                                                          times[rise_idx].minute))
         
             l = self.ax1.legend(handles=[p0, p1, p2, p3, p4], loc='center left', bbox_to_anchor=(1, 0.7), 
@@ -1269,11 +1270,11 @@ class FOVCalculator(ttk.Frame):
         
         whole_t_hours = np.array([t0_next_whole + i for i in range(0, 24, 2)])
         whole_t_hours[whole_t_hours >= 24] -= 24
-        self.ax1.set_xticklabels(['%02d:00' % t for t in whole_t_hours])
+        self.ax1.set_xticklabels(['{:02d}:00'.format(t) for t in whole_t_hours])
         
         whole_ha_hours = np.array([ha0_next_whole + i for i in range(0, 24, 2)])
         whole_ha_hours[whole_ha_hours >= 24] -= 24
-        self.ax2.set_xticklabels(['%d' % ha for ha in whole_ha_hours])
+        self.ax2.set_xticklabels(['{:d}'.format(ha) for ha in whole_ha_hours])
         
         self.ax1.set_xlabel('Local time', name=C.gfont, fontsize=self.cont.small_fs)
         self.ax2.set_xlabel('Hour angle of object', name=C.gfont, fontsize=self.cont.small_fs)
@@ -1292,8 +1293,8 @@ class FOVCalculator(ttk.Frame):
             
         az_h, az_m, alt_deg, alt_am = self.getAzAlt(self.obj_idx)
         
-        self.varAzAlt.set(u'%d\u00B0 %02d\' | %d\u00B0 %02d\'' % (az_h, round(az_m), 
-                                                                  alt_deg, round(np.abs(alt_am))))
+        self.varAzAlt.set(u'{:d}\u00B0 {:02d}\' | {:d}\u00B0 {:02d}\''.format(int(az_h), int(round(az_m)), 
+                                                                  int(alt_deg), int(round(np.abs(alt_am)))))
    
     def startDragEvent(self, event):
     

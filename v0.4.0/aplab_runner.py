@@ -6,7 +6,7 @@ Version: 0.4.0-alpha
 Written by Lars Frogner
 '''
 
-import Tkinter as tk
+import tkinter as tk
 import numpy as np
 import aplab_common as apc
 from aplab_common import C, ErrorWindow, Catcher
@@ -57,8 +57,8 @@ if startup_success:
             if not (line[1] == 'DSLR' or line[1] == 'CCD'):
             
                 startup_success = False
-                startup_error = 'Invalid camera type for camera model:\n"%s". ' \
-                                + 'Must be "DSLR" or "CCD".' % C.CNAME[-1]
+                startup_error = 'Invalid camera type for camera model:\n"{}". '.format(C.CNAME[-1]) \
+                                + 'Must be "DSLR" or "CCD".'
                 break
                 
             if len(line) != (12 if line[1] == "DSLR" else 11): raise IndexError
@@ -81,41 +81,41 @@ if startup_success:
                 
                     startup_success = False
                     startup_error = 'Non-matching number of gain and C.ISO values\nfor ' \
-                                    + 'camera model: "%s".' % C.CNAME[-1]
+                                    + 'camera model: "{}".'.format(C.CNAME[-1])
                     break
                     
                 elif len(C.RN[-1][0]) != len(C.ISO[-1]):
                 
                     startup_success = False
                     startup_error = 'Non-matching number of read noise and C.ISO values\nfor ' \
-                                    + 'camera model: "%s".' % C.CNAME[-1]
+                                    + 'camera model: "{}".'.format(C.CNAME[-1])
                     break
                     
             if len(C.SAT_CAP[-1][0]) != len(C.GAIN[-1][0]):
             
                 startup_success = False
                 startup_error = 'Non-matching number of saturation capacity and\ngain values for ' \
-                                + 'camera model: "%s".' % C.CNAME[-1]
+                                + 'camera model: "{}".'.format(C.CNAME[-1])
                 break
                 
             if len(C.WHITE_LEVEL[-1][0]) != len(C.GAIN[-1][0]):
             
                 startup_success = False
                 startup_error = 'Non-matching number of white level and gain\nvalues for ' \
-                                + 'camera model: "%s".' % C.CNAME[-1]
+                                + 'camera model: "{}".'.format(C.CNAME[-1])
                 break
             
         except IndexError:
         
             startup_success = False
             startup_error = 'Invalid data configuration in\nline %d in "cameradata.txt".' \
-                            % (len(C.CNAME) + 1)
+                            .format(len(C.CNAME) + 1)
             break
             
         except (TypeError, ValueError):
         
             startup_success = False
-            startup_error = 'Invalid data type detected for camera model:\n"%s".' % C.CNAME[-1]
+            startup_error = 'Invalid data type detected for camera model:\n"{}".'.format(C.CNAME[-1])
             break
             
     for line in lines2[1:-1]:
@@ -140,7 +140,7 @@ if startup_success:
         except (TypeError, ValueError):
         
             startup_success = False
-            startup_error = 'Invalid data type detected for telescope model:\n"%s".' % C.TNAME[-1]
+            startup_error = 'Invalid data type detected for telescope model:\n"{}".'.format(C.TNAME[-1])
             break
          
 # Get name of default camera model and default tooltip state

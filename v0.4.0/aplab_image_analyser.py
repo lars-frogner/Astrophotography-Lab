@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import Tkinter as tk
-import ttk
-import tkFileDialog
+import tkinter as tk
+import tkinter.ttk as ttk
 import sys
 import os
 import subprocess
+import shlex
+import atexit
 import numpy as np
 import matplotlib
-import FileDialog # Needed for matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from PIL import Image, ImageTk
 import pyfits
 import exifread
@@ -29,8 +30,9 @@ class ImageAnalyser(ttk.Frame):
         
         self.cont = controller
         
-        self.cont.protocol('WM_DELETE_WINDOW', lambda: self.deleteTemp(True))
-        
+        #self.cont.protocol('WM_DELETE_WINDOW', lambda: self.deleteTemp(True))
+        atexit.register(lambda: self.deleteTemp(True))
+
         # List of supported file formats
         self.supportedformats = [('DSLR RAW files', ('*.3fr', '*.r3d', '*.arw', '*.bay', '*.cap',
                                                      '*.cr2', '*.crw', '*.dcr', '*.dcs', '*.dng',
@@ -360,17 +362,17 @@ class ImageAnalyser(ttk.Frame):
         '''Create an image resized to fit the window.'''
         
         self.varMessageLabel.set('Reading temporary image file..' if not filename \
-                                               else '%s - Reading temporary image file..' % filename)
+                                               else '{} - Reading temporary image file..'.format(filename))
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
-        pil_img = Image.open(self.labelNames[label] + '.jpg')
+        pil_img = Image.open(self.labelNames[label] + '.png')
         
         self.photo_img = ImageTk.PhotoImage(pil_img)
         
         if self.showResized:
             
-            self.varMessageLabel.set('Resizing..' if not filename else '%s - Resizing..' % filename)
+            self.varMessageLabel.set('Resizing..' if not filename else '{} - Resizing..'.format(filename))
             self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
@@ -433,7 +435,7 @@ class ImageAnalyser(ttk.Frame):
         
             # Show file selection menu and store selected files
             
-            biasfiles = tkFileDialog.askopenfilenames(filetypes=supportedformats,
+            biasfiles = tk.filedialog.askopenfilenames(filetypes=supportedformats,
                                                       initialdir=self.previousPath)
             
             # Do nothing if no files were selected
@@ -588,7 +590,7 @@ class ImageAnalyser(ttk.Frame):
                 self.enableWidgets()
                 return None
         
-            darkfiles = tkFileDialog.askopenfilenames(filetypes=supportedformats,
+            darkfiles = tk.filedialog.askopenfilenames(filetypes=supportedformats,
                                                       initialdir=self.previousPath)
             
             if len(darkfiles) == 0:
@@ -725,7 +727,7 @@ class ImageAnalyser(ttk.Frame):
                 self.enableWidgets()
                 return None
         
-            flatfiles = tkFileDialog.askopenfilenames(filetypes=supportedformats,
+            flatfiles = tk.filedialog.askopenfilenames(filetypes=supportedformats,
                                                       initialdir=self.previousPath)
             
             if len(flatfiles) == 0:
@@ -875,7 +877,7 @@ class ImageAnalyser(ttk.Frame):
                 self.enableWidgets()
                 return None
         
-            lightfiles = tkFileDialog.askopenfilenames(filetypes=supportedformats,
+            lightfiles = tk.filedialog.askopenfilenames(filetypes=supportedformats,
                                                        initialdir=self.previousPath)
             
             if len(lightfiles) == 0:
@@ -929,7 +931,7 @@ class ImageAnalyser(ttk.Frame):
                 self.enableWidgets()
                 return None
         
-            saturatedfiles = tkFileDialog.askopenfilenames(filetypes=supportedformats,
+            saturatedfiles = tk.filedialog.askopenfilenames(filetypes=supportedformats,
                                                            initialdir=self.previousPath)
             
             if len(saturatedfiles) == 0:
@@ -1044,7 +1046,7 @@ class ImageAnalyser(ttk.Frame):
             def cmd():
                 self.clearFiles()
                 self.currentCCDType = self.varCCDType.get()
-                self.varMessageLabel.set('CCD type changed to %s.' % (self.varCCDType.get()))
+                self.varMessageLabel.set('CCD type changed to {}.'.format(self.varCCDType.get()))
                 self.labelMessage.configure(foreground='navy')
                 
             self.showWarning('Warning', 'Changing CCD type will\nremove added files. Proceed?',
@@ -1056,7 +1058,7 @@ class ImageAnalyser(ttk.Frame):
             
         else:
             # Show message that the camera type was changed
-            self.varMessageLabel.set('CCD type changed to %s.' % (self.varCCDType.get()))
+            self.varMessageLabel.set('CCD type changed to {}.'.format(self.varCCDType.get()))
             self.labelMessage.configure(foreground='navy')
             self.currentCCDType = self.varCCDType.get()
      
@@ -1120,12 +1122,12 @@ class ImageAnalyser(ttk.Frame):
     
         '''Read image data and store as label attributes.'''
         
-        self.varMessageLabel.set('%s - Loading file..' % filename)
+        self.varMessageLabel.set('{} - Loading file..'.format(filename))
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
         # Create path string compatible with terminal
-        norm_filepath = os.path.normpath('"' + filepath + '"')
+        norm_filepath = shlex.quote(filepath)
             
         # Create path string compatible with python file opening methods
         py_filepath = os.sep.join(filepath.split('/'))
@@ -1133,15 +1135,14 @@ class ImageAnalyser(ttk.Frame):
         # If image is a DSLR raw image
         if '*.' + filename.split('.')[1].lower() in self.supportedformats[0][1]:
         
-            self.varMessageLabel.set('%s - Converting to TIFF..' % filename)
+            self.varMessageLabel.set('{} - Converting to TIFF..'.format(filename))
             self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
             # Create TIFF file from raw with dcraw
-            subprocess.call('dcraw -4 -o 0 -D -t 0 -k 0 -H 1 -T -j -W %s' \
-                            % norm_filepath.encode(sys.getfilesystemencoding()), shell=True)
+            subprocess.call('dcraw -4 -o 0 -D -t 0 -k 0 -H 1 -T -j -W {}'.format(norm_filepath), shell=True)
             
-            self.varMessageLabel.set('%s - Reading Exif metadata..' % filename)
+            self.varMessageLabel.set('{} - Reading Exif metadata..'.format(filename))
             self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
@@ -1169,8 +1170,8 @@ class ImageAnalyser(ttk.Frame):
                 
                 if len(isovals) > 0 and isovals[1:] == isovals[:-1] and not iso in isovals:
                     
-                    warning = 'This frame has ISO %d, whereas the\nother added frames have ISO %d.' \
-                               % (iso, isovals[0]) + '\nStill proceed?' 
+                    warning = 'This frame has ISO {:d}, whereas the\nother added frames have ISO {:d}.' \
+                               .format(iso, isovals[0]) + '\nStill proceed?' 
                     
                     if not self.showWarning('Warning', warning, 'Yes', 'Cancel', lambda: None):
                             
@@ -1181,20 +1182,22 @@ class ImageAnalyser(ttk.Frame):
             label.exposure = self.checkExp(True, tags, compare, label, type)
             label.iso = iso
             
-            self.varMessageLabel.set('%s - Extracting raw data..' % filename)
+            self.varMessageLabel.set('{} - Extracting raw data..'.format(filename))
             self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
             # Get array of image data
-            img = plt.imread(tiff_filepath)
-            
-            self.varMessageLabel.set('%s - Deleting TIFF file..' % filename)
+            img = mpimg.imread(tiff_filepath)
+
+            self.varMessageLabel.set('{} - Deleting TIFF file..'.format(filename))
             self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
-            
+
             # Delete TIFF file created by dcraw
-            del_command = 'del /Q' if C.is_win else 'rm'
-            subprocess.call('%s %s' % (del_command, os.path.normpath('"'  + '.'.join(filepath.split('.')[:-1]) + '.tiff"').encode(sys.getfilesystemencoding())),
+
+            del_command = 'del /Q' if C.is_win else 'rm -f'
+
+            subprocess.call('{} {}'.format(del_command, tiff_filepath),
                             shell=True)
                 
         # If image is a CCD raw image
@@ -1203,14 +1206,14 @@ class ImageAnalyser(ttk.Frame):
             # If image is a TIFF file
             if filename.split('.')[1].lower() in ['tif', 'tiff']:
             
-                self.varMessageLabel.set('%s - Reading TIFF file..' % filename)
+                self.varMessageLabel.set('{} - Reading TIFF file..'.format(filename))
                 self.labelMessage.configure(foreground='navy')
                 self.labelMessage.update_idletasks()
             
                 # Get array of image data from TIFF file
-                img = plt.imread(py_filepath)
+                img = mpimg.imread(py_filepath)
                 
-                self.varMessageLabel.set('%s - Reading Exif metadata..' % filename)
+                self.varMessageLabel.set('{} - Reading Exif metadata..'.format(filename))
                 self.labelMessage.configure(foreground='navy')
                 self.labelMessage.update_idletasks()
                 
@@ -1223,7 +1226,7 @@ class ImageAnalyser(ttk.Frame):
             # If image is a FITS file
             elif filename.split('.')[1].lower() in ['fit', 'fits']:
                 
-                self.varMessageLabel.set('%s - Reading FITS file..' % filename)
+                self.varMessageLabel.set('{} - Reading FITS file..'.format(filename))
                 self.labelMessage.configure(foreground='navy')
                 self.labelMessage.update_idletasks()
                 
@@ -1236,12 +1239,12 @@ class ImageAnalyser(ttk.Frame):
                 hdulist.close()
                 
                 if len(img.shape) != 2:
-                    self.varMessageLabel.set('Image file "%s" contains colour channels.' \
-                                            + 'Please use a non-debayered image.' % filename)
+                    self.varMessageLabel.set('Image file "{}" contains colour channels.' \
+                                            + 'Please use a non-debayered image.'.format(filename))
                     self.labelMessage.configure(foreground='crimson')
                     raise Exception
                 
-                self.varMessageLabel.set('%s - Reading FITS header..' % filename)
+                self.varMessageLabel.set('{} - Reading FITS header..'.format(filename))
                 self.labelMessage.configure(foreground='navy')
                 self.labelMessage.update_idletasks()
                 
@@ -1250,7 +1253,7 @@ class ImageAnalyser(ttk.Frame):
         # If image has a CFA and a specific colour needs to be extracted
         if splitCFA:
                 
-            self.varMessageLabel.set('%s - Detecting CFA pattern..' % filename)
+            self.varMessageLabel.set('{} - Detecting CFA pattern..'.format(filename))
             self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
@@ -1272,11 +1275,11 @@ class ImageAnalyser(ttk.Frame):
             if self.cont.isDSLR and not filename.split('.')[-1].lower() in ['tif', 'tiff', 'fit', 'fits']:
                 
                 # Get string of raw file information
-                metadata = subprocess.check_output('dcraw -i -v %s' \
-                                    % norm_filepath.encode(sys.getfilesystemencoding()), shell=True)
+                metadata = subprocess.check_output('dcraw -i -v {}'.format(norm_filepath), shell=True).decode('UTF-8')
                     
                 # Extract string representing CFA pattern
                 if self.CFAPattern is None:
+
                     for line in metadata.split('\n'):
                         
                         parts = line.split(': ')
@@ -1303,12 +1306,12 @@ class ImageAnalyser(ttk.Frame):
                 raise Exception
                 
             if not self.CFAPattern in ['RG/GB', 'BG/GR', 'GR/BG', 'GB/RG']:
-                self.varMessageLabel.set('CFA pattern %s not recognized.' % (self.CFAPattern))
+                self.varMessageLabel.set('CFA pattern {} not recognized.'.format(self.CFAPattern))
                 self.labelMessage.configure(foreground='crimson')
                 raise Exception
                 
-            self.varMessageLabel.set('%s - Extracting %s pixels..' \
-                                     % (filename, ('green' if self.useGreen else 'red')))
+            self.varMessageLabel.set('{} - Extracting {} pixels..' \
+                                     .format(filename, ('green' if self.useGreen else 'red')))
             self.labelMessage.configure(foreground='navy')
             self.labelMessage.update_idletasks()
             
@@ -1338,33 +1341,33 @@ class ImageAnalyser(ttk.Frame):
             if type == 'light':
                 self.labelLight.isSplitted = False
         
-        self.varMessageLabel.set('%s - Checking image dimensions..' % filename)
+        self.varMessageLabel.set('{} - Checking image dimensions..'.format(filename))
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
         # Show error if the image size if different from the previously added image
         if compare and img.shape != compare.stretched_img.shape:
-            self.varMessageLabel.set('The dimensions of "%s" does not match ' % filename \
+            self.varMessageLabel.set('The dimensions of "{}" does not match '.format(filename) \
                                      + 'those of the other added frame.')
             self.labelMessage.configure(foreground='crimson')
             raise Exception
         
         # Store raw image data as label attribute
         
-        self.varMessageLabel.set('%s - Creating temporary raw data file..' % filename)
+        self.varMessageLabel.set('{} - Creating temporary raw data file..'.format(filename))
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
         np.save(self.labelNames[label], img)
             
-        self.varMessageLabel.set('%s - Applying screen stretch..' % filename)
+        self.varMessageLabel.set('{} - Applying screen stretch..'.format(filename))
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
         label.stretched_img = apc.autostretch(img)
         img = None
         
-        self.varMessageLabel.set('%s - Creating temporary image file..' % filename)
+        self.varMessageLabel.set('{} - Creating temporary image file..'.format(filename))
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         self.updateDisplayedImage(label)
@@ -1401,9 +1404,9 @@ class ImageAnalyser(ttk.Frame):
                         
                 if self.tooDiff(exp1, exp2):
                         
-                    warning = 'The two %s frames have\nsignificantly different ' % type \
-                               + 'exposure times.\n(%.4g s vs. %.4g s)\nStill proceed?' \
-                               % (exp1, exp2)
+                    warning = 'The two {} frames have\nsignificantly different '.format(type) \
+                               + 'exposure times.\n({:.4g} s vs. {:.4g} s)\nStill proceed?' \
+                               .format(exp1, exp2)
                                
                     if not self.showWarning('Warning', warning, 'Yes', 'Cancel', lambda: None):
                             
@@ -1430,15 +1433,15 @@ class ImageAnalyser(ttk.Frame):
             if len(expvals) == 1 and self.tooDiff(exposure_num, expvals[0]):
             
                 warning = 'This light frame and an added dark frame\nhave significantly ' \
-                           + 'different exposure times.\n(%.4g s vs. %.4g s)\nStill proceed?' \
-                           % (exposure_num, expvals[0])
+                           + 'different exposure times.\n({:.4g} s vs. {:.4g} s)\nStill proceed?' \
+                           .format(exposure_num, expvals[0])
                            
             elif len(expvals) == 2 and not self.tooDiff(*expvals) \
                                    and self.tooDiff(exposure_num, expvals[0]):
             
                 warning = 'This light frame and the added dark frames\nhave significantly ' \
-                          + 'different exposure times.\n(%.4g s vs. %.4g s)\nStill proceed?' \
-                          % (exposure_num, expvals[0])
+                          + 'different exposure times.\n({:.4g} s vs. {:.4g} s)\nStill proceed?' \
+                          .format(exposure_num, expvals[0])
                           
         elif type == 'dark' and self.displayed_light == 1 and exposure_num is not None:
         
@@ -1446,8 +1449,8 @@ class ImageAnalyser(ttk.Frame):
                                 and (label is self.labelDark1 or self.labelDark1.exposure is None):
                                 
                 warning = 'This dark frame and the added light frame\nhave significantly ' \
-                          + 'different exposure times.\n(%.4g s vs. %.4g s)\nStill proceed?' \
-                          % (exposure_num, self.labelLight.exposure)
+                          + 'different exposure times.\n({:.4g} s vs. {:.4g} s)\nStill proceed?' \
+                          .format(exposure_num, self.labelLight.exposure)
         
         # Display the warning window
         if warning:
@@ -1605,15 +1608,15 @@ class ImageAnalyser(ttk.Frame):
         # Update ISO and exposure time labels
         
         if label.exposure is not None:
-            self.varImInfo.set('Exposure time: %.4g s' % label.exposure)
+            self.varImInfo.set('Exposure time: {:.4g} s'.format(label.exposure))
         else:
             self.varImInfo.set('Exposure time: Not detected')
             
         if self.cont.isDSLR:
             if label.iso is not None:
-                self.varImInfo.set('ISO: %d        %s' % (label.iso, self.varImInfo.get()))
+                self.varImInfo.set('ISO: {:d}        {}'.format(label.iso, self.varImInfo.get()))
             else:
-                self.varImInfo.set('ISO: Not detected        %s' % (self.varImInfo.get()))
+                self.varImInfo.set('ISO: Not detected        {}'.format(self.varImInfo.get()))
         
         # Disable image interaction for resized images, except for measuring in the light frame
         if label is self.labelLight:
@@ -1661,7 +1664,7 @@ class ImageAnalyser(ttk.Frame):
                         
                             self.forgetAttributes(self.labelBias1)
                             os.remove(self.labelNames[self.labelBias1] + '.npy')
-                            os.remove(self.labelNames[self.labelBias1] + '.jpg')
+                            os.remove(self.labelNames[self.labelBias1] + '.png')
                             
                             self.labelBias1.pack_forget()
                             self.varBias1Label.set('')
@@ -1684,9 +1687,9 @@ class ImageAnalyser(ttk.Frame):
                                 os.rename(self.labelNames[self.labelBias2] + '.npy', 
                                           self.labelNames[self.labelBias1] + '.npy')
                                           
-                                os.remove(self.labelNames[self.labelBias1] + '.jpg')
-                                os.rename(self.labelNames[self.labelBias2] + '.jpg', 
-                                          self.labelNames[self.labelBias1] + '.jpg')
+                                os.remove(self.labelNames[self.labelBias1] + '.png')
+                                os.rename(self.labelNames[self.labelBias2] + '.png', 
+                                          self.labelNames[self.labelBias1] + '.png')
                                 if self.labelBias2.leftselected:
                                     self.showImage(self.labelBias1)
                             
@@ -1704,7 +1707,7 @@ class ImageAnalyser(ttk.Frame):
                         
                             self.forgetAttributes(self.labelDark1)
                             os.remove(self.labelNames[self.labelDark1] + '.npy')
-                            os.remove(self.labelNames[self.labelDark1] + '.jpg')
+                            os.remove(self.labelNames[self.labelDark1] + '.png')
                             
                             self.labelDark1.pack_forget()
                             self.varDark1Label.set('')
@@ -1725,9 +1728,9 @@ class ImageAnalyser(ttk.Frame):
                                 os.rename(self.labelNames[self.labelDark2] + '.npy',
                                           self.labelNames[self.labelDark1] + '.npy')
                                 
-                                os.remove(self.labelNames[self.labelDark1] + '.jpg')
-                                os.rename(self.labelNames[self.labelDark2] + '.jpg',
-                                          self.labelNames[self.labelDark1] + '.jpg')
+                                os.remove(self.labelNames[self.labelDark1] + '.png')
+                                os.rename(self.labelNames[self.labelDark2] + '.png',
+                                          self.labelNames[self.labelDark1] + '.png')
                                 if self.labelDark2.leftselected:
                                     self.showImage(self.labelDark1)
                             
@@ -1745,7 +1748,7 @@ class ImageAnalyser(ttk.Frame):
                         
                             self.forgetAttributes(self.labelFlat1)
                             os.remove(self.labelNames[self.labelFlat1] + '.npy')
-                            os.remove(self.labelNames[self.labelFlat1] + '.jpg')
+                            os.remove(self.labelNames[self.labelFlat1] + '.png')
                             
                             self.labelFlat1.pack_forget()
                             self.varFlat1Label.set('')
@@ -1766,9 +1769,9 @@ class ImageAnalyser(ttk.Frame):
                                 os.rename(self.labelNames[self.labelFlat2] + '.npy', 
                                           self.labelNames[self.labelFlat1] + '.npy')
                                 
-                                os.remove(self.labelNames[self.labelFlat1] + '.jpg')
-                                os.rename(self.labelNames[self.labelFlat2] + '.jpg', 
-                                          self.labelNames[self.labelFlat1] + '.jpg')
+                                os.remove(self.labelNames[self.labelFlat1] + '.png')
+                                os.rename(self.labelNames[self.labelFlat2] + '.png', 
+                                          self.labelNames[self.labelFlat1] + '.png')
                                 if self.labelFlat2.leftselected:
                                     self.showImage(self.labelFlat1)
                             
@@ -1784,7 +1787,7 @@ class ImageAnalyser(ttk.Frame):
                     
                         self.forgetAttributes(self.labelLight)
                         os.remove(self.labelNames[self.labelLight] + '.npy')
-                        os.remove(self.labelNames[self.labelLight] + '.jpg')
+                        os.remove(self.labelNames[self.labelLight] + '.png')
                         
                         self.labelLight.pack_forget()
                         self.varLightLabel.set('')
@@ -1796,7 +1799,7 @@ class ImageAnalyser(ttk.Frame):
                     
                         self.forgetAttributes(self.labelSaturated)
                         os.remove(self.labelNames[self.labelSaturated] + '.npy')
-                        os.remove(self.labelNames[self.labelSaturated] + '.jpg')
+                        os.remove(self.labelNames[self.labelSaturated] + '.png')
                         
                         self.labelSaturated.pack_forget()
                         self.varSaturatedLabel.set('')
@@ -1967,27 +1970,27 @@ class ImageAnalyser(ttk.Frame):
         frameResults.pack(side='top', expand=True)
         
         ttk.Label(frameResults, text='Gain: ').grid(row=0, column=0, sticky='W')
-        ttk.Label(frameResults, text=('%.3g' % (self.gain)), width=7,
+        ttk.Label(frameResults, text=('{:.3g}'.format(self.gain)), width=7,
                   anchor='center').grid(row=0, column=1)
         ttk.Label(frameResults, text=' e-/ADU').grid(row=0, column=2, sticky='W')
         
         ttk.Label(frameResults, text='Read noise: ').grid(row=1, column=0, sticky='W')
-        ttk.Label(frameResults, text=('%.3g' % (self.rn)), width=7,
+        ttk.Label(frameResults, text=('{:.3g}'.format(self.rn)), width=7,
                   anchor='center').grid(row=1, column=1)
         ttk.Label(frameResults, text=' e-').grid(row=1, column=2, sticky='W')
         
         ttk.Label(frameResults, text='Black level: ').grid(row=2, column=0, sticky='W')
-        ttk.Label(frameResults, text=('%d' % round(self.black_level)), width=7,
+        ttk.Label(frameResults, text=('{:d}'.format(int(round(self.black_level)))), width=7,
                   anchor='center').grid(row=2, column=1)
         ttk.Label(frameResults, text=' ADU').grid(row=2, column=2, sticky='W')
         
         ttk.Label(frameResults, text='White level: ').grid(row=3, column=0, sticky='W')
-        ttk.Label(frameResults, text=('%d' % round(self.white_level)), width=7,
+        ttk.Label(frameResults, text=('{:d}'.format(int(round(self.white_level)))), width=7,
                   anchor='center').grid(row=3, column=1)
         ttk.Label(frameResults, text=' ADU').grid(row=3, column=2, sticky='W')
         
         ttk.Label(frameResults, text='Saturation capacity: ').grid(row=4, column=0, sticky='W')
-        ttk.Label(frameResults, text=('%d' % round(self.sat_cap)), width=7,
+        ttk.Label(frameResults, text=('{:d}'.format(int(round(self.sat_cap)))), width=7,
                   anchor='center').grid(row=4, column=1)
         ttk.Label(frameResults, text=' e-').grid(row=4, column=2, sticky='W')
         
@@ -2069,8 +2072,8 @@ class ImageAnalyser(ttk.Frame):
                         g_idx2 = rn_idx2 = 1
                     
                         # Add the data
-                        file.write('\n%s,%s,%.3g*,%.3g*,%d*,%d*,%d*,%s,%s,%s,%s' \
-                                    % (line[0], line[1], self.gain, self.rn, round(self.sat_cap),
+                        file.write('\n{},{},{:.3g}*,{:.3g}*,{:d}*,{:d}*,{:d}*,{},{},{},{}' \
+                                    .format(line[0], line[1], self.gain, self.rn, round(self.sat_cap),
                                        round(self.black_level), round(self.white_level), 'NA',
                                        line[8], line[9], line[10]))
                         if self.cont.isDSLR: file.write(',' + iso)
@@ -2107,36 +2110,36 @@ class ImageAnalyser(ttk.Frame):
                                     
                         else:
                             
-                            if ('%.2g' % (self.rn)) in rv_stripped:
+                            if ('{:.2g}'.format(self.rn)) in rv_stripped:
                                 
-                                rn_idx1 = rv_stripped.index('%.2g' % (self.rn))
+                                rn_idx1 = rv_stripped.index('{:.2g}'.format(self.rn))
                                 rn_idx2 = rn_idx1 + 1
                             else:
                                 
-                                rn_idx1 = rn_idx2 = sorted(rv_stripped + ['%.3g' % (self.rn)],
-                                                           key=float).index(('%.3g' % (self.rn)))
+                                rn_idx1 = rn_idx2 = sorted(rv_stripped + ['{:.3g}'.format(self.rn)],
+                                                           key=float).index(('{:.3g}'.format(self.rn)))
                             
-                            if ('%.2g' % (self.gain)) in gv_stripped:
+                            if ('{:.2g}'.format(self.gain)) in gv_stripped:
                                
-                                g_idx1 = gv_stripped.index('%.2g' % (self.gain))
+                                g_idx1 = gv_stripped.index('{:.2g}'.format(self.gain))
                                 g_idx2 = g_idx1 + 1
                                 
                             else:
                                 
-                                g_idx1 = g_idx2 = sorted(gv_stripped + ['%.3g' % (self.gain)],
-                                                         key=float).index(('%.3g' % (self.gain)))
+                                g_idx1 = g_idx2 = sorted(gv_stripped + ['{:.3g}'.format(self.gain)],
+                                                         key=float).index(('{:.3g}'.format(self.gain)))
                             
                         # Add calculated values to camera data file
-                        file.write('\n%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' \
-                    % (line[0], line[1],
-                       '-'.join(gainvals[:g_idx1] + ['%.3g*' % (self.gain)] + gainvals[g_idx2:]),
-                       '-'.join(rnvals[:rn_idx1] + ['%.3g*' % (self.rn)] + rnvals[rn_idx2:]),
-                       '-'.join(satcapvals[:g_idx1] + ['%d*' % round(self.sat_cap)] + satcapvals[g_idx2:]),
-                       '-'.join(blvals[:g_idx1] + ['%d*' % round(self.black_level)] + blvals[g_idx2:]),
-                       '-'.join(wlvals[:g_idx1] + ['%d*' % round(self.white_level)] + wlvals[g_idx2:]),
+                        file.write('\n{},{},{},{},{},{},{},{},{},{},{}' \
+                    .format(line[0], line[1],
+                       '-'.join(gainvals[:g_idx1] + ['{:.3g}*'.format(self.gain)] + gainvals[g_idx2:]),
+                       '-'.join(rnvals[:rn_idx1] + ['{:.3g}*'.format(self.rn)] + rnvals[rn_idx2:]),
+                       '-'.join(satcapvals[:g_idx1] + ['{:d}*'.format(int(round(self.sat_cap)))] + satcapvals[g_idx2:]),
+                       '-'.join(blvals[:g_idx1] + ['{:d}*'.format(int(round(self.black_level)))] + blvals[g_idx2:]),
+                       '-'.join(wlvals[:g_idx1] + ['{:d}*'.format(int(round(self.white_level)))] + wlvals[g_idx2:]),
                        line[7], line[8], line[9], line[10]))
                                           
-                        if self.cont.isDSLR: file.write(',%s' % ('-'.join(isovals[:g_idx1] + [iso] \
+                        if self.cont.isDSLR: file.write(',{}'.format('-'.join(isovals[:g_idx1] + [iso] \
                                                                           + isovals[g_idx2:])))
                 
                 # Write the other lines with no changes
@@ -2152,7 +2155,7 @@ class ImageAnalyser(ttk.Frame):
             idx = self.cont.cnum
             
             if g_idx2 == g_idx1 + 1:
-                C.GAIN[idx][0][g_idx1] = float('%.3g' % (self.gain))
+                C.GAIN[idx][0][g_idx1] = float('{:.3g}'.format(self.gain))
                 C.GAIN[idx][1][g_idx1] = 1
                 C.SAT_CAP[idx][0][g_idx1] = int(round(self.sat_cap))
                 C.SAT_CAP[idx][1][g_idx1] = 1
@@ -2162,7 +2165,7 @@ class ImageAnalyser(ttk.Frame):
                 C.WHITE_LEVEL[idx][1][g_idx1] = 1
                 if self.cont.isDSLR: C.ISO[idx][g_idx1] = int(iso)
             else:
-                C.GAIN[idx][0] = np.insert(C.GAIN[idx][0], g_idx1, float('%.3g' % (self.gain)))
+                C.GAIN[idx][0] = np.insert(C.GAIN[idx][0], g_idx1, float('{:.3g}'.format(self.gain)))
                 C.GAIN[idx][1] = np.insert(C.GAIN[idx][1], g_idx1, 1)
                 C.SAT_CAP[idx][0] = np.insert(C.SAT_CAP[idx][0], g_idx1, int(round(self.sat_cap)))
                 C.SAT_CAP[idx][1] = np.insert(C.SAT_CAP[idx][1], g_idx1, 1)
@@ -2173,10 +2176,10 @@ class ImageAnalyser(ttk.Frame):
                 if self.cont.isDSLR: C.ISO[idx] = np.insert(C.ISO[idx], g_idx1, int(iso))
                     
             if rn_idx2 == rn_idx1 + 1:
-                C.RN[idx][0][rn_idx1] = float('%.3g' % (self.rn))
+                C.RN[idx][0][rn_idx1] = float('{:.3g}'.format(self.rn))
                 C.RN[idx][1][rn_idx1] = 1
             else:
-                C.RN[idx][0] = np.insert(C.RN[idx][0], rn_idx1, float('%.3g' % (self.rn)))
+                C.RN[idx][0] = np.insert(C.RN[idx][0], rn_idx1, float('{:.3g}'.format(self.rn)))
                 C.RN[idx][1] = np.insert(C.RN[idx][1], rn_idx1, 1)
             
             for frame in [self.cont.frames[ImageCalculator], self.cont.frames[ImageSimulator],
@@ -2185,7 +2188,7 @@ class ImageAnalyser(ttk.Frame):
                 frame.reconfigureNonstaticWidgets()
                 frame.setDefaultValues()
                 
-            self.varMessageLabel.set('Sensor information added for %s.' % C.CNAME[idx])
+            self.varMessageLabel.set('Sensor information added for {}.'.format(C.CNAME[idx]))
             self.labelMessage.configure(foreground='navy')
             try:
                 self.topCamInfo.destroy()
@@ -2336,12 +2339,12 @@ class ImageAnalyser(ttk.Frame):
             sec_x = (min_x - min_xi)*60
             sec_y = (min_y - min_yi)*60
                
-            self.varFOV.set(u'%s FOV: %d\u00B0 %d\' %.1f\'\' x %d\u00B0 %d\' %.1f\'\'' \
-                            % (type, deg_xi, min_xi, sec_x, deg_yi, min_yi, sec_y))
+            self.varFOV.set(u'{} FOV: {:d}\u00B0 {:d}\' {:.1f}\'\' x {:d}\u00B0 {:d}\' {:.1f}\'\'' \
+                            .format(type, deg_xi, min_xi, sec_x, deg_yi, min_yi, sec_y))
             
         else:
         
-            self.varFOV.set(u'%s FOV: %.3g\u00B0 x %.3g\u00B0' % (type, deg_x, deg_y))
+            self.varFOV.set(u'{} FOV: {:.3g}\u00B0 x {:.3g}\u00B0'.format(type, deg_x, deg_y))
     
     def setAngle(self, x1, x2, y1, y2):
     
@@ -2377,11 +2380,11 @@ class ImageAnalyser(ttk.Frame):
                 
             sec_r = (min_r - min_ri)*60
                
-            self.varFOV.set(u'Angle: %d\u00B0 %d\' %.1f\'\'' % (deg_ri, min_ri, sec_r))
+            self.varFOV.set(u'Angle: {:d}\u00B0 {:d}\' {:.1f}\'\''.format(deg_ri, min_ri, sec_r))
                             
         else:
         
-            self.varFOV.set(u'Angle: %.3g\u00B0' % deg_r)
+            self.varFOV.set(u'Angle: {:.3g}\u00B0'.format(deg_r))
     
     def showRCMenuEvent(self, event):
     
@@ -2443,32 +2446,32 @@ class ImageAnalyser(ttk.Frame):
         frameStatistics.pack(side='top', pady=(0, 6*C.scsy), expand=True)
         
         ttk.Label(frameStatistics, text='Sample size: ').grid(row=0, column=0, sticky='W')
-        ttk.Label(frameStatistics, text=('%s' % sample_val), width=7,
+        ttk.Label(frameStatistics, text=('{}'.format(sample_val)), width=7,
                   anchor='center').grid(row=0, column=1)
         ttk.Label(frameStatistics, text=' pixels').grid(row=0, column=2, sticky='W')
         
         ttk.Label(frameStatistics, text='Mean value: ').grid(row=1, column=0, sticky='W')
-        ttk.Label(frameStatistics, text=('%.1f' % mean_val), width=7,
+        ttk.Label(frameStatistics, text=('{:.1f}'.format(mean_val)), width=7,
                   anchor='center').grid(row=1, column=1)
         ttk.Label(frameStatistics, text=' ADU').grid(row=1, column=2, sticky='W')
         
         ttk.Label(frameStatistics, text='Median value: ').grid(row=2, column=0, sticky='W')
-        ttk.Label(frameStatistics, text=('%g' % median_val), width=7,
+        ttk.Label(frameStatistics, text=('{:g}'.format(median_val)), width=7,
                   anchor='center').grid(row=2, column=1)
         ttk.Label(frameStatistics, text=' ADU').grid(row=2, column=2, sticky='W')
         
         ttk.Label(frameStatistics, text='Standard deviation: ').grid(row=3, column=0, sticky='W')
-        ttk.Label(frameStatistics, text=('%.2f' % std_val), width=7,
+        ttk.Label(frameStatistics, text=('{:.2f}'.format(std_val)), width=7,
                   anchor='center').grid(row=3, column=1)
         ttk.Label(frameStatistics, text=' ADU').grid(row=3, column=2, sticky='W')
         
         ttk.Label(frameStatistics, text='Maximum value: ').grid(row=4, column=0, sticky='W')
-        ttk.Label(frameStatistics, text=('%d' % max_val), width=7,
+        ttk.Label(frameStatistics, text=('{:d}'.format(max_val)), width=7,
                   anchor='center').grid(row=4, column=1)
         ttk.Label(frameStatistics, text=' ADU').grid(row=4, column=2, sticky='W')
         
         ttk.Label(frameStatistics, text='Minimum value: ').grid(row=5, column=0, sticky='W')
-        ttk.Label(frameStatistics, text=('%d' % min_val), width=7,
+        ttk.Label(frameStatistics, text=('{:d}'.format(min_val)), width=7,
                   anchor='center').grid(row=5, column=1)
         ttk.Label(frameStatistics, text=' ADU').grid(row=5, column=2, sticky='W')
         
@@ -2574,15 +2577,15 @@ class ImageAnalyser(ttk.Frame):
                 if self.cont.isDSLR:
                 
                     bg_noise = np.std(img_crop)
-                    calframe.varBGN.set('%.3g' % bg_noise)
+                    calframe.varBGN.set('{:.3g}'.format(bg_noise))
                     
                 bg_level = np.median(img_crop)
-                calframe.varBGL.set('%g' % bg_level)
+                calframe.varBGL.set('{:g}'.format(bg_level))
                     
             else:
             
                 target_level = np.median(img_crop)
-                calframe.varTarget.set('%g' % target_level)
+                calframe.varTarget.set('{:g}'.format(target_level))
                 
             isostr = ''
             expstr = ''
@@ -2590,11 +2593,11 @@ class ImageAnalyser(ttk.Frame):
             if self.labelLight.iso is not None and self.labelLight.iso in list(C.ISO[self.cont.cnum]):
                 calframe.varISO.set(self.labelLight.iso)
                 calframe.updateISO(self.labelLight.iso)
-                isostr = ' ISO set to %d.' % (self.labelLight.iso)
+                isostr = ' ISO set to {:d}.'.format(self.labelLight.iso)
                 
             if self.labelLight.exposure is not None:
-                calframe.varExp.set('%.4g' % (self.labelLight.exposure))
-                expstr = ' Exposure time set to %.4g s.' % (self.labelLight.exposure)
+                calframe.varExp.set('{:.4g}'.format(self.labelLight.exposure))
+                expstr = ' Exposure time set to {:.4g} s.'.format(self.labelLight.exposure)
                 
             self.varMessageLabel.set(('Background data transferred to Image Calculator.' \
                                       if varBGRegion.get() \
@@ -2760,7 +2763,7 @@ class ImageAnalyser(ttk.Frame):
             calframe = self.cont.frames[ImageCalculator]
             calframe.varUseDark.set(1)
             calframe.toggleDarkInputMode()
-            calframe.varDark.set(('%.3g' % dark_val) if self.cont.isDSLR else ('%g' % dark_val))
+            calframe.varDark.set(('{:.3g}'.format(dark_val)) if self.cont.isDSLR else ('{:g}'.format(dark_val)))
             
             isostr = ''
             expstr = ''
@@ -2781,13 +2784,13 @@ class ImageAnalyser(ttk.Frame):
             
                 calframe.varISO.set(isovals[0])
                 calframe.updateISO(isovals[0])
-                isostr = ' ISO set to %d.' % isovals[0]
+                isostr = ' ISO set to {:d}.'.format(isovals[0])
                     
             if len(expvals) == 1 or (len(expvals) == 2 and not self.tooDiff(*expvals)):
             
                 calframe.varExp.set(expvals[0])
-                expstr = ' Exposure time set to %.4g s.' \
-                         % (label.exposure if label.exposure is not None else expvals[0])
+                expstr = ' Exposure time set to {:.4g} s.' \
+                         .format(label.exposure if label.exposure is not None else expvals[0])
                     
             self.varMessageLabel.set('Dark data transferred to Image Calculator.' + isostr + expstr)
             self.labelMessage.configure(foreground='navy')
@@ -3009,6 +3012,9 @@ class ImageAnalyser(ttk.Frame):
         Create window with a histogram of the current 
         image and tools for adjusting the screen stretch.
         '''
+        
+        self.disableWidgets()
+        self.busy = True
     
         self.varM = tk.StringVar()
         label = self.getSelectedLabel()
@@ -3042,9 +3048,6 @@ class ImageAnalyser(ttk.Frame):
         # Plot histogram and stretch function
         self.line1, = self.ax.plot(bin_edges[:-1], hist/(1.05*np.max(hist)), color='gray')
         self.line2, = self.ax.plot(self.x, apc.stretch(self.x, 0.5)/65535.0, color='lime')
-        
-        self.disableWidgets()
-        self.busy = True
         
         # Setup window
         topHist = tk.Toplevel()
@@ -3098,7 +3101,7 @@ class ImageAnalyser(ttk.Frame):
         ttk.Button(frameButtons3, text='Apply changes',
                    command=apply).pack(side='left', padx=(20*C.scsx, 10*C.scsx))
         ttk.Button(frameButtons3, text='Close',
-                   command=lambda: self.closeHist(topHist)).pack(side='right', padx=(0, 20*C.scsx))
+                   command=lambda: self.closeHist(topHist, label)).pack(side='right', padx=(0, 20*C.scsx))
         
         self.wait_window(topHist)
         
@@ -3112,9 +3115,9 @@ class ImageAnalyser(ttk.Frame):
         
         self.menuActive = False
         
-    def closeHist(self, toplevel):
+    def closeHist(self, toplevel, label):
 
-        self.orig_stretched = None
+        self.orig_stretched = label.stretched_img
         toplevel.destroy()
 
     def updateHistStretch(self, m):
@@ -3181,7 +3184,7 @@ class ImageAnalyser(ttk.Frame):
         '''Create a photo image from the raw image of the label.'''
     
         # Save data as temporary image
-        plt.imsave(self.labelNames[label] + '.jpg', label.stretched_img, cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
+        im = Image.fromarray((255.0/65535.0*label.stretched_img).astype(np.uint8)).save(self.labelNames[label] + '.png')
 
         plt.close('all')
         
@@ -3191,13 +3194,14 @@ class ImageAnalyser(ttk.Frame):
     def deleteTemp(self, exit):
     
         for file in self.labelNames.values():
+
             try:
                 os.remove(file + '.npy')
             except OSError:
                 pass
             try:
-                os.remove(file + '.jpg')
+                os.remove(file + '.png')
             except OSError:
                 pass
    
-        if exit: self.cont.destroy()
+        #if exit: self.cont.destroy()

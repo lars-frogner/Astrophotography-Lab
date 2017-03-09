@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import Tkinter as tk
-import ttk
+import tkinter as tk
+import tkinter.ttk as ttk
 import numpy as np
 import aplab_common as apc
 from aplab_common import C
@@ -522,12 +522,12 @@ class ImageCalculator(ttk.Frame):
         self.varSFTypeLabel.set('Skyglow: ')
         self.varMessageLabel.set('')
         
-        self.varGainInfo.set('%.3g' % C.GAIN[self.cont.cnum][0][self.gain_idx])
-        self.varSatCapInfo.set('%d' % C.SAT_CAP[self.cont.cnum][0][self.gain_idx])
-        self.varBLInfo.set('%d' % C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx])
-        self.varWLInfo.set('%d' % C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx])
-        self.varPSInfo.set('%g' % C.PIXEL_SIZE[self.cont.cnum][0])
-        self.varQEInfo.set('-' if not self.cont.hasQE else ('%d' % (C.QE[self.cont.cnum][0]*100)))
+        self.varGainInfo.set('{:.3g}'.format(C.GAIN[self.cont.cnum][0][self.gain_idx]))
+        self.varSatCapInfo.set('{:d}'.format(C.SAT_CAP[self.cont.cnum][0][self.gain_idx]))
+        self.varBLInfo.set('{:d}'.format(C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx]))
+        self.varWLInfo.set('{:d}'.format(C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]))
+        self.varPSInfo.set('{:g}'.format(C.PIXEL_SIZE[self.cont.cnum][0]))
+        self.varQEInfo.set('-' if not self.cont.hasQE else ('{:d}'.format(int(C.QE[self.cont.cnum][0]*100))))
         
         # Set text colour according to whether the data is default or user added
         self.labelGainI2.configure(foreground=('black' \
@@ -545,7 +545,7 @@ class ImageCalculator(ttk.Frame):
         
         self.updateOpticsLabels()
         
-        self.varRNInfo.set('%.1f' % C.RN[self.cont.cnum][0][self.rn_idx])
+        self.varRNInfo.set('{:.1f}'.format(C.RN[self.cont.cnum][0][self.rn_idx]))
         
         self.checkbuttonLim.configure(state='disabled')
         self.varTransfLim.set(0)
@@ -635,11 +635,11 @@ class ImageCalculator(ttk.Frame):
         level values of currently selected ISO/gain/RN.
         '''
     
-        self.varGainInfo.set('%.3g' % C.GAIN[self.cont.cnum][0][self.gain_idx])
-        self.varRNInfo.set('%.1f' % C.RN[self.cont.cnum][0][self.rn_idx])
-        self.varSatCapInfo.set('%d' % C.SAT_CAP[self.cont.cnum][0][self.gain_idx])
-        self.varBLInfo.set('%d' % C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx])
-        self.varWLInfo.set('%d' % C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx])
+        self.varGainInfo.set('{:.3g}'.format(C.GAIN[self.cont.cnum][0][self.gain_idx]))
+        self.varRNInfo.set('{:.1f}'.format(C.RN[self.cont.cnum][0][self.rn_idx]))
+        self.varSatCapInfo.set('{:d}'.format(C.SAT_CAP[self.cont.cnum][0][self.gain_idx]))
+        self.varBLInfo.set('{:d}'.format(C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx]))
+        self.varWLInfo.set('{:d}'.format(C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]))
         
         # Set text colour according to whether the data is default or user added
         self.labelGainI2.configure(foreground=('black' if C.GAIN[self.cont.cnum][1][self.gain_idx] == 0 else 'navy'))
@@ -652,13 +652,13 @@ class ImageCalculator(ttk.Frame):
     
         '''Update labels in the optics frame with the current values.'''
     
-        self.varFLInfo.set('%g' % C.FOCAL_LENGTH[self.cont.tnum][0])
-        self.varEFLInfo.set('%g' % (C.FOCAL_LENGTH[self.cont.tnum][0]*self.cont.FLModVal))
-        self.varAPInfo.set('%g' % C.APERTURE[self.cont.tnum][0])
-        self.varFRInfo.set(u'\u0192/%g' % round(C.FOCAL_LENGTH[self.cont.tnum][0]*self.cont.FLModVal\
-                                                /C.APERTURE[self.cont.tnum][0], 1))
-        self.varISInfo.set('%.3g' % (self.cont.ISVal))
-        self.varRLInfo.set('%.2g' % (1.22*5.5e-4*180*3600/(C.APERTURE[self.cont.tnum][0]*np.pi)))
+        self.varFLInfo.set('{:g}'.format(C.FOCAL_LENGTH[self.cont.tnum][0]))
+        self.varEFLInfo.set('{:g}'.format(C.FOCAL_LENGTH[self.cont.tnum][0]*self.cont.FLModVal))
+        self.varAPInfo.set('{:g}'.format(C.APERTURE[self.cont.tnum][0]))
+        self.varFRInfo.set(u'\u0192/{:g}'.format(round(C.FOCAL_LENGTH[self.cont.tnum][0]*self.cont.FLModVal\
+                                                /C.APERTURE[self.cont.tnum][0], 1)))
+        self.varISInfo.set('{:.3g}'.format(self.cont.ISVal))
+        self.varRLInfo.set('{:.2g}'.format(1.22*5.5e-4*180*3600/(C.APERTURE[self.cont.tnum][0]*np.pi)))
         
         # Set text colour according to whether the data is default or user added
         self.labelFL2.configure(foreground=('black' if C.FOCAL_LENGTH[self.cont.tnum][1] == 0 else 'navy'))
@@ -732,7 +732,7 @@ class ImageCalculator(ttk.Frame):
         try:
             self.exposure = self.varExp.get()
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for exposure time.')
             self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
@@ -743,7 +743,7 @@ class ImageCalculator(ttk.Frame):
         try:
             self.dark_input = self.varDark.get()
             
-        except ValueError:
+        except tk.TclError:
             if self.use_dark:
                 self.varMessageLabel.set('Invalid input for dark frame noise.' \
                                          if self.cont.isDSLR else 'Invalid input for dark frame level.')
@@ -756,7 +756,7 @@ class ImageCalculator(ttk.Frame):
         try:
             self.bgn = self.varBGN.get()
             
-        except ValueError:
+        except tk.TclError:
             if self.cont.isDSLR:
                 self.varMessageLabel.set('Invalid input for background noise.')
                 self.labelMessage.configure(foreground='crimson')
@@ -768,7 +768,7 @@ class ImageCalculator(ttk.Frame):
         try:
             self.bgl = self.varBGL.get()
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for background level.')
             self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
@@ -777,7 +777,7 @@ class ImageCalculator(ttk.Frame):
         try:
             self.target = self.varTarget.get()
             
-        except ValueError:
+        except tk.TclError:
             self.varTarget.set('')
             self.target = 0
         
@@ -837,7 +837,7 @@ class ImageCalculator(ttk.Frame):
                 if dark_signal_e < 0:
                     message = 'The dark frame noise cannot be lower than the read noise. Using ' \
                               + 'lowest possible value.'
-                    self.varDark.set('%.3g' % (rn/gain))
+                    self.varDark.set('{:.3g}'.format(rn/gain))
                     dark_signal_e = 0
                     
             else:
@@ -858,7 +858,7 @@ class ImageCalculator(ttk.Frame):
                 message = 'The background noise cannot be lower than the ' + type \
                           + ' noise. Using lowest possible value.'
                 tbgn = np.sqrt(rn**2 + dark_signal_e)
-                self.varBGN.set('%.3g' % (tbgn/gain))
+                self.varBGN.set('{:.3g}'.format(tbgn/gain))
                 sky_signal_e = 0
             
             dn = np.sqrt(dark_signal_e)                   # Dark noise [e-]
@@ -899,22 +899,22 @@ class ImageCalculator(ttk.Frame):
         factor = 10*np.log(2.0)/np.log(10.0)
         
         # Update labels
-        self.varSNRInfo.set('-' if self.target == 0 else '%.1f' % snr)
-        self.varDRInfo.set('%.1f' % (self.dr if self.cont.stopsDRUnit.get() else self.dr*factor))
-        self.varSNInfo.set('%.1f' % sn)
-        self.varDNInfo.set('%.1f' % dn)
-        self.varTBGNInfo.set('%.1f' % tbgn)
-        self.varDFInfo.set('%.3g' % (self.df))
+        self.varSNRInfo.set('-' if self.target == 0 else '{:.1f}'.format(snr))
+        self.varDRInfo.set('{:.1f}'.format(self.dr if self.cont.stopsDRUnit.get() else self.dr*factor))
+        self.varSNInfo.set('{:.1f}'.format(sn))
+        self.varDNInfo.set('{:.1f}'.format(dn))
+        self.varTBGNInfo.set('{:.1f}'.format(tbgn))
+        self.varDFInfo.set('{:.3g}'.format(self.df))
         
         if self.cont.lumSignalType.get():
         
             sf = self.cont.convSig(self.sf, True)
-            self.varSFInfo.set('%.4g' % sf)
+            self.varSFInfo.set('{:.4g}'.format(sf))
             self.setLumColour(sf, self.labelSF2)
             
             if self.target != 0:
                 tf = self.cont.convSig(self.tf, True)
-                self.varTFInfo.set('%.4g' % tf)
+                self.varTFInfo.set('{:.4g}'.format(tf))
                 self.setLumColour(tf, self.labelTF2)
                 self.checkbuttonLim.configure(state='normal')
             else:
@@ -923,9 +923,9 @@ class ImageCalculator(ttk.Frame):
                 self.checkbuttonLim.configure(state='disabled')
                 self.varTransfLim.set(0)
         else:
-            self.varSFInfo.set('%.3g' % (self.sf))
+            self.varSFInfo.set('{:.3g}'.format(self.sf))
             self.checkbuttonLim.configure(state=('normal' if self.target != 0 else 'disabled'))
-            self.varTFInfo.set('-' if self.target == 0 else '%.3g' % (self.tf))
+            self.varTFInfo.set('-' if self.target == 0 else '{:.3g}'.format(self.tf))
             self.labelTF2.configure(background=C.DEFAULT_BG, foreground='black')
         
         self.dataCalculated = True
@@ -987,17 +987,17 @@ class ImageCalculator(ttk.Frame):
         '''Set skyglow label background according to the luminance value.'''
     
         if sf > 21.8:
-            label.configure(background=('#%02x%02x%02x' % (0, 0, 0)), foreground='white')
+            label.configure(background=('#{:02x}{:02x}{:02x}'.format(0, 0, 0)), foreground='white')
         elif 21.8 >= sf > 21.5:
-            label.configure(background=('#%02x%02x%02x' % (11, 44, 111)), foreground='white')
+            label.configure(background=('#{:02x}{:02x}{:02x}'.format(11, 44, 111)), foreground='white')
         elif 21.5 >= sf > 21.2:
-            label.configure(background=('#%02x%02x%02x' % (32, 153, 143)), foreground='white')
+            label.configure(background=('#{:02x}{:02x}{:02x}'.format(32, 153, 143)), foreground='white')
         elif 21.2 >= sf > 20.9:
-            label.configure(background=('#%02x%02x%02x' % (0, 219, 0)), foreground='black')
+            label.configure(background=('#{:02x}{:02x}{:02x}'.format(0, 219, 0)), foreground='black')
         elif 20.9 >= sf > 20.4:
-            label.configure(background=('#%02x%02x%02x' % (255, 255, 0)), foreground='black')
+            label.configure(background=('#{:02x}{:02x}{:02x}'.format(255, 255, 0)), foreground='black')
         elif 20.4 >= sf > 19.4:
-            label.configure(background=('#%02x%02x%02x' % (237, 161, 19)), foreground='black')
+            label.configure(background=('#{:02x}{:02x}{:02x}'.format(237, 161, 19)), foreground='black')
         else:
-            label.configure(background=('#%02x%02x%02x' % (194, 82, 60)), foreground='black')
+            label.configure(background=('#{:02x}{:02x}{:02x}'.format(194, 82, 60)), foreground='black')
     

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import Tkinter as tk
-import ttk
+import tkinter as tk
+import tkinter.ttk as ttk
 import numpy as np
 import matplotlib
-import FileDialog
 import matplotlib.pyplot as plt
 from PIL import Image, ImageTk
 import aplab_common as apc
@@ -493,13 +492,13 @@ class ImageSimulator(ttk.Frame):
         self.varSubs.set(1)
         self.varStretch.set(0)
         
-        self.varGainInfo.set('%.3g' % C.GAIN[self.cont.cnum][0][self.gain_idx])
-        self.varSatCapInfo.set('%d' % C.SAT_CAP[self.cont.cnum][0][self.gain_idx])
-        self.varBLInfo.set('%d' % C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx])
-        self.varWLInfo.set('%d' % C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx])
-        self.varPSInfo.set('%g' % C.PIXEL_SIZE[self.cont.cnum][0])
-        self.varQEInfo.set('-' if not self.cont.hasQE else ('%d' % (C.QE[self.cont.cnum][0]*100)))
-        self.varRNInfo.set('%.1f' % (self.varRN.get()))
+        self.varGainInfo.set('{:.3g}'.format(C.GAIN[self.cont.cnum][0][self.gain_idx]))
+        self.varSatCapInfo.set('{:d}'.format(C.SAT_CAP[self.cont.cnum][0][self.gain_idx]))
+        self.varBLInfo.set('{:d}'.format(C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx]))
+        self.varWLInfo.set('{:d}'.format(C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]))
+        self.varPSInfo.set('{:g}'.format(C.PIXEL_SIZE[self.cont.cnum][0]))
+        self.varQEInfo.set('-' if not self.cont.hasQE else ('{:d}'.format(int(C.QE[self.cont.cnum][0]*100))))
+        self.varRNInfo.set('{:.1f}'.format(self.varRN.get()))
         
         # Set text colour according to whether the data is default or user added
         self.labelGainI2.configure(foreground=('black' \
@@ -597,11 +596,11 @@ class ImageSimulator(ttk.Frame):
         level values of currently selected ISO/gain/RN.
         '''
     
-        self.varGainInfo.set('%.3g' % C.GAIN[self.cont.cnum][0][self.gain_idx])
-        self.varRNInfo.set('%.1f' % C.RN[self.cont.cnum][0][self.rn_idx])
-        self.varSatCapInfo.set('%d' % C.SAT_CAP[self.cont.cnum][0][self.gain_idx])
-        self.varBLInfo.set('%d' % C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx])
-        self.varWLInfo.set('%d' % C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx])
+        self.varGainInfo.set('{:.3g}'.format(C.GAIN[self.cont.cnum][0][self.gain_idx]))
+        self.varRNInfo.set('{:.1f}'.format(C.RN[self.cont.cnum][0][self.rn_idx]))
+        self.varSatCapInfo.set('{:d}'.format(C.SAT_CAP[self.cont.cnum][0][self.gain_idx]))
+        self.varBLInfo.set('{:d}'.format(C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx]))
+        self.varWLInfo.set('{:d}'.format(C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]))
         
         # Set text colour according to whether the data is default or user added
         self.labelGainI2.configure(foreground=('black' if C.GAIN[self.cont.cnum][1][self.gain_idx] == 0 else 'navy'))
@@ -614,13 +613,13 @@ class ImageSimulator(ttk.Frame):
     
         '''Update labels in the optics frame with the current values.'''
     
-        self.varFLInfo.set('%g' % C.FOCAL_LENGTH[self.cont.tnum][0])
-        self.varEFLInfo.set('%g' % (C.FOCAL_LENGTH[self.cont.tnum][0]*self.cont.FLModVal))
-        self.varAPInfo.set('%g' % C.APERTURE[self.cont.tnum][0])
-        self.varFRInfo.set(u'\u0192/%g' % round(C.FOCAL_LENGTH[self.cont.tnum][0]*self.cont.FLModVal\
-                                                /C.APERTURE[self.cont.tnum][0], 1))
-        self.varISInfo.set('%.3g' % (self.cont.ISVal))
-        self.varRLInfo.set('%.2g' % (1.22*5.5e-4*180*3600/(C.APERTURE[self.cont.tnum][0]*np.pi)))
+        self.varFLInfo.set('{:g}'.format(C.FOCAL_LENGTH[self.cont.tnum][0]))
+        self.varEFLInfo.set('{:g}'.format(C.FOCAL_LENGTH[self.cont.tnum][0]*self.cont.FLModVal))
+        self.varAPInfo.set('{:g}'.format(C.APERTURE[self.cont.tnum][0]))
+        self.varFRInfo.set(u'\u0192/{:g}'.format(round(C.FOCAL_LENGTH[self.cont.tnum][0]*self.cont.FLModVal\
+                                                /C.APERTURE[self.cont.tnum][0], 1)))
+        self.varISInfo.set('{:.3g}'.format(self.cont.ISVal))
+        self.varRLInfo.set('{:.2g}'.format(1.22*5.5e-4*180*3600/(C.APERTURE[self.cont.tnum][0]*np.pi)))
         
         # Set text colour according to whether the data is default or user added
         self.labelFL2.configure(foreground=('black' if C.FOCAL_LENGTH[self.cont.tnum][1] == 0 else 'navy'))
@@ -635,7 +634,7 @@ class ImageSimulator(ttk.Frame):
         try:
             self.exposure = self.varExp.get()
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for exposure time.')
             self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
@@ -644,7 +643,7 @@ class ImageSimulator(ttk.Frame):
         try:
             self.df = self.varDF.get()
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for dark current.')
             self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
@@ -654,7 +653,7 @@ class ImageSimulator(ttk.Frame):
             self.sf = (self.cont.convSig(self.varSF.get(), False) if self.cont.lumSignalType.get() \
                                                         else self.varSF.get())
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for skyglow.')
             self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
@@ -664,7 +663,7 @@ class ImageSimulator(ttk.Frame):
             self.tf = (self.cont.convSig(self.varTF.get(), False) if self.cont.lumSignalType.get() \
                                                         else self.varTF.get())
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for target signal.')
             self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
@@ -673,7 +672,7 @@ class ImageSimulator(ttk.Frame):
         try:
             self.subs = self.varSubs.get()
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for number of subframes. Must be an integer.')
             self.labelMessage.configure(foreground='crimson')
             self.emptyInfoLabels()
@@ -707,12 +706,12 @@ class ImageSimulator(ttk.Frame):
         factor = 10*np.log(2.0)/np.log(10.0)
         
         # Update labels
-        self.varSNRInfo.set('%.1f' % snr)
-        self.varStackSNRInfo.set('%.1f' % stack_snr)
-        self.varDRInfo.set('%.1f' % (self.dr if self.cont.stopsDRUnit.get() else self.dr*factor))
-        self.varDNInfo.set('%.1f' % dn)
-        self.varSNInfo.set('%.1f' % sn)
-        self.varTBGNInfo.set('%.1f' % tbgn)
+        self.varSNRInfo.set('{:.1f}'.format(snr))
+        self.varStackSNRInfo.set('{:.1f}'.format(stack_snr))
+        self.varDRInfo.set('{:.1f}'.format(self.dr if self.cont.stopsDRUnit.get() else self.dr*factor))
+        self.varDNInfo.set('{:.1f}'.format(dn))
+        self.varSNInfo.set('{:.1f}'.format(sn))
+        self.varTBGNInfo.set('{:.1f}'.format(tbgn))
         
         self.dataCalculated = True
         
@@ -934,7 +933,7 @@ class ImageSimulator(ttk.Frame):
             tf = (self.cont.convSig(self.varTF.get(), False) if self.cont.lumSignalType.get() \
                                                         else self.varTF.get())
                 
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set(\
                  'Requires valid input for dark current, skyglow and target signal.')
             self.labelMessage.configure(foreground='crimson')
@@ -944,7 +943,7 @@ class ImageSimulator(ttk.Frame):
         try:
             lf = (self.cont.convSig(self.varLF.get(), False) if self.cont.lumSignalType.get() \
                                                             else self.varLF.get())
-        except ValueError:
+        except tk.TclError:
             self.varLF.set('')
             lf = tf
             
@@ -1088,20 +1087,20 @@ class ImageSimulator(ttk.Frame):
         if iso:
             labelISO1 = ttk.Label(frameResults, text='ISO: ')
             labelISO1.grid(row=0, column=0, sticky='W')
-            labelISO2 = ttk.Label(frameResults, text=('%d' % iso), width=7, anchor='center')
+            labelISO2 = ttk.Label(frameResults, text=('{:d}'.format(iso)), width=7, anchor='center')
             labelISO2.grid(row=0, column=1)
             apc.createToolTip(labelISO2, C.TTSet, self.cont.tt_fs)
         
         labelExp1 = ttk.Label(frameResults, text='Exposure time: ')
         labelExp1.grid(row=1, column=0, sticky='W')
-        labelExp2 = ttk.Label(frameResults, text=('%d' % exp), width=7, anchor='center')
+        labelExp2 = ttk.Label(frameResults, text=('{:d}'.format(exp)), width=7, anchor='center')
         labelExp2.grid(row=1, column=1)
         labelExp3 = ttk.Label(frameResults, text=' seconds')
         labelExp3.grid(row=1, column=2, sticky='W')
         
         labelSubs1 = ttk.Label(frameResults, text='Number of subframes: ')
         labelSubs1.grid(row=2, column=0, sticky='W')
-        labelSubs2 = ttk.Label(frameResults, text=('%d' % subs), width=7, anchor='center')
+        labelSubs2 = ttk.Label(frameResults, text=('{:d}'.format(subs)), width=7, anchor='center')
         labelSubs2.grid(row=2, column=1)
         
         for widget in [labelExp2, labelSubs2]:
@@ -1118,15 +1117,15 @@ class ImageSimulator(ttk.Frame):
         frameResultVals.pack(side='top')
         
         ttk.Label(frameResultVals, text='Sub SNR: ').grid(row=0, column=0, sticky='W')
-        ttk.Label(frameResultVals, text=('%.1f' % snr), width=7,
+        ttk.Label(frameResultVals, text=('{:.1f}'.format(snr)), width=7,
                   anchor='center').grid(row=0, column=1)
         
         ttk.Label(frameResultVals, text='Stack SNR: ').grid(row=1, column=0, sticky='W')
-        ttk.Label(frameResultVals, text=('%.1f' % stack_snr), width=7,
+        ttk.Label(frameResultVals, text=('{:.1f}'.format(stack_snr)), width=7,
                   anchor='center').grid(row=1, column=1)
         
         ttk.Label(frameResultVals, text='Dynamic range: ').grid(row=2, column=0, sticky='W')
-        ttk.Label(frameResultVals, text=('%.1f' % dr), width=7,
+        ttk.Label(frameResultVals, text=('{:.1f}'.format(dr)), width=7,
                   anchor='center').grid(row=2, column=1)
         ttk.Label(frameResultVals, text=(' stops' if self.cont.stopsDRUnit.get() else ' dB'))\
                  .grid(row=2, column=2, sticky='W')
@@ -1142,22 +1141,22 @@ class ImageSimulator(ttk.Frame):
         frameCompVals.pack(side='top')
         
         ttk.Label(frameCompVals, text='User limited exp. time: ').grid(row=0, column=0, sticky='W')
-        ttk.Label(frameCompVals, text=('%d' % max), width=7,
+        ttk.Label(frameCompVals, text=('{:d}'.format(max)), width=7,
                   anchor='center').grid(row=0, column=1)
         ttk.Label(frameCompVals, text=' seconds').grid(row=0, column=2, sticky='W')
         
         ttk.Label(frameCompVals, text='Saturation limited exp. time: ').grid(row=1, column=0, sticky='W')
-        ttk.Label(frameCompVals, text=('%d' % sat_exp), width=7,
+        ttk.Label(frameCompVals, text=('{:d}'.format(sat_exp)), width=7,
                   anchor='center').grid(row=1, column=1)
         ttk.Label(frameCompVals, text=' seconds').grid(row=1, column=2, sticky='W')
         
         ttk.Label(frameCompVals, text='Reduced exp. time: ').grid(row=2, column=0, sticky='W')
-        ttk.Label(frameCompVals, text=('%d' % exp), width=7,
+        ttk.Label(frameCompVals, text=('{:d}'.format(exp)), width=7,
                   anchor='center').grid(row=2, column=1)
         ttk.Label(frameCompVals, text=' seconds').grid(row=2, column=2, sticky='W')
         
         ttk.Label(frameCompVals, text='Stack SNR loss from reduction: ').grid(row=3, column=0, sticky='W')
-        ttk.Label(frameCompVals, text=('%.2f%%' % ((in_stack_snr - stack_snr)*100/stack_snr)), width=7,
+        ttk.Label(frameCompVals, text=('{:.2f}%%'.format((in_stack_snr - stack_snr)*100/stack_snr)), width=7,
                   anchor='center').grid(row=3, column=1)
         
         ttk.Button(topSettings, text='Close', command=lambda: topSettings.destroy())\

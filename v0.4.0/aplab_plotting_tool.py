@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import Tkinter as tk
-import ttk
+import tkinter as tk
+import tkinter.ttk as ttk
 import numpy as np
 import matplotlib
-import FileDialog # Needed for matplotlib
 import aplab_common as apc
 from aplab_common import C
 
@@ -765,7 +764,7 @@ class PlottingTool(ttk.Frame):
         try:
             self.exposure = self.varExp.get()
             
-        except ValueError:
+        except tk.TclError:
             if self.useExp:
                 self.varMessageLabel.set('Invalid input for exposure time.')
                 self.labelMessage.configure(foreground='crimson')
@@ -775,7 +774,7 @@ class PlottingTool(ttk.Frame):
             if self.useFlux:
                 self.df = self.varDF.get()
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for dark current.')
             self.labelMessage.configure(foreground='crimson')
             return None
@@ -785,7 +784,7 @@ class PlottingTool(ttk.Frame):
                 self.sf = (self.cont.convSig(self.varSF.get(), False) if self.cont.lumSignalType.get() \
                                                             else self.varSF.get())
                 
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for skyglow.')
             self.labelMessage.configure(foreground='crimson')
             return None
@@ -795,7 +794,7 @@ class PlottingTool(ttk.Frame):
                 self.lf = (self.cont.convSig(self.varLF.get(), False) if self.cont.lumSignalType.get() \
                                                             else self.varLF.get())
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for limit signal.')
             self.labelMessage.configure(foreground='crimson')
             return None
@@ -805,7 +804,7 @@ class PlottingTool(ttk.Frame):
                 self.tf = (self.cont.convSig(self.varTF.get(), False) if self.cont.lumSignalType.get() \
                                                             else self.varTF.get())
             
-        except ValueError:
+        except tk.TclError:
             self.varMessageLabel.set('Invalid input for target signal.')
             self.labelMessage.configure(foreground='crimson')
             return None
@@ -813,7 +812,7 @@ class PlottingTool(ttk.Frame):
         try:
             self.total = self.varTotal.get()*3600
             
-        except ValueError:
+        except tk.TclError:
             if self.useTotal:
                 self.varMessageLabel.set('Invalid input for total imaging time.')
                 self.labelMessage.configure(foreground='crimson')
@@ -822,7 +821,7 @@ class PlottingTool(ttk.Frame):
         try:
             self.max = self.varMax.get()
             
-        except ValueError:
+        except tk.TclError:
             if self.useMax and self.cont.isDSLR:
                 self.varMessageLabel.set('Invalid input for max exposure time.')
                 self.labelMessage.configure(foreground='crimson')
@@ -937,7 +936,7 @@ class PlottingTool(ttk.Frame):
             self.ax.plot(xvals, stack_snr, 'o-', color='forestgreen')
             
             for i in range(len(iso)):
-                self.ax.annotate('%d x %d s' % (subs[i], np.ceil(exposure[i])), name=C.gfont,
+                self.ax.annotate('{:d} x {:d} s'.format(subs[i], np.ceil(exposure[i])), name=C.gfont,
                                  fontsize=self.cont.tt_fs, xy=(xvals[i], stack_snr[i]),
                                  xytext=(-20, -30), textcoords='offset points',
                                  arrowprops=dict(arrowstyle='->', facecolor='black'))
@@ -1010,7 +1009,7 @@ class PlottingTool(ttk.Frame):
                               current_snr, 'o', color='crimson', label='Current values')
             self.ax.legend(handles=[p], loc='best', numpoints=1, fontsize=small_fs)
             self.ax.set_title(self.p7, name=C.gfont, weight='heavy', fontsize=medium_fs)
-            self.ax.set_xlabel('Skyglow %s' % (u'[mag/arcsec\u00B2]' \
+            self.ax.set_xlabel('Skyglow {}'.format(u'[mag/arcsec\u00B2]' \
                                                if self.cont.lumSignalType.get() else '[e-/s]'),
                                name=C.gfont, fontsize=small_fs)
             self.ax.set_ylabel('Target SNR', name=C.gfont, fontsize=small_fs)
@@ -1050,7 +1049,7 @@ class PlottingTool(ttk.Frame):
                               current_dr, 'o', color='navy', label='Current values')
             self.ax.legend(handles=[p], loc='best', numpoints=1, fontsize=small_fs)
             self.ax.set_title(self.p8, name=C.gfont, weight='heavy', fontsize=medium_fs)
-            self.ax.set_xlabel('Skyglow %s' % (u'[mag/arcsec\u00B2]' \
+            self.ax.set_xlabel('Skyglow {}'.format(u'[mag/arcsec\u00B2]' \
                                                if self.cont.lumSignalType.get() else '[e-/s]'),
                                name=C.gfont, fontsize=small_fs)
             self.ax.set_ylabel('Dynamic range [stops]', name=C.gfont, fontsize=small_fs)
@@ -1106,7 +1105,7 @@ class PlottingTool(ttk.Frame):
                               current_snr, 'o', color='crimson', label='Current values')
             self.ax.legend(handles=[p], loc='best', numpoints=1, fontsize=small_fs)
             self.ax.set_title(self.p10, name=C.gfont, weight='heavy', fontsize=medium_fs)
-            self.ax.set_xlabel('Target signal %s' % (u'[mag/arcsec\u00B2]' \
+            self.ax.set_xlabel('Target signal {}'.format(u'[mag/arcsec\u00B2]' \
                                                      if self.cont.lumSignalType.get() else '[e-/s]'),
                                name=C.gfont, fontsize=small_fs)
             self.ax.set_ylabel('Target SNR', name=C.gfont, fontsize=small_fs)
@@ -1216,11 +1215,11 @@ class PlottingTool(ttk.Frame):
             
             self.ax.cla()
             self.ax.plot(exposure, snr1, '-', color='crimson', 
-                         label='Target SNR: %.1f - %.1f' % (snr1_min, snr1_max))
+                         label='Target SNR: {:.1f} - {:.1f}'.format(snr1_min, snr1_max))
             self.ax.plot(exposure, stack_snr2, '-', color='forestgreen',
-                         label='Stack SNR: %.1f - %.1f' % (stack_snr2_min, stack_snr2_max))
+                         label='Stack SNR: {:.1f} - {:.1f}'.format(stack_snr2_min, stack_snr2_max))
             self.ax.plot(exposure, dr3, '-', color='navy', 
-                         label='Dynamic range: %.1f - %.1f stops' % (dr3_min, dr3_max))
+                         label='Dynamic range: {:.1f} - {:.1f} stops'.format(dr3_min, dr3_max))
             self.ax.legend(loc='best', fontsize=small_fs)
             self.ax.set_title(self.pc1 + ' comparison plot', name=C.gfont, weight='heavy', 
                               fontsize=medium_fs)
@@ -1245,9 +1244,9 @@ class PlottingTool(ttk.Frame):
             
             self.ax.cla()
             self.ax.plot(subs[:-1], stack_snr1, '-', color='crimson', 
-                         label='Stack SNR: %.1f - %.1f' % (stack_snr1_min, stack_snr1_max))
+                         label='Stack SNR: {:.1f} - {:.1f}'.format(stack_snr1_min, stack_snr1_max))
             self.ax.plot(subs[:-1], delta_snr1, '-', color='forestgreen',
-                         label='Stack SNR increase: %.1f - %.1f' % (delta_snr1_min, delta_snr1_max))
+                         label='Stack SNR increase: {:.1f} - {:.1f}'.format(delta_snr1_min, delta_snr1_max))
             self.ax.legend(loc='best', fontsize=small_fs)
             self.ax.set_title(self.pc2 + ' comparison plot', name=C.gfont, weight='heavy', 
                               fontsize=medium_fs)
@@ -1291,10 +1290,10 @@ class PlottingTool(ttk.Frame):
             
             self.ax.cla()
             self.ax.plot((self.cont.convSig(sf, True) if self.cont.lumSignalType.get() else sf), snr1, '-', 
-                         color='crimson', label='Target SNR: %.1f - %.1f' % (snr1_min, snr1_max))
+                         color='crimson', label='Target SNR: {:.1f} - {:.1f}'.format(snr1_min, snr1_max))
             self.ax.plot((self.cont.convSig(sf, True) if self.cont.lumSignalType.get() else sf), dr1, '-', 
                          color='forestgreen', 
-                         label='Dynamic range: %.1f - %.1f stops' % (dr1_min, dr1_max))
+                         label='Dynamic range: {:.1f} - {:.1f} stops'.format(dr1_min, dr1_max))
             self.ax.legend(loc='best', fontsize=small_fs)
             self.ax.plot((self.cont.convSig(self.sf, True) if self.cont.lumSignalType.get() else self.sf),
                          (current_snr1 - snr1_min)/(snr1_max - snr1_min), 'o', color='crimson')
@@ -1302,7 +1301,7 @@ class PlottingTool(ttk.Frame):
                          (current_dr1 - dr1_min)/(dr1_max - dr1_min), 'o', color='forestgreen')
             self.ax.set_title(self.pc3 + ' comparison plot', name=C.gfont, weight='heavy', 
                               fontsize=medium_fs)
-            self.ax.set_xlabel('Skyglow %s' % (u'[mag/arcsec\u00B2]' \
+            self.ax.set_xlabel('Skyglow {}'.format(u'[mag/arcsec\u00B2]' \
                                                if self.cont.lumSignalType.get() else '[e-/s]'), 
                                name=C.gfont, fontsize=small_fs)
             self.ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
@@ -1339,9 +1338,9 @@ class PlottingTool(ttk.Frame):
             xvals = np.linspace(0, 1, len(iso))
             self.ax.cla()
             self.ax.plot(xvals, stack_snr1, '-o', color='crimson', 
-                         label='Max stack SNR: %.1f - %.1f' % (stack_snr1_min, stack_snr1_max))
+                         label='Max stack SNR: {:.1f} - {:.1f}'.format(stack_snr1_min, stack_snr1_max))
             self.ax.plot(xvals, dr2, '-o', color='forestgreen',
-                         label='Dynamic range: %.1f - %.1f stops' % (dr2_min, dr2_max))
+                         label='Dynamic range: {:.1f} - {:.1f} stops'.format(dr2_min, dr2_max))
             self.ax.legend(loc='best', fontsize=small_fs)
             self.ax.set_title(self.pc4 + ' comparison plot', name=C.gfont, weight='heavy', 
                               fontsize=medium_fs)

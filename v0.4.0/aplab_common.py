@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import Tkinter as tk
-import ttk
-import tkFont
+import tkinter as tk
+import tkinter.ttk as ttk
+import tkinter.font as tkfont
 import sys
 import datetime
 import traceback
@@ -87,7 +87,7 @@ class C:
     scsy = scsx = sh/768.0  # Scaling after screen height
 
     # Default background colour
-    DEFAULT_BG = '#%02x%02x%02x' % ((240, 240, 237) if is_win else (217, 217, 217))
+    DEFAULT_BG = '#{:02x}{:02x}{:02x}'.format(240, 240, 237) if is_win else '#{:02x}{:02x}{:02x}'.format(217, 217, 217)
 
     # Window sizes
 
@@ -206,8 +206,8 @@ class ToolTip:
         self.topTip.wm_attributes('-topmost', 1)
         
         # Set window position
-        self.topTip.wm_geometry('+%d+%d' % (self.widget.winfo_pointerx() + 15*C.scsx,
-                                            self.widget.winfo_pointery() + 15*C.scsy))
+        self.topTip.wm_geometry('+{:d}+{:d}'.format(self.widget.winfo_pointerx() + int(15*C.scsx),
+                                            self.widget.winfo_pointery() + int(15*C.scsy)))
         
         # Define tooltip label
         label = tk.Label(self.topTip, text=tiptext, justify='left', background='white',
@@ -241,7 +241,7 @@ class ErrorWindow(tk.Tk):
         except:
             pass
             
-        errfont = tkFont.Font(root=self, family=C.gfont, size=9)
+        errfont = tkfont.Font(root=self, family=C.gfont, size=9)
         
         ttk.Label(self, text=error_message, font=errfont).pack(pady=12*C.scsy, expand=True)
         ttk.Button(self, text='OK', command=lambda: self.destroy()).pack(pady=(0, 12*C.scsy),
@@ -270,13 +270,13 @@ class Catcher:
         
             if self.subst:
             
-                args = apply(self.subst, args)
+                args = self.subst(*args)
                 
-            return apply(self.func, args)
+            return self.func(*args)
             
-        except SystemExit, msg:
+        except SystemExit:
         
-            raise SystemExit, msg
+            raise SystemExit(0)
             
         except:
         
@@ -294,7 +294,7 @@ class Catcher:
             file.close()
             
             error = ErrorWindow(msg1 + '\n'.join(traceback.format_tb(tb)) + '\n' \
-                                + ex_type.__name__ + ': ' + ex.message + '\n' + msg2)
+                                + ex_type.__name__ + ': ' + ex.__str__() + '\n' + msg2)
             error.mainloop()
             
 
@@ -309,7 +309,7 @@ def createToolTip(widget, tiptext, fs):
         
     def moveWidget(event):
         try:
-            toolTip.topTip.wm_geometry('+%d+%d' % (event.widget.winfo_pointerx() + 15*C.scsx,
+            toolTip.topTip.wm_geometry('+{:d}+{:d}'.format(event.widget.winfo_pointerx() + 15*C.scsx,
                                                    event.widget.winfo_pointery() + 15*C.scsy))
         except:
             pass
@@ -332,7 +332,7 @@ def setupWindow(window, width, height):
     x = (C.sw - width)/2
     y = (C.sh - height)/2
         
-    window.geometry('%dx%d+%d-%d' % (width, height, x, y))
+    window.geometry('{:d}x{:d}+{:d}-{:d}'.format(int(width), int(height), int(x), int(y)))
     window.update_idletasks()
 
 def sortDataList(name, filename):
