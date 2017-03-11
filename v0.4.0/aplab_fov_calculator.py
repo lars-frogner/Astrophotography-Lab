@@ -28,7 +28,7 @@ class FOVCalculator(ttk.Frame):
         medium_font = self.cont.medium_font
         large_font = self.cont.large_font
         
-        self.topCanvas = tk.Toplevel()
+        self.topCanvas = tk.Toplevel(background=C.DEFAULT_BG)
         self.topCanvas.destroy()
         
         self.utcOffset = datetime.datetime.now() - datetime.datetime.utcnow()
@@ -84,7 +84,8 @@ class FOVCalculator(ttk.Frame):
         
         all = range(len(self.obDes))
 
-        self.obj_idx = self.obDes.index('Moon')
+        self.start_idx = self.obDes.index('Moon')
+        self.obj_idx = self.start_idx
         
         l_messier = all[:-11]
         l_ic = []
@@ -369,7 +370,7 @@ class FOVCalculator(ttk.Frame):
         self.canvasView.pack(side='top', expand=True)
         
         self.labelCredit = ttk.Label(self.frameRight, textvariable=self.varCredit, anchor='center',
-                                foreground='darkgray')
+                                foreground='dim gray')
         self.labelCredit.pack(side='bottom', fill='x')
         
         self.labelFOV = ttk.Label(self.frameRight, textvariable=self.varFOV, anchor='center')
@@ -497,10 +498,10 @@ class FOVCalculator(ttk.Frame):
         
         if not self.obj_idx in self.groups['Solar system']:
             self.varMag.set(self.obMag[self.obj_idx])
-            self.varRADec.set(u'{}h {:02d}m | {}\u00B0 {:02d}\''.format(self.obRA[self.obj_idx][0], 
-                                                                round(self.obRA[self.obj_idx][1]), 
-                                                                self.obDec[self.obj_idx][0], 
-                                                                round(self.obDec[self.obj_idx][1])))
+            self.varRADec.set(u'{:d}h {:02d}m | {:d}\u00B0 {:02d}\''.format(int(self.obRA[self.obj_idx][0]), 
+                                                                int(round(self.obRA[self.obj_idx][1])), 
+                                                                int(self.obDec[self.obj_idx][0]), 
+                                                                int(round(self.obDec[self.obj_idx][1]))))
             im_ang_w = self.imScale[self.obj_idx]*im_pix_w
 
             if self.obj_idx in (self.types['Nebula'] + self.types['Galaxy']):
@@ -509,7 +510,8 @@ class FOVCalculator(ttk.Frame):
                 self.labelSB2.grid(row=3, column=1)
                 self.varSB.set('{}'.format(self.obSB[self.obj_idx]) + u' mag/arcsec\u00B2')
 
-                self.buttonTransfer.configure(state='normal')
+                if not self.cont.noData:
+                    self.buttonTransfer.configure(state='normal')
 
             else:
 
@@ -538,10 +540,10 @@ class FOVCalculator(ttk.Frame):
                 if self.obName[self.obj_idx] == 'Moon':
 
                     state = 'waxing' if phaseangle >= np.pi else 'waning'
-                    self.varIllum.set('{:.1f}%% ({})'.format(illum, state))
+                    self.varIllum.set('{:.1f}% ({})'.format(illum, state))
 
                 else:
-                    self.varIllum.set('{:.1f}%%'.format(illum))
+                    self.varIllum.set('{:.1f}%'.format(illum))
             else:
                 self.labelIllum1.grid_forget()
                 self.labelIllum2.grid_forget()
@@ -1089,7 +1091,7 @@ class FOVCalculator(ttk.Frame):
     
         if not self.topCanvas.winfo_exists():
     
-            self.topCanvas = tk.Toplevel(bg=C.DEFAULT_BG)
+            self.topCanvas = tk.Toplevel(background=C.DEFAULT_BG)
             self.topCanvas.title('Altitude plot')
             self.cont.addIcon(self.topCanvas)
             apc.setupWindow(self.topCanvas, 900, 550)
@@ -1120,11 +1122,11 @@ class FOVCalculator(ttk.Frame):
             frameCheck.pack(side='top', expand=True)
             
             ttk.Label(frameCheck, text='Show Moon: ').grid(row=0, column=0, sticky='W')
-            self.checkbuttonMoon = tk.Checkbutton(frameCheck, variable=self.varUseMoon, command=self.plotAlt)
+            self.checkbuttonMoon = tk.Checkbutton(frameCheck, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varUseMoon, command=self.plotAlt)
             self.checkbuttonMoon.grid(row=0, column=1)
             
             ttk.Label(frameCheck, text='Show day/night: ').grid(row=1, column=0, sticky='W')
-            self.checkbuttonSun = tk.Checkbutton(frameCheck, variable=self.varUseSun, command=self.plotAlt)
+            self.checkbuttonSun = tk.Checkbutton(frameCheck, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varUseSun, command=self.plotAlt)
             self.checkbuttonSun.grid(row=1, column=1)
         
         if self.obName[self.obj_idx] == 'Moon':
@@ -1210,7 +1212,7 @@ class FOVCalculator(ttk.Frame):
         if ymin < 0 and ymax > 0: self.ax1.plot([xvals[0], xvals[-1]], [0, 0], '-', color='dimgray', 
                                                 zorder=1)
         
-        p0, = self.ax1.plot([], [], color='white', label=(self.obName[self.obj_idx]))
+        p0, = self.ax1.plot([], [], color='#{:02x}{:02x}{:02x}'.format(236, 240, 246), label=(self.obName[self.obj_idx]))
         if state == 'rs':
             p3, = self.ax1.plot([xvals[set_idx]], [alts[set_idx]], marker=7, color='navy', zorder=3,
                                label='Set time: {:02d}:{:02d}'.format(times[set_idx].hour, times[set_idx].minute))

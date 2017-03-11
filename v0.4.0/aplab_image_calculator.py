@@ -115,7 +115,7 @@ class ImageCalculator(ttk.Frame):
         
         frameOptics.pack(side='top', pady=(25*C.scsy, 50*C.scsy), expand=True)
         ttk.Label(frameLeft, text='User modified camera/optics data is displayed in blue',
-                  foreground='dimgray').pack(side='bottom', pady=(8*C.scsy, 25*C.scsy))
+                  foreground='dim gray').pack(side='bottom', pady=(8*C.scsy, 25*C.scsy))
         frameSensor.pack(side='bottom', expand=True)
         
         frameUpMiddle.pack(side='top', pady=(25*C.scsy, 20*C.scsy), expand=True)
@@ -156,26 +156,26 @@ class ImageCalculator(ttk.Frame):
         labelOptics = ttk.Label(frameOptics, text='Optics', font=medium_font, anchor='center', width=28)
         labelOptics.grid(row=0, column=0, columnspan=3, pady=5*C.scsy)
         
-        labelFL = ttk.Label(frameOptics, text='Focal length: ')
+        self.labelFL = ttk.Label(frameOptics, text='Focal length: ')
         self.labelFL2 = ttk.Label(frameOptics, textvariable=self.varFLInfo, anchor='center', width=7)
         labelFL3 = ttk.Label(frameOptics, text='mm')
         
-        labelEFL = ttk.Label(frameOptics, text='Effective focal length: ')
+        self.labelEFL = ttk.Label(frameOptics, text='Effective focal length: ')
         self.labelEFL2 = ttk.Label(frameOptics, textvariable=self.varEFLInfo, anchor='center', width=7)
         labelEFL3 = ttk.Label(frameOptics, text='mm')
         
-        labelAP = ttk.Label(frameOptics, text='Aperture diameter: ')
+        self.labelAP = ttk.Label(frameOptics, text='Aperture diameter: ')
         self.labelAP2 = ttk.Label(frameOptics, textvariable=self.varAPInfo, anchor='center', width=7)
         labelAP3 = ttk.Label(frameOptics, text='mm')
         
-        labelFR = ttk.Label(frameOptics, text='Focal ratio: ')
+        self.labelFR = ttk.Label(frameOptics, text='Focal ratio: ')
         self.labelFR2 = ttk.Label(frameOptics, textvariable=self.varFRInfo, anchor='center', width=7)
         
-        labelIS = ttk.Label(frameOptics, text='Image scale: ')
+        self.labelIS = ttk.Label(frameOptics, text='Image scale: ')
         self.labelIS2 = ttk.Label(frameOptics, textvariable=self.varISInfo, anchor='center', width=7)
         labelIS3 = ttk.Label(frameOptics, text='arcsec/pixel')
         
-        labelRL = ttk.Label(frameOptics, text='Angular resolution limit: ')
+        self.labelRL = ttk.Label(frameOptics, text='Angular resolution limit: ')
         self.labelRL2 = ttk.Label(frameOptics, textvariable=self.varRLInfo, anchor='center', width=7)
         labelRL3 = ttk.Label(frameOptics, text='arcsec')
         
@@ -185,82 +185,82 @@ class ImageCalculator(ttk.Frame):
                                 width=28)
         labelSensor.grid(row=0, column=0, columnspan=3, pady=5*C.scsy)
         
-        labelGainI = ttk.Label(frameSensor, text='Gain: ')
+        self.labelGainI = ttk.Label(frameSensor, text='Gain: ')
         self.labelGainI2 = ttk.Label(frameSensor, textvariable=self.varGainInfo, anchor='center',
                                      width=7)
         labelGainI3 = ttk.Label(frameSensor, text='e-/ADU')
         
-        labelSatCap = ttk.Label(frameSensor, text='Saturation capacity: ')
+        self.labelSatCap = ttk.Label(frameSensor, text='Saturation capacity: ')
         self.labelSatCap2 = ttk.Label(frameSensor, textvariable=self.varSatCapInfo, anchor='center',
                                       width=7)
         labelSatCap3 = ttk.Label(frameSensor, text='e-')
         
-        labelBL = ttk.Label(frameSensor, text='Black level: ')
+        self.labelBL = ttk.Label(frameSensor, text='Black level: ')
         self.labelBL2 = ttk.Label(frameSensor, textvariable=self.varBLInfo, anchor='center', width=7)
         labelBL3 = ttk.Label(frameSensor, text='ADU')
         
-        labelWL = ttk.Label(frameSensor, text='White level: ')
+        self.labelWL = ttk.Label(frameSensor, text='White level: ')
         self.labelWL2 = ttk.Label(frameSensor, textvariable=self.varWLInfo, anchor='center', width=7)
         labelWL3 = ttk.Label(frameSensor, text='ADU')
         
-        labelPS = ttk.Label(frameSensor, text='Pixel size: ')
+        self.labelPS = ttk.Label(frameSensor, text='Pixel size: ')
         self.labelPS2 = ttk.Label(frameSensor, textvariable=self.varPSInfo, anchor='center', width=7)
         labelPS3 = ttk.Label(frameSensor, text=u'\u03bcm')
         
-        labelQE = ttk.Label(frameSensor, text='Quantum efficiency: ')
+        self.labelQE = ttk.Label(frameSensor, text='Quantum efficiency: ')
         self.labelQE2 = ttk.Label(frameSensor, textvariable=self.varQEInfo, anchor='center', width=7)
         labelQE3 = ttk.Label(frameSensor, text='%')
         
         # Place optics frame widgets
         
-        labelFL.grid(row=1, column=0, sticky='W')
+        self.labelFL.grid(row=1, column=0, sticky='W')
         self.labelFL2.grid(row=1, column=1)
         labelFL3.grid(row=1, column=2, sticky='W')
         
-        labelEFL.grid(row=2, column=0, sticky='W')
+        self.labelEFL.grid(row=2, column=0, sticky='W')
         self.labelEFL2.grid(row=2, column=1)
         labelEFL3.grid(row=2, column=2, sticky='W')
         
-        labelAP.grid(row=3, column=0, sticky='W')
+        self.labelAP.grid(row=3, column=0, sticky='W')
         self.labelAP2.grid(row=3, column=1)
         labelAP3.grid(row=3, column=2, sticky='W')
         
-        labelFR.grid(row=4, column=0, sticky='W')
+        self.labelFR.grid(row=4, column=0, sticky='W')
         self.labelFR2.grid(row=4, column=1)
         
-        labelIS.grid(row=5, column=0, sticky='W')
+        self.labelIS.grid(row=5, column=0, sticky='W')
         self.labelIS2.grid(row=5, column=1)
         labelIS3.grid(row=5, column=2, sticky='W')
         
-        labelRL.grid(row=6, column=0, sticky='W')
+        self.labelRL.grid(row=6, column=0, sticky='W')
         self.labelRL2.grid(row=6, column=1)
         labelRL3.grid(row=6, column=2, sticky='W')
         
         # Place sensor frame widgets
         
-        labelGainI.grid(row=1, column=0, sticky='W')
+        self.labelGainI.grid(row=1, column=0, sticky='W')
         self.labelGainI2.grid(row=1, column=1)
         labelGainI3.grid(row=1, column=2, sticky='W')
         
-        labelSatCap.grid(row=2, column=0, sticky='W')
+        self.labelSatCap.grid(row=2, column=0, sticky='W')
         self.labelSatCap2.grid(row=2, column=1)
         labelSatCap3.grid(row=2, column=2, sticky='W')
         
-        labelBL.grid(row=3, column=0, sticky='W')
+        self.labelBL.grid(row=3, column=0, sticky='W')
         self.labelBL2.grid(row=3, column=1)
         labelBL3.grid(row=3, column=2, sticky='W')
         
-        labelWL.grid(row=4, column=0, sticky='W')
+        self.labelWL.grid(row=4, column=0, sticky='W')
         self.labelWL2.grid(row=4, column=1)
         labelWL3.grid(row=4, column=2, sticky='W')
         
         ttk.Separator(frameSensor, orient='horizontal').grid(row=5, column=0, columnspan=3, sticky='EW')
         
-        labelPS.grid(row=6, column=0, sticky='W')
+        self.labelPS.grid(row=6, column=0, sticky='W')
         self.labelPS2.grid(row=6, column=1)
         labelPS3.grid(row=6, column=2, sticky='W')
         
-        labelQE.grid(row=7, column=0, sticky='W')
+        self.labelQE.grid(row=7, column=0, sticky='W')
         self.labelQE2.grid(row=7, column=1)
         labelQE3.grid(row=7, column=2, sticky='W')
         
@@ -275,18 +275,18 @@ class ImageCalculator(ttk.Frame):
         self.labelDF2 = ttk.Label(frameSignal, textvariable=self.varDFInfo, anchor='center', width=7)
         self.labelDF3 = ttk.Label(frameSignal, text='e-/s')
         
-        labelSF = ttk.Label(frameSignal, textvariable=self.varSFTypeLabel)
+        self.labelSF = ttk.Label(frameSignal, textvariable=self.varSFTypeLabel)
         self.labelSF2 = ttk.Label(frameSignal, textvariable=self.varSFInfo, anchor='center', width=7)
         labelSF3 = ttk.Label(frameSignal, textvariable=self.varSFLabel, font=small_font)
         
-        labelTF = ttk.Label(frameSignal, text='Target signal: ')
+        self.labelTF = ttk.Label(frameSignal, text='Target signal: ')
         self.labelTF2 = ttk.Label(frameSignal, textvariable=self.varTFInfo, anchor='center', width=7)
         labelTF3 = ttk.Label(frameSignal, textvariable=self.varTFLabel)
         
-        labelSNR = ttk.Label(frameSignal, text='Target SNR:')
+        self.labelSNR = ttk.Label(frameSignal, text='Target SNR:')
         self.labelSNR2 = ttk.Label(frameSignal, textvariable=self.varSNRInfo, anchor='center', width=7)
         
-        labelDR = ttk.Label(frameSignal, text='Dynamic range:')
+        self.labelDR = ttk.Label(frameSignal, text='Dynamic range:')
         self.labelDR2 = ttk.Label(frameSignal, textvariable=self.varDRInfo, anchor='center', width=7)
         labelDR3 = ttk.Label(frameSignal, textvariable=self.varDRLabel)
         
@@ -296,7 +296,7 @@ class ImageCalculator(ttk.Frame):
                                      width=28)
         labelNoiseHeader.grid(row=0, column=0, columnspan=3, pady=5*C.scsy)
         
-        labelRNI = ttk.Label(frameNoise, text='Read noise: ')
+        self.labelRNI = ttk.Label(frameNoise, text='Read noise: ')
         self.labelRNI2 = ttk.Label(frameNoise, textvariable=self.varRNInfo, anchor='center', width=5)
         labelRNI3 = ttk.Label(frameNoise, textvariable=self.varRNLabel)
         
@@ -304,11 +304,11 @@ class ImageCalculator(ttk.Frame):
         self.labelDN2 = ttk.Label(frameNoise, textvariable=self.varDNInfo, anchor='center', width=5)
         self.labelDN3 = ttk.Label(frameNoise, textvariable=self.varDNLabel)
         
-        labelSN = ttk.Label(frameNoise, textvariable=self.varSNTypeLabel)
+        self.labelSN = ttk.Label(frameNoise, textvariable=self.varSNTypeLabel)
         self.labelSN2 = ttk.Label(frameNoise, textvariable=self.varSNInfo, anchor='center', width=5)
         labelSN3 = ttk.Label(frameNoise, textvariable=self.varSNLabel)
         
-        labelTBGN = ttk.Label(frameNoise, text='Total background noise: ')
+        self.labelTBGN = ttk.Label(frameNoise, text='Total background noise: ')
         self.labelTBGN2 = ttk.Label(frameNoise, textvariable=self.varTBGNInfo, anchor='center', width=5)
         labelTBGN3 = ttk.Label(frameNoise, textvariable=self.varTBGNLabel)
         
@@ -318,27 +318,27 @@ class ImageCalculator(ttk.Frame):
         self.labelDF2.grid(row=1, column=1)
         self.labelDF3.grid(row=1, column=2, sticky='W')
         
-        labelSF.grid(row=2, column=0, sticky='W')
+        self.labelSF.grid(row=2, column=0, sticky='W')
         self.labelSF2.grid(row=2, column=1)
         labelSF3.grid(row=2, column=2, sticky='W')
         
-        labelTF.grid(row=3, column=0, sticky='W')
+        self.labelTF.grid(row=3, column=0, sticky='W')
         self.labelTF2.grid(row=3, column=1)
         labelTF3.grid(row=3, column=2, sticky='W')
         
         ttk.Separator(frameSignal, orient='horizontal').grid(row=4, column=0, columnspan=3,
                                                              sticky='EW')
         
-        labelSNR.grid(row=5, column=0, sticky='W')
+        self.labelSNR.grid(row=5, column=0, sticky='W')
         self.labelSNR2.grid(row=5, column=1)
         
-        labelDR.grid(row=6, column=0, sticky='W')
+        self.labelDR.grid(row=6, column=0, sticky='W')
         self.labelDR2.grid(row=6, column=1)
         labelDR3.grid(row=6, column=2, sticky='W')
         
         # Place noise frame widgets
         
-        labelRNI.grid(row=1, column=0, sticky='W')
+        self.labelRNI.grid(row=1, column=0, sticky='W')
         self.labelRNI2.grid(row=1, column=1)
         labelRNI3.grid(row=1, column=2, sticky='W')
         
@@ -346,13 +346,13 @@ class ImageCalculator(ttk.Frame):
         self.labelDN2.grid(row=2, column=1)
         self.labelDN3.grid(row=2, column=2, sticky='W')
         
-        labelSN.grid(row=3, column=0, sticky='W')
+        self.labelSN.grid(row=3, column=0, sticky='W')
         self.labelSN2.grid(row=3, column=1)
         labelSN3.grid(row=3, column=2, sticky='W')
         
         ttk.Separator(frameNoise, orient='horizontal').grid(row=4, column=0, columnspan=3, sticky='EW')
         
-        labelTBGN.grid(row=5, column=0, sticky='W')
+        self.labelTBGN.grid(row=5, column=0, sticky='W')
         self.labelTBGN2.grid(row=5, column=1)
         labelTBGN3.grid(row=5, column=2, sticky='W')
         
@@ -381,14 +381,14 @@ class ImageCalculator(ttk.Frame):
             self.optionGain.config(width=6)
             self.optionRN.config(width=6)
         
-        labelExp = ttk.Label(frameUpMiddle, text='Exposure time:')
+        self.labelExp = ttk.Label(frameUpMiddle, text='Exposure time:')
         self.entryExp = ttk.Entry(frameUpMiddle, textvariable=self.varExp, width=9, font=small_font,
                                   background=C.DEFAULT_BG)
         labelExp2 = ttk.Label(frameUpMiddle, text='seconds')
         
-        labelToggleDark = ttk.Label(frameUpMiddle, text='Use dark frame info:')
-        self.checkbuttonToggleDark = tk.Checkbutton(frameUpMiddle, variable=self.varUseDark,
-                                                    font=small_font, command=self.toggleDarkInputMode)
+        self.labelToggleDark = ttk.Label(frameUpMiddle, text='Use dark frame info:')
+        self.checkbuttonToggleDark = tk.Checkbutton(frameUpMiddle, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG,
+                                                    variable=self.varUseDark, command=self.toggleDarkInputMode)
         labelToggleDark2 = ttk.Label(frameUpMiddle, text='', width=9)
         
         self.labelDark = ttk.Label(frameUpMiddle, textvariable=self.varDarkLabel)
@@ -401,12 +401,12 @@ class ImageCalculator(ttk.Frame):
                                   background=C.DEFAULT_BG, width=9)
         self.labelBGN2 = ttk.Label(frameUpMiddle, text='ADU')
         
-        labelBGL = ttk.Label(frameUpMiddle, text='Background level:')
+        self.labelBGL = ttk.Label(frameUpMiddle, text='Background level:')
         self.entryBGL = ttk.Entry(frameUpMiddle, textvariable=self.varBGL, font=small_font,
                                   background=C.DEFAULT_BG, width=9)
         labelBGL2 = ttk.Label(frameUpMiddle, text='ADU')
         
-        labelTarget = ttk.Label(frameUpMiddle, text='Target level:')
+        self.labelTarget = ttk.Label(frameUpMiddle, text='Target level:')
         self.entryTarget = ttk.Entry(frameUpMiddle, textvariable=self.varTarget, font=small_font,
                                      background=C.DEFAULT_BG, width=9)
         labelTarget2 = ttk.Label(frameUpMiddle, text='ADU')
@@ -417,8 +417,8 @@ class ImageCalculator(ttk.Frame):
                                 width=14)
                                 
         frameLim = ttk.Frame(frameLowMiddle)
-        labelLim = ttk.Label(frameLim, text='Transfer limit signal only:')
-        self.checkbuttonLim = tk.Checkbutton(frameLim, variable=self.varTransfLim)
+        self.labelLim = ttk.Label(frameLim, text='Transfer limit signal only:')
+        self.checkbuttonLim = tk.Checkbutton(frameLim, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varTransfLim)
         
         buttonTransferSim = ttk.Button(frameLowMiddle, text='Transfer data to Image Simulator',
                                        command=self.cont.transferToSim, width=29)
@@ -433,11 +433,11 @@ class ImageCalculator(ttk.Frame):
         
         labelInput.grid(row=0, column=0, columnspan=3, pady=(0, 10*C.scsy))
         
-        labelExp.grid(row=3, column=0, sticky='W')
+        self.labelExp.grid(row=3, column=0, sticky='W')
         self.entryExp.grid(row=3, column=1)
         labelExp2.grid(row=3, column=2, sticky='W')
         
-        labelToggleDark.grid(row=4, column=0, sticky='W')
+        self.labelToggleDark.grid(row=4, column=0, sticky='W')
         self.checkbuttonToggleDark.grid(row=4, column=1)
         labelToggleDark2.grid(row=4, column=2, sticky='W')
         
@@ -445,11 +445,11 @@ class ImageCalculator(ttk.Frame):
         self.entryDark.grid(row=5, column=1)
         self.labelDark2.grid(row=5, column=2, sticky='W')
         
-        labelBGL.grid(row=7, column=0, sticky='W')
+        self.labelBGL.grid(row=7, column=0, sticky='W')
         self.entryBGL.grid(row=7, column=1)
         labelBGL2.grid(row=7, column=2, sticky='W')
         
-        labelTarget.grid(row=8, column=0, sticky='W')
+        self.labelTarget.grid(row=8, column=0, sticky='W')
         self.entryTarget.grid(row=8, column=1)
         labelTarget2.grid(row=8, column=2, sticky='W')
         
@@ -458,7 +458,7 @@ class ImageCalculator(ttk.Frame):
         buttonData.grid(row=0, column=0, pady=(0, 22*C.scsy))
         
         frameLim.grid(row=1, column=0)
-        labelLim.pack(side='left')
+        self.labelLim.pack(side='left')
         self.checkbuttonLim.pack(side='left')
         
         buttonTransferSim.grid(row=2, column=0)
@@ -702,9 +702,14 @@ class ImageCalculator(ttk.Frame):
             
             # Change tooltips
             if self.cont.tooltipsOn.get():
+
+                apc.createToolTip(self.labelSN, C.TTSN, self.cont.tt_fs)
                 apc.createToolTip(self.labelSN2, C.TTSN, self.cont.tt_fs)
+
+                apc.createToolTip(self.labelSF, C.TTSFLum if self.cont.lumSignalType.get() else C.TTSFElectron,
+                                  self.cont.tt_fs)
                 apc.createToolTip(self.labelSF2, C.TTSFLum if self.cont.lumSignalType.get() else C.TTSFElectron,
-                              self.cont.tt_fs)
+                                  self.cont.tt_fs)
             
         else:
         
@@ -713,15 +718,21 @@ class ImageCalculator(ttk.Frame):
             # Change labels for skyglow noise/flux
             self.varSNTypeLabel.set('Sky and dark noise: ')
             
-            if self.cont.tooltipsOn.get(): apc.createToolTip(self.labelSN2, C.TTDSN, self.cont.tt_fs)
+            if self.cont.tooltipsOn.get():
+
+                apc.createToolTip(self.labelSN, C.TTDSN, self.cont.tt_fs)
+                apc.createToolTip(self.labelSN2, C.TTDSN, self.cont.tt_fs)
             
             if not self.cont.isDSLR:
             
                 self.varSFTypeLabel.set('Background signal: ')
                 
                 if self.cont.tooltipsOn.get():
+
+                    apc.createToolTip(self.labelSF, C.TTDSFPhoton if self.cont.lumSignalType.get() else C.TTDSFElectron,
+                                      self.cont.tt_fs)
                     apc.createToolTip(self.labelSF2, C.TTDSFPhoton if self.cont.lumSignalType.get() else C.TTDSFElectron,
-                                  self.cont.tt_fs)
+                                      self.cont.tt_fs)
             
         self.emptyInfoLabels() # Clear labels
     
@@ -936,13 +947,55 @@ class ImageCalculator(ttk.Frame):
     def activateTooltips(self):
     
         '''Add tooltips to all relevant widgets.'''
-        
+
+        if self.cont.isDSLR:
+
+            apc.createToolTip(self.labelISO, C.TTISO, self.cont.tt_fs)
+            apc.createToolTip(self.optionISO, C.TTISO, self.cont.tt_fs)
+
+        elif len(C.GAIN[self.cont.cnum][0]) > 1:
+
+            apc.createToolTip(self.labelGain, C.TTGain, self.cont.tt_fs)
+            apc.createToolTip(self.optionGain, C.TTGain, self.cont.tt_fs)
+
+        apc.createToolTip(self.labelExp, C.TTExp, self.cont.tt_fs)
+        apc.createToolTip(self.labelToggleDark, C.TTUseDark, self.cont.tt_fs)
+        apc.createToolTip(self.labelDark, C.TTDarkNoise if self.cont.isDSLR else C.TTDarkLevel, self.cont.tt_fs)
+        apc.createToolTip(self.labelBGN, C.TTBGNoise, self.cont.tt_fs)
+        apc.createToolTip(self.labelBGL, C.TTBGLevel, self.cont.tt_fs)
+        apc.createToolTip(self.labelTarget, C.TTTarget, self.cont.tt_fs)
+        apc.createToolTip(self.labelLim, C.TTLim, self.cont.tt_fs)
+
         apc.createToolTip(self.entryExp, C.TTExp, self.cont.tt_fs)
         apc.createToolTip(self.checkbuttonToggleDark, C.TTUseDark, self.cont.tt_fs)
         apc.createToolTip(self.entryDark, C.TTDarkNoise if self.cont.isDSLR else C.TTDarkLevel, self.cont.tt_fs)
         apc.createToolTip(self.entryBGN, C.TTBGNoise, self.cont.tt_fs)
         apc.createToolTip(self.entryBGL, C.TTBGLevel, self.cont.tt_fs)
         apc.createToolTip(self.entryTarget, C.TTTarget, self.cont.tt_fs)
+        apc.createToolTip(self.checkbuttonLim, C.TTLim, self.cont.tt_fs)
+
+        apc.createToolTip(self.labelSNR, C.TTSNR, self.cont.tt_fs)
+        apc.createToolTip(self.labelDR, C.TTDR, self.cont.tt_fs)
+        apc.createToolTip(self.labelFL, C.TTFL, self.cont.tt_fs)
+        apc.createToolTip(self.labelEFL, C.TTEFL, self.cont.tt_fs)
+        apc.createToolTip(self.labelAP, C.TTAP, self.cont.tt_fs)
+        apc.createToolTip(self.labelFR, C.TTFR, self.cont.tt_fs)
+        apc.createToolTip(self.labelIS, C.TTIS, self.cont.tt_fs)
+        apc.createToolTip(self.labelRL, C.TTRL, self.cont.tt_fs)
+        apc.createToolTip(self.labelGainI, C.TTGain, self.cont.tt_fs)
+        apc.createToolTip(self.labelSatCap, C.TTSatCap, self.cont.tt_fs)
+        apc.createToolTip(self.labelBL, C.TTBL, self.cont.tt_fs)
+        apc.createToolTip(self.labelWL, C.TTWL, self.cont.tt_fs)
+        apc.createToolTip(self.labelPS, C.TTPS, self.cont.tt_fs)
+        apc.createToolTip(self.labelQE, C.TTQE, self.cont.tt_fs)
+        apc.createToolTip(self.labelRNI, C.TTRN, self.cont.tt_fs)
+        apc.createToolTip(self.labelDN, C.TTDN, self.cont.tt_fs)
+        apc.createToolTip(self.labelSN, C.TTSN, self.cont.tt_fs)
+        apc.createToolTip(self.labelTBGN, C.TTTotN, self.cont.tt_fs)
+        apc.createToolTip(self.labelDF, C.TTDF, self.cont.tt_fs)
+        apc.createToolTip(self.labelSF, C.TTSFLum if self.cont.hasQE else C.TTSFElectron, self.cont.tt_fs)
+        apc.createToolTip(self.labelTF, C.TTTFLum if self.cont.hasQE else C.TTTFElectron, self.cont.tt_fs)
+
         apc.createToolTip(self.labelSNR2, C.TTSNR, self.cont.tt_fs)
         apc.createToolTip(self.labelDR2, C.TTDR, self.cont.tt_fs)
         apc.createToolTip(self.labelFL2, C.TTFL, self.cont.tt_fs)
@@ -964,19 +1017,43 @@ class ImageCalculator(ttk.Frame):
         apc.createToolTip(self.labelDF2, C.TTDF, self.cont.tt_fs)
         apc.createToolTip(self.labelSF2, C.TTSFLum if self.cont.hasQE else C.TTSFElectron, self.cont.tt_fs)
         apc.createToolTip(self.labelTF2, C.TTTFLum if self.cont.hasQE else C.TTTFElectron, self.cont.tt_fs)
-        apc.createToolTip(self.checkbuttonLim, C.TTLim, self.cont.tt_fs)
  
     def deactivateTooltips(self):
     
         '''Remove tooltips from all widgets.'''
+
+        if self.cont.isDSLR:
+
+            self.labelISO.unbind('<Enter>')
+            self.labelISO.unbind('<Motion>')
+            self.labelISO.unbind('<Leave>')
+            self.optionISO.unbind('<Enter>')
+            self.optionISO.unbind('<Motion>')
+            self.optionISO.unbind('<Leave>')
+
+        elif len(C.GAIN[self.cont.cnum][0]) > 1:
+
+            self.labelGain.unbind('<Enter>')
+            self.labelGain.unbind('<Motion>')
+            self.labelGain.unbind('<Leave>')
+            self.optionGain.unbind('<Enter>')
+            self.optionGain.unbind('<Motion>')
+            self.optionGain.unbind('<Leave>')
     
-        for widget in [self.entryExp, self.checkbuttonToggleDark, self.entryDark, self.entryBGN,
-                       self.entryBGL, self.entryTarget, self.labelSNR2, self.labelDR2,
-                       self.labelFL2, self.labelEFL2, self.labelAP2, self.labelFR2, self.labelIS2, 
-                       self.labelRL2, self.labelGainI2, self.labelSatCap2, self.labelBL2, self.labelWL2, 
-                       self.labelPS2, self.labelQE2, self.labelRNI2, self.labelDN2, self.labelSN2,
-                       self.labelTBGN2, self.labelDF2, self.labelSF2, self.labelTF2,
-                       self.checkbuttonLim]:
+        for widget in [self.labelExp, self.labelToggleDark, self.labelDark, self.labelBGN,
+                       self.labelBGL, self.labelTarget, self.labelLim, 
+                       self.entryExp, self.checkbuttonToggleDark, self.entryDark, self.entryBGN,
+                       self.entryBGL, self.entryTarget, self.checkbuttonLim, 
+                       self.labelSNR, self.labelDR, self.labelFL, self.labelEFL, self.labelAP, 
+                       self.labelFR, self.labelIS, self.labelRL, self.labelGainI, self.labelSatCap, 
+                       self.labelBL, self.labelWL, self.labelPS, self.labelQE, self.labelRNI, 
+                       self.labelDN, self.labelSN, self.labelTBGN, self.labelDF, self.labelSF, 
+                       self.labelTF, 
+                       self.labelSNR2, self.labelDR2, self.labelFL2, self.labelEFL2, self.labelAP2, 
+                       self.labelFR2, self.labelIS2, self.labelRL2, self.labelGainI2, self.labelSatCap2, 
+                       self.labelBL2, self.labelWL2, self.labelPS2, self.labelQE2, self.labelRNI2, 
+                       self.labelDN2, self.labelSN2, self.labelTBGN2, self.labelDF2, self.labelSF2, 
+                       self.labelTF2]:
                            
             widget.unbind('<Enter>')
             widget.unbind('<Motion>')

@@ -277,8 +277,8 @@ class ImageAnalyser(ttk.Frame):
         # *** Right frame ***
         
         frameInfo = ttk.Frame(frameRight)
-        labelImInfo = tk.Label(frameInfo, textvariable=self.varImInfo, font=self.cont.small_font)
-        labelFOV = tk.Label(frameInfo, textvariable=self.varFOV, font=self.cont.small_font,
+        labelImInfo = tk.Label(frameInfo, textvariable=self.varImInfo, font=self.cont.small_font, background=C.DEFAULT_BG)
+        labelFOV = tk.Label(frameInfo, textvariable=self.varFOV, font=self.cont.small_font, background=C.DEFAULT_BG,
                             width=40, anchor='w')
         
         self.labelCanv = ttk.Label(frameRight, text='<Added images will be displayed here>',
@@ -288,7 +288,7 @@ class ImageAnalyser(ttk.Frame):
         self.scrollbarCanvVer = ttk.Scrollbar(frameRight, orient='vertical')
         self.canvasDisplay = tk.Canvas(frameRight, xscrollcommand=self.scrollbarCanvHor.set,
                                        yscrollcommand=self.scrollbarCanvVer.set, xscrollincrement='1',
-                                       yscrollincrement='1')
+                                       yscrollincrement='1', background=C.DEFAULT_BG)
         
         self.scrollbarCanvHor.config(command=self.canvasDisplay.xview)
         self.scrollbarCanvVer.config(command=self.canvasDisplay.yview)
@@ -1239,8 +1239,8 @@ class ImageAnalyser(ttk.Frame):
                 hdulist.close()
                 
                 if len(img.shape) != 2:
-                    self.varMessageLabel.set('Image file "{}" contains colour channels.' \
-                                            + 'Please use a non-debayered image.'.format(filename))
+                    self.varMessageLabel.set('Image file "{}" contains colour channels.'.format(filename) \
+                                            + 'Please use a non-debayered image.')
                     self.labelMessage.configure(foreground='crimson')
                     raise Exception
                 
@@ -1481,7 +1481,7 @@ class ImageAnalyser(ttk.Frame):
         
         # Setup window
         
-        self.topAskColour = tk.Toplevel()
+        self.topAskColour = tk.Toplevel(background=C.DEFAULT_BG)
         self.topAskColour.title('Choose colour')
         self.cont.addIcon(self.topAskColour)
         apc.setupWindow(self.topAskColour, 300, 145)
@@ -1491,10 +1491,9 @@ class ImageAnalyser(ttk.Frame):
         self.varUseGreen = tk.IntVar()
         self.varUseGreen.set(1)
         
-        tk.Label(self.topAskColour,
+        ttk.Label(self.topAskColour,
                   text='Choose which colour of pixels to extract.\nGreen is recommended unless the '\
-                       + 'image\nwas taken with a red narrowband filter.',
-                  font=self.cont.small_font).pack(side='top', pady=(10*C.scsy, 5*C.scsy), expand=True)
+                       + 'image\nwas taken with a red narrowband filter.').pack(side='top', pady=(10*C.scsy, 5*C.scsy), expand=True)
         
         frameRadio = ttk.Frame(self.topAskColour)
         frameRadio.pack(side='top', expand=True, pady=(0, 10*C.scsy))
@@ -1519,7 +1518,7 @@ class ImageAnalyser(ttk.Frame):
             
         # Setup window
         
-        self.topAskCFA = tk.Toplevel()
+        self.topAskCFA = tk.Toplevel(background=C.DEFAULT_BG)
         self.topAskCFA.title('Choose filter pattern')
         self.cont.addIcon(self.topAskCFA)
         apc.setupWindow(self.topAskCFA, 300, 145)
@@ -1957,7 +1956,7 @@ class ImageAnalyser(ttk.Frame):
         self.busy = True
         
         # Setup window displaying calculated values, with option to save data
-        self.topResults = tk.Toplevel()
+        self.topResults = tk.Toplevel(background=C.DEFAULT_BG)
         self.topResults.title('Computed sensor data')
         self.cont.addIcon(self.topResults)
         apc.setupWindow(self.topResults, 300, 220)
@@ -2051,7 +2050,12 @@ class ImageAnalyser(ttk.Frame):
             
             # Read camera data file            
             file = open('cameradata.txt', 'r')
-            lines = file.read().split('\n')
+            old_text = file.read()
+            lines = old_text.split('\n')
+            file.close()
+
+            file = open('cameradata_user_backup.txt', 'w')
+            file.write(old_text)
             file.close()
                 
             file = open('cameradata.txt', 'w')
@@ -2073,8 +2077,8 @@ class ImageAnalyser(ttk.Frame):
                     
                         # Add the data
                         file.write('\n{},{},{:.3g}*,{:.3g}*,{:d}*,{:d}*,{:d}*,{},{},{},{}' \
-                                    .format(line[0], line[1], self.gain, self.rn, round(self.sat_cap),
-                                       round(self.black_level), round(self.white_level), 'NA',
+                                    .format(line[0], line[1], self.gain, self.rn, int(round(self.sat_cap)),
+                                       int(round(self.black_level)), int(round(self.white_level)), 'NA',
                                        line[8], line[9], line[10]))
                         if self.cont.isDSLR: file.write(',' + iso)
                         
@@ -2085,9 +2089,9 @@ class ImageAnalyser(ttk.Frame):
                     
                         # Read existing values
                         gainvals = line[2].split('-')
-                        gv_stripped = [val.split('*')[0] for val in gainvals]
+                        gv_stripped = ['{:.2g}'.format(float(val.split('*')[0])) for val in gainvals]
                         rnvals = line[3].split('-')
-                        rv_stripped = [val.split('*')[0] for val in rnvals]
+                        rv_stripped = ['{:.2g}'.format(float(val.split('*')[0])) for val in rnvals]
                         satcapvals = line[4].split('-')
                         blvals = line[5].split('-')
                         wlvals = line[6].split('-')
@@ -2199,7 +2203,7 @@ class ImageAnalyser(ttk.Frame):
         # Create the window asking for required camera information
         if self.cont.isDSLR and not con_iso:
         
-            self.topCamInfo = tk.Toplevel()
+            self.topCamInfo = tk.Toplevel(background=C.DEFAULT_BG)
             self.topCamInfo.title('Save sensor data')
             self.cont.addIcon(self.topCamInfo)
             apc.setupWindow(self.topCamInfo, 300, 140)
@@ -2429,7 +2433,7 @@ class ImageAnalyser(ttk.Frame):
         self.busy = True
         
         # Setup window displaying the calculated information
-        topStatistics = tk.Toplevel()
+        topStatistics = tk.Toplevel(background=C.DEFAULT_BG)
         topStatistics.title('Statistics')
         self.cont.addIcon(topStatistics)
         apc.setupWindow(topStatistics, 300, 230)
@@ -2446,7 +2450,7 @@ class ImageAnalyser(ttk.Frame):
         frameStatistics.pack(side='top', pady=(0, 6*C.scsy), expand=True)
         
         ttk.Label(frameStatistics, text='Sample size: ').grid(row=0, column=0, sticky='W')
-        ttk.Label(frameStatistics, text=('{}'.format(sample_val)), width=7,
+        ttk.Label(frameStatistics, text=('{:d}'.format(sample_val)), width=7,
                   anchor='center').grid(row=0, column=1)
         ttk.Label(frameStatistics, text=' pixels').grid(row=0, column=2, sticky='W')
         
@@ -2466,12 +2470,12 @@ class ImageAnalyser(ttk.Frame):
         ttk.Label(frameStatistics, text=' ADU').grid(row=3, column=2, sticky='W')
         
         ttk.Label(frameStatistics, text='Maximum value: ').grid(row=4, column=0, sticky='W')
-        ttk.Label(frameStatistics, text=('{:d}'.format(max_val)), width=7,
+        ttk.Label(frameStatistics, text=('{:d}'.format(int(max_val))), width=7,
                   anchor='center').grid(row=4, column=1)
         ttk.Label(frameStatistics, text=' ADU').grid(row=4, column=2, sticky='W')
         
         ttk.Label(frameStatistics, text='Minimum value: ').grid(row=5, column=0, sticky='W')
-        ttk.Label(frameStatistics, text=('{:d}'.format(min_val)), width=7,
+        ttk.Label(frameStatistics, text=('{:d}'.format(int(min_val))), width=7,
                   anchor='center').grid(row=5, column=1)
         ttk.Label(frameStatistics, text=' ADU').grid(row=5, column=2, sticky='W')
         
@@ -2527,7 +2531,7 @@ class ImageAnalyser(ttk.Frame):
                 self.cancelled = False
                 topAskRegion.destroy()
                 
-            topAskRegion = tk.Toplevel()
+            topAskRegion = tk.Toplevel(background=C.DEFAULT_BG)
             topAskRegion.title('Choose selected region')
             self.cont.addIcon(topAskRegion)
             apc.setupWindow(topAskRegion, 300, 145)
@@ -2537,9 +2541,8 @@ class ImageAnalyser(ttk.Frame):
             varBGRegion = tk.IntVar()
             varBGRegion.set(1)
             
-            tk.Label(topAskRegion,
-                      text='Choose which region of the image\nyou have selected.',
-                      font=self.cont.small_font).pack(side='top', pady=(10*C.scsy, 5*C.scsy),
+            ttk.Label(topAskRegion,
+                      text='Choose which region of the image\nyou have selected.').pack(side='top', pady=(10*C.scsy, 5*C.scsy),
                                                       expand=True)
             
             frameRadio = ttk.Frame(topAskRegion)
@@ -2620,7 +2623,7 @@ class ImageAnalyser(ttk.Frame):
                     self.menuRC.entryconfigure(9, state='disabled')
                     self.busy = True
             
-                    topWarning = tk.Toplevel()
+                    topWarning = tk.Toplevel(background=C.DEFAULT_BG)
                     topWarning.title('Warning')
                     self.cont.addIcon(topWarning)
                     apc.setupWindow(topWarning, 300, 180)
@@ -2632,9 +2635,8 @@ class ImageAnalyser(ttk.Frame):
                     
                     self.cancelled = True
                     
-                    tk.Label(topWarning, text='Using two dark frames is recommended\nto get more ' \
-                                            + 'accurate noise measurements.\nProceed with only one?',
-                            font=self.cont.small_font).pack(side='top', pady=(20*C.scsy, 5*C.scsy),
+                    ttk.Label(topWarning, text='Using two dark frames is recommended\nto get more ' \
+                                            + 'accurate noise measurements.\nProceed with only one?').pack(side='top', pady=(20*C.scsy, 5*C.scsy),
                                                             expand=True)
                           
                     frameButtons = ttk.Frame(topWarning)
@@ -2982,7 +2984,7 @@ class ImageAnalyser(ttk.Frame):
     
         # Setup window
         
-        topWarning = tk.Toplevel()
+        topWarning = tk.Toplevel(background=C.DEFAULT_BG)
         topWarning.title(title)
         self.cont.addIcon(topWarning)
         apc.setupWindow(topWarning, 300, 145)
@@ -2990,8 +2992,7 @@ class ImageAnalyser(ttk.Frame):
         
         self.cancelled = True
         
-        tk.Label(topWarning, text=body,
-                 font=self.cont.small_font).pack(side='top', pady=(20*C.scsy, 5*C.scsy), expand=True)
+        ttk.Label(topWarning, text=body).pack(side='top', pady=(20*C.scsy, 5*C.scsy), expand=True)
         
         frameButtons = ttk.Frame(topWarning)
         frameButtons.pack(side='top', expand=True, pady=(0, 10*C.scsy))
@@ -3050,7 +3051,7 @@ class ImageAnalyser(ttk.Frame):
         self.line2, = self.ax.plot(self.x, apc.stretch(self.x, 0.5)/65535.0, color='lime')
         
         # Setup window
-        topHist = tk.Toplevel()
+        topHist = tk.Toplevel(background=C.DEFAULT_BG)
         topHist.title('Histogram')
         self.cont.addIcon(topHist)
         apc.setupWindow(topHist, 470, 520)
@@ -3071,7 +3072,7 @@ class ImageAnalyser(ttk.Frame):
         
         self.scaleStretch = tk.Scale(frameCanvas, from_=0.001, to=0.999, resolution=0.001,
                                      orient='horizontal', length=388*C.scsx, showvalue=False,
-                                     command=self.updateHistStretch)
+                                     background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, highlightbackground=C.DEFAULT_BG, highlightcolor=C.DEFAULT_BG, command=self.updateHistStretch)
         self.scaleStretch.pack(side='top')
         
         self.scaleStretch.set(0.5)
@@ -3081,7 +3082,7 @@ class ImageAnalyser(ttk.Frame):
         
         ttk.Button(frameButtons1, text='Clip black point',
                    command=lambda: self.clipBlackPoint(label)).pack(side='left', padx=10*C.scsx)
-        tk.Label(frameButtons1, textvariable=self.varM).pack(side='left', expand=True)
+        ttk.Label(frameButtons1, textvariable=self.varM).pack(side='left', expand=True)
         ttk.Button(frameButtons1, text='Clip white point',
                    command=lambda: self.clipWhitePoint(label)).pack(side='right', padx=10*C.scsx)
         

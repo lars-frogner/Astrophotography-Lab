@@ -92,7 +92,7 @@ class ImageSimulator(ttk.Frame):
         
         # Setup canvas
         
-        self.topCanvas = tk.Toplevel()
+        self.topCanvas = tk.Toplevel(background=C.DEFAULT_BG)
         self.topCanvas.destroy()
                      
         # Read demonstration image
@@ -122,7 +122,7 @@ class ImageSimulator(ttk.Frame):
         frameOptics.pack(side='top', pady=(25*C.scsy, 50*C.scsy), expand=True)
         ttk.Label(frameLeft, text='User modified camera/optics data is displayed in blue' \
                                     + '\n\n*Only required to get suggested camera settings',
-                  foreground='dimgray').pack(side='bottom', pady=(8*C.scsy, 25*C.scsy))
+                  foreground='dim gray').pack(side='bottom', pady=(8*C.scsy, 25*C.scsy))
         frameSensor.pack(side='bottom', expand=True)
         
         frameUpMiddle.pack(side='top', pady=(20*C.scsy, 40*C.scsy), expand=True)
@@ -163,26 +163,26 @@ class ImageSimulator(ttk.Frame):
         labelOptics = ttk.Label(frameOptics, text='Optics', font=medium_font, anchor='center', width=28)
         labelOptics.grid(row=0, column=0, columnspan=3, pady=5*C.scsy)
         
-        labelFL = ttk.Label(frameOptics, text='Focal length: ')
+        self.labelFL = ttk.Label(frameOptics, text='Focal length: ')
         self.labelFL2 = ttk.Label(frameOptics, textvariable=self.varFLInfo, anchor='center', width=7)
         labelFL3 = ttk.Label(frameOptics, text='mm')
         
-        labelEFL = ttk.Label(frameOptics, text='Effective focal length: ')
+        self.labelEFL = ttk.Label(frameOptics, text='Effective focal length: ')
         self.labelEFL2 = ttk.Label(frameOptics, textvariable=self.varEFLInfo, anchor='center', width=7)
         labelEFL3 = ttk.Label(frameOptics, text='mm')
         
-        labelAP = ttk.Label(frameOptics, text='Aperture diameter: ')
+        self.labelAP = ttk.Label(frameOptics, text='Aperture diameter: ')
         self.labelAP2 = ttk.Label(frameOptics, textvariable=self.varAPInfo, anchor='center', width=7)
         labelAP3 = ttk.Label(frameOptics, text='mm')
         
-        labelFR = ttk.Label(frameOptics, text='Focal ratio: ')
+        self.labelFR = ttk.Label(frameOptics, text='Focal ratio: ')
         self.labelFR2 = ttk.Label(frameOptics, textvariable=self.varFRInfo, anchor='center', width=7)
         
-        labelIS = ttk.Label(frameOptics, text='Image scale: ')
+        self.labelIS = ttk.Label(frameOptics, text='Image scale: ')
         self.labelIS2 = ttk.Label(frameOptics, textvariable=self.varISInfo, anchor='center', width=7)
         labelIS3 = ttk.Label(frameOptics, text='arcsec/pixel')
         
-        labelRL = ttk.Label(frameOptics, text='Angular resolution limit: ')
+        self.labelRL = ttk.Label(frameOptics, text='Angular resolution limit: ')
         self.labelRL2 = ttk.Label(frameOptics, textvariable=self.varRLInfo, anchor='center', width=7)
         labelRL3 = ttk.Label(frameOptics, text='arcsec')
         
@@ -192,82 +192,82 @@ class ImageSimulator(ttk.Frame):
                                 width=28)
         labelSensor.grid(row=0, column=0, columnspan=3, pady=5*C.scsy)
         
-        labelGainI = ttk.Label(frameSensor, text='Gain: ')
+        self.labelGainI = ttk.Label(frameSensor, text='Gain: ')
         self.labelGainI2 = ttk.Label(frameSensor, textvariable=self.varGainInfo, anchor='center',
                                      width=7)
         labelGainI3 = ttk.Label(frameSensor, text='e-/ADU')
         
-        labelSatCap = ttk.Label(frameSensor, text='Saturation capacity: ')
+        self.labelSatCap = ttk.Label(frameSensor, text='Saturation capacity: ')
         self.labelSatCap2 = ttk.Label(frameSensor, textvariable=self.varSatCapInfo, anchor='center',
                                       width=7)
         labelSatCap3 = ttk.Label(frameSensor, text='e-')
         
-        labelBL = ttk.Label(frameSensor, text='Black level: ')
+        self.labelBL = ttk.Label(frameSensor, text='Black level: ')
         self.labelBL2 = ttk.Label(frameSensor, textvariable=self.varBLInfo, anchor='center', width=7)
         labelBL3 = ttk.Label(frameSensor, text='ADU')
         
-        labelWL = ttk.Label(frameSensor, text='White level: ')
+        self.labelWL = ttk.Label(frameSensor, text='White level: ')
         self.labelWL2 = ttk.Label(frameSensor, textvariable=self.varWLInfo, anchor='center', width=7)
         labelWL3 = ttk.Label(frameSensor, text='ADU')
         
-        labelPS = ttk.Label(frameSensor, text='Pixel size: ')
+        self.labelPS = ttk.Label(frameSensor, text='Pixel size: ')
         self.labelPS2 = ttk.Label(frameSensor, textvariable=self.varPSInfo, anchor='center', width=7)
         labelPS3 = ttk.Label(frameSensor, text=u'\u03bcm')
         
-        labelQE = ttk.Label(frameSensor, text='Quantum efficiency: ')
+        self.labelQE = ttk.Label(frameSensor, text='Quantum efficiency: ')
         self.labelQE2 = ttk.Label(frameSensor, textvariable=self.varQEInfo, anchor='center', width=7)
         labelQE3 = ttk.Label(frameSensor, text='%')
         
         # Place optics frame widgets
         
-        labelFL.grid(row=1, column=0, sticky='W')
+        self.labelFL.grid(row=1, column=0, sticky='W')
         self.labelFL2.grid(row=1, column=1)
         labelFL3.grid(row=1, column=2, sticky='W')
         
-        labelEFL.grid(row=2, column=0, sticky='W')
+        self.labelEFL.grid(row=2, column=0, sticky='W')
         self.labelEFL2.grid(row=2, column=1)
         labelEFL3.grid(row=2, column=2, sticky='W')
         
-        labelAP.grid(row=3, column=0, sticky='W')
+        self.labelAP.grid(row=3, column=0, sticky='W')
         self.labelAP2.grid(row=3, column=1)
         labelAP3.grid(row=3, column=2, sticky='W')
         
-        labelFR.grid(row=4, column=0, sticky='W')
+        self.labelFR.grid(row=4, column=0, sticky='W')
         self.labelFR2.grid(row=4, column=1)
         
-        labelIS.grid(row=5, column=0, sticky='W')
+        self.labelIS.grid(row=5, column=0, sticky='W')
         self.labelIS2.grid(row=5, column=1)
         labelIS3.grid(row=5, column=2, sticky='W')
         
-        labelRL.grid(row=6, column=0, sticky='W')
+        self.labelRL.grid(row=6, column=0, sticky='W')
         self.labelRL2.grid(row=6, column=1)
         labelRL3.grid(row=6, column=2, sticky='W')
         
         # Place sensor frame widgets
         
-        labelGainI.grid(row=1, column=0, sticky='W')
+        self.labelGainI.grid(row=1, column=0, sticky='W')
         self.labelGainI2.grid(row=1, column=1)
         labelGainI3.grid(row=1, column=2, sticky='W')
         
-        labelSatCap.grid(row=2, column=0, sticky='W')
+        self.labelSatCap.grid(row=2, column=0, sticky='W')
         self.labelSatCap2.grid(row=2, column=1)
         labelSatCap3.grid(row=2, column=2, sticky='W')
         
-        labelBL.grid(row=3, column=0, sticky='W')
+        self.labelBL.grid(row=3, column=0, sticky='W')
         self.labelBL2.grid(row=3, column=1)
         labelBL3.grid(row=3, column=2, sticky='W')
         
-        labelWL.grid(row=4, column=0, sticky='W')
+        self.labelWL.grid(row=4, column=0, sticky='W')
         self.labelWL2.grid(row=4, column=1)
         labelWL3.grid(row=4, column=2, sticky='W')
         
         ttk.Separator(frameSensor, orient='horizontal').grid(row=5, column=0, columnspan=3, sticky='EW')
         
-        labelPS.grid(row=6, column=0, sticky='W')
+        self.labelPS.grid(row=6, column=0, sticky='W')
         self.labelPS2.grid(row=6, column=1)
         labelPS3.grid(row=6, column=2, sticky='W')
         
-        labelQE.grid(row=7, column=0, sticky='W')
+        self.labelQE.grid(row=7, column=0, sticky='W')
         self.labelQE2.grid(row=7, column=1)
         labelQE3.grid(row=7, column=2, sticky='W')
         
@@ -278,14 +278,14 @@ class ImageSimulator(ttk.Frame):
         labelSignal = ttk.Label(frameSignal, text='Signal', font=medium_font, anchor='center', width=26)
         labelSignal.grid(row=0, column=0, columnspan=3, pady=5*C.scsy)
         
-        labelSNR = ttk.Label(frameSignal, text='Target SNR:')
+        self.labelSNR = ttk.Label(frameSignal, text='Target SNR:')
         self.labelSNR2 = ttk.Label(frameSignal, textvariable=self.varSNRInfo, anchor='center', width=5)
         
-        labelStackSNR = ttk.Label(frameSignal, text='Stack SNR')
+        self.labelStackSNR = ttk.Label(frameSignal, text='Stack SNR')
         self.labelStackSNR2 = ttk.Label(frameSignal, textvariable=self.varStackSNRInfo, anchor='center',
                                         width=5)
         
-        labelDR = ttk.Label(frameSignal, text='Dynamic range:')
+        self.labelDR = ttk.Label(frameSignal, text='Dynamic range:')
         self.labelDR2 = ttk.Label(frameSignal, textvariable=self.varDRInfo, anchor='center', width=5)
         labelDR3 = ttk.Label(frameSignal, textvariable=self.varDRLabel)
         
@@ -294,51 +294,51 @@ class ImageSimulator(ttk.Frame):
         labelNoise = ttk.Label(frameNoise, text='Noise', font=medium_font, anchor='center', width=26)
         labelNoise.grid(row=0, column=0, columnspan=3, pady=5*C.scsy)
         
-        labelRNI = ttk.Label(frameNoise, text='Read noise: ')
+        self.labelRNI = ttk.Label(frameNoise, text='Read noise: ')
         self.labelRNI2 = ttk.Label(frameNoise, textvariable=self.varRNInfo, anchor='center', width=5)
         labelRNI3 = ttk.Label(frameNoise, textvariable=self.varRNLabel)
         
-        labelDN = ttk.Label(frameNoise, text='Dark noise: ')
+        self.labelDN = ttk.Label(frameNoise, text='Dark noise: ')
         self.labelDN2 = ttk.Label(frameNoise, textvariable=self.varDNInfo, anchor='center', width=5)
         labelDN3 = ttk.Label(frameNoise, textvariable=self.varDNLabel)
         
-        labelSN = ttk.Label(frameNoise, text='Sky shot noise: ')
+        self.labelSN = ttk.Label(frameNoise, text='Sky shot noise: ')
         self.labelSN2 = ttk.Label(frameNoise, textvariable=self.varSNInfo, anchor='center', width=5)
         labelSN3 = ttk.Label(frameNoise, textvariable=self.varSNLabel)
         
-        labelTBGN = ttk.Label(frameNoise, text='Total background noise: ')
+        self.labelTBGN = ttk.Label(frameNoise, text='Total background noise: ')
         self.labelTBGN2 = ttk.Label(frameNoise, textvariable=self.varTBGNInfo, anchor='center', width=5)
         labelTBGN3 = ttk.Label(frameNoise, textvariable=self.varTBGNLabel)
         
         # Place signal frame widgets
         
-        labelSNR.grid(row=1, column=0, sticky='W')
+        self.labelSNR.grid(row=1, column=0, sticky='W')
         self.labelSNR2.grid(row=1, column=1)
         
-        labelStackSNR.grid(row=2, column=0, sticky='W')
+        self.labelStackSNR.grid(row=2, column=0, sticky='W')
         self.labelStackSNR2.grid(row=2, column=1)
         
-        labelDR.grid(row=3, column=0, sticky='W')
+        self.labelDR.grid(row=3, column=0, sticky='W')
         self.labelDR2.grid(row=3, column=1)
         labelDR3.grid(row=3, column=2, sticky='W')
         
         # Place noise frame widgets
         
-        labelRNI.grid(row=1, column=0, sticky='W')
+        self.labelRNI.grid(row=1, column=0, sticky='W')
         self.labelRNI2.grid(row=1, column=1)
         labelRNI3.grid(row=1, column=2, sticky='W')
         
-        labelDN.grid(row=2, column=0, sticky='W')
+        self.labelDN.grid(row=2, column=0, sticky='W')
         self.labelDN2.grid(row=2, column=1)
         labelDN3.grid(row=2, column=2, sticky='W')
         
-        labelSN.grid(row=3, column=0, sticky='W')
+        self.labelSN.grid(row=3, column=0, sticky='W')
         self.labelSN2.grid(row=3, column=1)
         labelSN3.grid(row=3, column=2, sticky='W')
         
         ttk.Separator(frameNoise, orient='horizontal').grid(row=4, column=0, columnspan=3, sticky='EW')
         
-        labelTBGN.grid(row=5, column=0, sticky='W')
+        self.labelTBGN.grid(row=5, column=0, sticky='W')
         self.labelTBGN2.grid(row=5, column=1)
         labelTBGN3.grid(row=5, column=2, sticky='W')
         
@@ -369,32 +369,32 @@ class ImageSimulator(ttk.Frame):
             self.optionGain.config(width=6)
             self.optionRN.config(width=6)
         
-        labelExp = ttk.Label(frameUpMiddle, text='Exposure time:')
+        self.labelExp = ttk.Label(frameUpMiddle, text='Exposure time:')
         self.entryExp = ttk.Entry(frameUpMiddle, textvariable=self.varExp, font=small_font,
                                   background=C.DEFAULT_BG, width=9)
         labelExp2 = ttk.Label(frameUpMiddle, text='seconds')
         
-        labelDF = ttk.Label(frameUpMiddle, text='Dark current:')
+        self.labelDF = ttk.Label(frameUpMiddle, text='Dark current:')
         self.entryDF = ttk.Entry(frameUpMiddle, textvariable=self.varDF, font=small_font,
                                  background=C.DEFAULT_BG, width=9)
         labelDF2 = ttk.Label(frameUpMiddle, text='e-/s')
         
-        labelSF = ttk.Label(frameUpMiddle, text='Skyglow:')
+        self.labelSF = ttk.Label(frameUpMiddle, text='Skyglow:')
         self.entrySF = ttk.Entry(frameUpMiddle, textvariable=self.varSF, font=small_font,
                                  background=C.DEFAULT_BG, width=9)
         labelSF2 = ttk.Label(frameUpMiddle, textvariable=self.varSFLabel)
         
-        labelTF = ttk.Label(frameUpMiddle, text='Target signal:')
+        self.labelTF = ttk.Label(frameUpMiddle, text='Target signal:')
         self.entryTF = ttk.Entry(frameUpMiddle, textvariable=self.varTF, font=small_font,
                                  background=C.DEFAULT_BG, width=9)
         labelTF2 = ttk.Label(frameUpMiddle, textvariable=self.varTFLabel)
         
-        labelLF = ttk.Label(frameUpMiddle, text='*Limit signal:')
+        self.labelLF = ttk.Label(frameUpMiddle, text='*Limit signal:')
         self.entryLF = ttk.Entry(frameUpMiddle, textvariable=self.varLF, font=small_font,
                                  background=C.DEFAULT_BG, width=9)
         labelLF2 = ttk.Label(frameUpMiddle, textvariable=self.varLFLabel)
         
-        labelSubs = ttk.Label(frameUpMiddle, text='Number of subframes:')
+        self.labelSubs = ttk.Label(frameUpMiddle, text='Number of subframes:')
         self.entrySubs = ttk.Entry(frameUpMiddle, textvariable=self.varSubs, font=small_font,
                                    background=C.DEFAULT_BG, width=9)
         labelSubs2 = ttk.Label(frameUpMiddle, text='', width=9)
@@ -415,27 +415,27 @@ class ImageSimulator(ttk.Frame):
         
         labelInput.grid(row=0, column=0, columnspan=3, pady=(0, 10*C.scsy))
         
-        labelExp.grid(row=3, column=0, sticky='W')
+        self.labelExp.grid(row=3, column=0, sticky='W')
         self.entryExp.grid(row=3, column=1)
         labelExp2.grid(row=3, column=2, sticky='W')
         
-        labelDF.grid(row=4, column=0, sticky='W')
+        self.labelDF.grid(row=4, column=0, sticky='W')
         self.entryDF.grid(row=4, column=1)
         labelDF2.grid(row=4, column=2, sticky='W')
         
-        labelSF.grid(row=5, column=0, sticky='W')
+        self.labelSF.grid(row=5, column=0, sticky='W')
         self.entrySF.grid(row=5, column=1)
         labelSF2.grid(row=5, column=2, sticky='W')
         
-        labelTF.grid(row=6, column=0, sticky='W')
+        self.labelTF.grid(row=6, column=0, sticky='W')
         self.entryTF.grid(row=6, column=1)
         labelTF2.grid(row=6, column=2, sticky='W')
         
-        labelLF.grid(row=7, column=0, sticky='W')
+        self.labelLF.grid(row=7, column=0, sticky='W')
         self.entryLF.grid(row=7, column=1)
         labelLF2.grid(row=7, column=2, sticky='W')
         
-        labelSubs.grid(row=8, column=0, sticky='W')
+        self.labelSubs.grid(row=8, column=0, sticky='W')
         self.entrySubs.grid(row=8, column=1)
         labelSubs2.grid(row=8, column=2)
         
@@ -836,6 +836,23 @@ class ImageSimulator(ttk.Frame):
     def activateTooltips(self):
     
         '''Add tooltips to all relevant widgets.'''
+
+        if self.cont.isDSLR:
+
+            apc.createToolTip(self.labelISO, C.TTISO, self.cont.tt_fs)
+            apc.createToolTip(self.optionISO, C.TTISO, self.cont.tt_fs)
+
+        elif len(C.GAIN[self.cont.cnum][0]) > 1:
+
+            apc.createToolTip(self.labelGain, C.TTGain, self.cont.tt_fs)
+            apc.createToolTip(self.optionGain, C.TTGain, self.cont.tt_fs)
+    
+        apc.createToolTip(self.labelExp, C.TTExp, self.cont.tt_fs)
+        apc.createToolTip(self.labelDF, C.TTDF, self.cont.tt_fs)
+        apc.createToolTip(self.labelSF, C.TTSFLum if self.cont.hasQE else C.TTSFElectron, self.cont.tt_fs)
+        apc.createToolTip(self.labelTF, C.TTTFLum if self.cont.hasQE else C.TTTFElectron, self.cont.tt_fs)
+        apc.createToolTip(self.labelLF, C.TTLFLum if self.cont.hasQE else C.TTLFElectron, self.cont.tt_fs)
+        apc.createToolTip(self.labelSubs, C.TTSubs, self.cont.tt_fs)
     
         apc.createToolTip(self.entryExp, C.TTExp, self.cont.tt_fs)
         apc.createToolTip(self.entryDF, C.TTDF, self.cont.tt_fs)
@@ -843,6 +860,27 @@ class ImageSimulator(ttk.Frame):
         apc.createToolTip(self.entryTF, C.TTTFLum if self.cont.hasQE else C.TTTFElectron, self.cont.tt_fs)
         apc.createToolTip(self.entryLF, C.TTLFLum if self.cont.hasQE else C.TTLFElectron, self.cont.tt_fs)
         apc.createToolTip(self.entrySubs, C.TTSubs, self.cont.tt_fs)
+
+        apc.createToolTip(self.labelSNR, C.TTSNR, self.cont.tt_fs)
+        apc.createToolTip(self.labelStackSNR, C.TTStackSNR, self.cont.tt_fs)
+        apc.createToolTip(self.labelDR, C.TTDR, self.cont.tt_fs)
+        apc.createToolTip(self.labelFL, C.TTFL, self.cont.tt_fs)
+        apc.createToolTip(self.labelEFL, C.TTEFL, self.cont.tt_fs)
+        apc.createToolTip(self.labelAP, C.TTAP, self.cont.tt_fs)
+        apc.createToolTip(self.labelFR, C.TTFR, self.cont.tt_fs)
+        apc.createToolTip(self.labelIS, C.TTIS, self.cont.tt_fs)
+        apc.createToolTip(self.labelRL, C.TTRL, self.cont.tt_fs)
+        apc.createToolTip(self.labelGainI, C.TTGain, self.cont.tt_fs)
+        apc.createToolTip(self.labelSatCap, C.TTSatCap, self.cont.tt_fs)
+        apc.createToolTip(self.labelBL, C.TTBL, self.cont.tt_fs)
+        apc.createToolTip(self.labelWL, C.TTWL, self.cont.tt_fs)
+        apc.createToolTip(self.labelPS, C.TTPS, self.cont.tt_fs)
+        apc.createToolTip(self.labelQE, C.TTQE, self.cont.tt_fs)
+        apc.createToolTip(self.labelRNI, C.TTRN, self.cont.tt_fs)
+        apc.createToolTip(self.labelDN, C.TTDN, self.cont.tt_fs)
+        apc.createToolTip(self.labelSN, C.TTSN, self.cont.tt_fs)
+        apc.createToolTip(self.labelTBGN, C.TTTotN, self.cont.tt_fs)
+
         apc.createToolTip(self.labelSNR2, C.TTSNR, self.cont.tt_fs)
         apc.createToolTip(self.labelStackSNR2, C.TTStackSNR, self.cont.tt_fs)
         apc.createToolTip(self.labelDR2, C.TTDR, self.cont.tt_fs)
@@ -865,14 +903,38 @@ class ImageSimulator(ttk.Frame):
         
         if self.topCanvas.winfo_exists():
             
+            apc.createToolTip(self.labelStretch, C.TTStretch, self.cont.tt_fs)
             apc.createToolTip(self.checkbuttonStretch, C.TTStretch, self.cont.tt_fs)
         
     def deactivateTooltips(self):
     
         '''Remove tooltips from all widgets.'''
+
+        if self.cont.isDSLR:
+            
+            self.labelISO.unbind('<Enter>')
+            self.labelISO.unbind('<Motion>')
+            self.labelISO.unbind('<Leave>')
+            self.optionISO.unbind('<Enter>')
+            self.optionISO.unbind('<Motion>')
+            self.optionISO.unbind('<Leave>')
+
+        elif len(C.GAIN[self.cont.cnum][0]) > 1:
+
+            self.labelGain.unbind('<Enter>')
+            self.labelGain.unbind('<Motion>')
+            self.labelGain.unbind('<Leave>')
+            self.optionGain.unbind('<Enter>')
+            self.optionGain.unbind('<Motion>')
+            self.optionGain.unbind('<Leave>')
     
-        for widget in [self.entryExp, self.entryDF, self.entrySF, self.entryTF, self.entryLF,
-                       self.entrySubs, self.labelSNR2, self.labelStackSNR2, self.labelDR2, self.labelFL2, 
+        for widget in [self.entryExp, self.entryDF, self.entrySF, self.entryTF, self.entryLF, self.entrySubs,
+                       self.labelExp, self.labelDF, self.labelSF, self.labelTF, self.labelLF, self.labelSubs,
+                       self.labelSNR2, self.labelStackSNR2, self.labelDR2, self.labelFL2, 
+                       self.labelEFL, self.labelAP, self.labelFR, self.labelIS, self.labelRL, 
+                       self.labelGainI, self.labelSatCap, self.labelBL, self.labelWL, self.labelPS, 
+                       self.labelQE, self.labelRNI, self.labelDN, self.labelSN, self.labelTBGN,
+                       self.labelSNR2, self.labelStackSNR2, self.labelDR2, self.labelFL2, 
                        self.labelEFL2, self.labelAP2, self.labelFR2, self.labelIS2, self.labelRL2, 
                        self.labelGainI2, self.labelSatCap2, self.labelBL2, self.labelWL2, self.labelPS2, 
                        self.labelQE2, self.labelRNI2, self.labelDN2, self.labelSN2, self.labelTBGN2]:
@@ -882,6 +944,10 @@ class ImageSimulator(ttk.Frame):
             widget.unbind('<Leave>')
             
         if self.topCanvas.winfo_exists():
+            
+            self.labelStretch.unbind('<Enter>')
+            self.labelStretch.unbind('<Motion>')
+            self.labelStretch.unbind('<Leave>')
             
             self.checkbuttonStretch.unbind('<Enter>')
             self.checkbuttonStretch.unbind('<Motion>')
@@ -895,7 +961,7 @@ class ImageSimulator(ttk.Frame):
         if not self.topCanvas.winfo_exists():
                 
             # Setup window
-            self.topCanvas = tk.Toplevel(bg=C.DEFAULT_BG)
+            self.topCanvas = tk.Toplevel(background=C.DEFAULT_BG)
             self.topCanvas.title('Simulated image')
             self.cont.addIcon(self.topCanvas)
             apc.setupWindow(self.topCanvas, 330, 350)
@@ -911,15 +977,18 @@ class ImageSimulator(ttk.Frame):
             # Create stretch checkbutton
             frameStretch = ttk.Frame(self.topCanvas)
         
-            labelStretch = ttk.Label(frameStretch, text='Stretch:')
-            self.checkbuttonStretch = tk.Checkbutton(frameStretch, variable=self.varStretch,
+            self.labelStretch = ttk.Label(frameStretch, text='Stretch:')
+            self.checkbuttonStretch = tk.Checkbutton(frameStretch, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varStretch,
                                       command=lambda: self.simulateController(fromCheckbutton=True))
+
             if self.cont.tooltipsOn.get():
+
+                apc.createToolTip(self.labelStretch, C.TTStretch, self.cont.tt_fs)
                 apc.createToolTip(self.checkbuttonStretch, C.TTStretch, self.cont.tt_fs)
             
             frameStretch.pack(side='bottom', expand=True)
         
-            labelStretch.pack(side='left')
+            self.labelStretch.pack(side='left')
             self.checkbuttonStretch.pack(side='left')
             
             self.topCanvas.update()
@@ -928,10 +997,10 @@ class ImageSimulator(ttk.Frame):
         
         try:
             df = self.varDF.get()
-            sf = (self.cont.convSig(self.varSF.get(), False) if self.cont.lumSignalType.get() \
-                                                            else self.varSF.get())
-            tf = (self.cont.convSig(self.varTF.get(), False) if self.cont.lumSignalType.get() \
-                                                        else self.varTF.get())
+            sf = self.cont.convSig(self.varSF.get(), False) if self.cont.lumSignalType.get() \
+                                                            else self.varSF.get()
+            tf = self.cont.convSig(self.varTF.get(), False) if self.cont.lumSignalType.get() \
+                                                        else self.varTF.get()
                 
         except tk.TclError:
             self.varMessageLabel.set(\
@@ -941,8 +1010,8 @@ class ImageSimulator(ttk.Frame):
             return None
             
         try:
-            lf = (self.cont.convSig(self.varLF.get(), False) if self.cont.lumSignalType.get() \
-                                                            else self.varLF.get())
+            lf = self.cont.convSig(self.varLF.get(), False) if self.cont.lumSignalType.get() \
+                                                            else self.varLF.get()
         except tk.TclError:
             self.varLF.set('')
             lf = tf
@@ -996,8 +1065,8 @@ class ImageSimulator(ttk.Frame):
             else:
                 idx = self.rn_idx
                 opt_iso = False
-                opt_exp = np.min([0.9*C.SAT_CAP[self.cont.cnum][self.gain_idx]/maxf, self.max])
-                sat_exp = 0.9*C.SAT_CAP[self.cont.cnum][self.gain_idx]/maxf
+                opt_exp = np.min([0.9*C.SAT_CAP[self.cont.cnum][0][self.gain_idx]/maxf, self.max])
+                sat_exp = 0.9*C.SAT_CAP[self.cont.cnum][0][self.gain_idx]/maxf
                 opt_subs = self.tot/opt_exp
             
             exposure2 = np.linspace(1, 900, 200)
@@ -1028,7 +1097,7 @@ class ImageSimulator(ttk.Frame):
             self.displaySuggestedSettings(opt_iso, opt_exp, sat_exp, self.max, int(np.ceil(opt_subs)), 
                                           in_stack_snr, snr, stack_snr, dr)
             
-        topSettings = tk.Toplevel()
+        topSettings = tk.Toplevel(background=C.DEFAULT_BG)
         topSettings.title('Get suggested imaging settings')
         self.cont.addIcon(topSettings)
         apc.setupWindow(topSettings, 300, 180)
@@ -1040,19 +1109,25 @@ class ImageSimulator(ttk.Frame):
         frameInput = ttk.Frame(topSettings)
         frameInput.pack(side='top', pady=(7*C.scsy, 10*C.scsy), expand=True)
             
-        ttk.Label(frameInput, text='Total imaging time: ').grid(row=0, column=0, sticky='W')
+        labelTot = ttk.Label(frameInput, text='Total imaging time: ')
         entryTot = ttk.Entry(frameInput, textvariable=varTot, font=self.cont.small_font,
                   background=C.DEFAULT_BG, width=6)
+        labelTot.grid(row=0, column=0, sticky='W')
         entryTot.grid(row=0, column=1)
         ttk.Label(frameInput, text=' hours').grid(row=0, column=2, sticky='W')
                   
-        ttk.Label(frameInput, text='Max exposure time: ').grid(row=1, column=0, sticky='W')
+        labelMax = ttk.Label(frameInput, text='Max exposure time: ')
         entryMax = ttk.Entry(frameInput, textvariable=varMax, font=self.cont.small_font,
                   background=C.DEFAULT_BG, width=6)
+        labelMax.grid(row=1, column=0, sticky='W')
         entryMax.grid(row=1, column=1)
         ttk.Label(frameInput, text=' seconds').grid(row=1, column=2, sticky='W')
            
         if self.cont.tooltipsOn.get():
+
+            apc.createToolTip(labelTot, C.TTTotal, self.cont.tt_fs)
+            apc.createToolTip(labelMax, C.TTMax, self.cont.tt_fs)
+
             apc.createToolTip(entryTot, C.TTTotal, self.cont.tt_fs)
             apc.createToolTip(entryMax, C.TTMax, self.cont.tt_fs)
         
@@ -1068,7 +1143,7 @@ class ImageSimulator(ttk.Frame):
    
     def displaySuggestedSettings(self, iso, exp, sat_exp, max, subs, in_stack_snr, snr, stack_snr, dr):
     
-        topSettings = tk.Toplevel()
+        topSettings = tk.Toplevel(background=C.DEFAULT_BG)
         topSettings.title('Suggested imaging settings')
         self.cont.addIcon(topSettings)
         apc.setupWindow(topSettings, 330, 430)
@@ -1085,25 +1160,28 @@ class ImageSimulator(ttk.Frame):
         frameResults.pack(side='top')
         
         if iso:
+
             labelISO1 = ttk.Label(frameResults, text='ISO: ')
             labelISO1.grid(row=0, column=0, sticky='W')
-            labelISO2 = ttk.Label(frameResults, text=('{:d}'.format(iso)), width=7, anchor='center')
+            labelISO2 = ttk.Label(frameResults, text=('{:d}'.format(int(iso))), width=7, anchor='center')
             labelISO2.grid(row=0, column=1)
+
+            apc.createToolTip(labelISO1, C.TTSet, self.cont.tt_fs)
             apc.createToolTip(labelISO2, C.TTSet, self.cont.tt_fs)
         
         labelExp1 = ttk.Label(frameResults, text='Exposure time: ')
         labelExp1.grid(row=1, column=0, sticky='W')
-        labelExp2 = ttk.Label(frameResults, text=('{:d}'.format(exp)), width=7, anchor='center')
+        labelExp2 = ttk.Label(frameResults, text=('{:d}'.format(int(exp))), width=7, anchor='center')
         labelExp2.grid(row=1, column=1)
         labelExp3 = ttk.Label(frameResults, text=' seconds')
         labelExp3.grid(row=1, column=2, sticky='W')
         
         labelSubs1 = ttk.Label(frameResults, text='Number of subframes: ')
         labelSubs1.grid(row=2, column=0, sticky='W')
-        labelSubs2 = ttk.Label(frameResults, text=('{:d}'.format(subs)), width=7, anchor='center')
+        labelSubs2 = ttk.Label(frameResults, text=('{:d}'.format(int(subs))), width=7, anchor='center')
         labelSubs2.grid(row=2, column=1)
         
-        for widget in [labelExp2, labelSubs2]:
+        for widget in [labelExp1, labelExp2, labelSubs1, labelSubs2]:
             apc.createToolTip(widget, C.TTSet, self.cont.tt_fs)
         
         frameMiddle = ttk.Frame(topSettings)
@@ -1141,22 +1219,22 @@ class ImageSimulator(ttk.Frame):
         frameCompVals.pack(side='top')
         
         ttk.Label(frameCompVals, text='User limited exp. time: ').grid(row=0, column=0, sticky='W')
-        ttk.Label(frameCompVals, text=('{:d}'.format(max)), width=7,
+        ttk.Label(frameCompVals, text=('{:d}'.format(int(max))), width=7,
                   anchor='center').grid(row=0, column=1)
         ttk.Label(frameCompVals, text=' seconds').grid(row=0, column=2, sticky='W')
         
         ttk.Label(frameCompVals, text='Saturation limited exp. time: ').grid(row=1, column=0, sticky='W')
-        ttk.Label(frameCompVals, text=('{:d}'.format(sat_exp)), width=7,
+        ttk.Label(frameCompVals, text=('{:d}'.format(int(sat_exp))), width=7,
                   anchor='center').grid(row=1, column=1)
         ttk.Label(frameCompVals, text=' seconds').grid(row=1, column=2, sticky='W')
         
         ttk.Label(frameCompVals, text='Reduced exp. time: ').grid(row=2, column=0, sticky='W')
-        ttk.Label(frameCompVals, text=('{:d}'.format(exp)), width=7,
+        ttk.Label(frameCompVals, text=('{:d}'.format(int(exp))), width=7,
                   anchor='center').grid(row=2, column=1)
         ttk.Label(frameCompVals, text=' seconds').grid(row=2, column=2, sticky='W')
         
         ttk.Label(frameCompVals, text='Stack SNR loss from reduction: ').grid(row=3, column=0, sticky='W')
-        ttk.Label(frameCompVals, text=('{:.2f}%%'.format((in_stack_snr - stack_snr)*100/stack_snr)), width=7,
+        ttk.Label(frameCompVals, text=('{:.2f}%'.format((in_stack_snr - stack_snr)*100/stack_snr)), width=7,
                   anchor='center').grid(row=3, column=1)
         
         ttk.Button(topSettings, text='Close', command=lambda: topSettings.destroy())\

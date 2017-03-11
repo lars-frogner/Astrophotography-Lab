@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import numpy as np
 import matplotlib
+import matplotlib.pyplot as plt
 import aplab_common as apc
 from aplab_common import C
 
@@ -161,22 +162,22 @@ class PlottingTool(ttk.Frame):
             self.optionGain.config(width=6)
             self.optionRN.config(width=6)
         
-        labelExp = ttk.Label(frameLowLeft, text='Exposure time:')
+        self.labelExp = ttk.Label(frameLowLeft, text='Exposure time:')
         self.entryExp = ttk.Entry(frameLowLeft, textvariable=self.varExp, font=small_font,
                                   background=C.DEFAULT_BG, width=9)
         labelExp2 = ttk.Label(frameLowLeft, text='seconds')
         
-        labelDF = ttk.Label(frameLowLeft, text='Dark current:')
+        self.labelDF = ttk.Label(frameLowLeft, text='Dark current:')
         self.entryDF = ttk.Entry(frameLowLeft, textvariable=self.varDF, font=small_font,
                                   background=C.DEFAULT_BG, width=9)
         labelDF2 = ttk.Label(frameLowLeft, text='e-/s')
         
-        labelSF = ttk.Label(frameLowLeft, text='Skyglow:')
+        self.labelSF = ttk.Label(frameLowLeft, text='Skyglow:')
         self.entrySF = ttk.Entry(frameLowLeft, textvariable=self.varSF, font=small_font,
                                   background=C.DEFAULT_BG, width=9)
         labelSF2 = ttk.Label(frameLowLeft, textvariable=self.varSFLabel)
         
-        labelTF = ttk.Label(frameLowLeft, text='Target signal:')
+        self.labelTF = ttk.Label(frameLowLeft, text='Target signal:')
         self.entryTF = ttk.Entry(frameLowLeft, textvariable=self.varTF, font=small_font,
                                   background=C.DEFAULT_BG, width=9)
         labelTF2 = ttk.Label(frameLowLeft, textvariable=self.varTFLabel)
@@ -186,7 +187,7 @@ class PlottingTool(ttk.Frame):
                                   background=C.DEFAULT_BG, width=9)
         self.labelLF2 = ttk.Label(frameLowLeft, textvariable=self.varLFLabel)
         
-        labelTotal = ttk.Label(frameLowLeft, text='Total imaging time:')
+        self.labelTotal = ttk.Label(frameLowLeft, text='Total imaging time:')
         self.entryTotal = ttk.Entry(frameLowLeft, textvariable=self.varTotal, font=small_font,
                                   background=C.DEFAULT_BG, width=9)
         labelTotal2 = ttk.Label(frameLowLeft, text='hours')
@@ -218,23 +219,23 @@ class PlottingTool(ttk.Frame):
         
         labelInput.grid(row=0, column=0, columnspan=3, pady=10*C.scsy)
         
-        labelExp.grid(row=3, column=0, sticky='W')
+        self.labelExp.grid(row=3, column=0, sticky='W')
         self.entryExp.grid(row=3, column=1)
         labelExp2.grid(row=3, column=2, sticky='W')
         
-        labelDF.grid(row=4, column=0, sticky='W')
+        self.labelDF.grid(row=4, column=0, sticky='W')
         self.entryDF.grid(row=4, column=1)
         labelDF2.grid(row=4, column=2, sticky='W')
         
-        labelSF.grid(row=5, column=0, sticky='W')
+        self.labelSF.grid(row=5, column=0, sticky='W')
         self.entrySF.grid(row=5, column=1)
         labelSF2.grid(row=5, column=2, sticky='W')
         
-        labelTF.grid(row=6, column=0, sticky='W')
+        self.labelTF.grid(row=6, column=0, sticky='W')
         self.entryTF.grid(row=6, column=1)
         labelTF2.grid(row=6, column=2, sticky='W')
             
-        labelTotal.grid(row=8, column=0, sticky='W')
+        self.labelTotal.grid(row=8, column=0, sticky='W')
         self.entryTotal.grid(row=8, column=1)
         labelTotal2.grid(row=8, column=2, sticky='W')
         
@@ -934,11 +935,13 @@ class PlottingTool(ttk.Frame):
             xvals = np.linspace(0, 1, len(iso))
             self.ax.cla()
             self.ax.plot(xvals, stack_snr, 'o-', color='forestgreen')
+
+            y_ofs = [-15, -30, -45]
             
             for i in range(len(iso)):
-                self.ax.annotate('{:d} x {:d} s'.format(subs[i], np.ceil(exposure[i])), name=C.gfont,
+                self.ax.annotate('{:d} x {:d} s'.format(int(subs[i]), int(np.ceil(exposure[i]))), name=C.gfont,
                                  fontsize=self.cont.tt_fs, xy=(xvals[i], stack_snr[i]),
-                                 xytext=(-20, -30), textcoords='offset points',
+                                 xytext=(-20, y_ofs[i % 3]), textcoords='offset points',
                                  arrowprops=dict(arrowstyle='->', facecolor='black'))
             self.ax.text(0.5, 0.05,
                          'Exposure time limited if unwanted saturation occurs',
@@ -949,6 +952,7 @@ class PlottingTool(ttk.Frame):
             self.ax.set_xlabel('ISO', name=C.gfont, fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
+            plt.setp(self.ax.get_xticklabels(), rotation=30, horizontalalignment='right')
             self.ax.set_ylabel('Maximum stack SNR', name=C.gfont, fontsize=small_fs)
             self.canvas.draw()
             
@@ -975,6 +979,7 @@ class PlottingTool(ttk.Frame):
             self.ax.set_xlabel('ISO', name=C.gfont, fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
+            plt.setp(self.ax.get_xticklabels(), rotation=30, horizontalalignment='right')
             self.ax.set_ylabel('Dynamic range [stops]', name=C.gfont, fontsize=small_fs)
             self.canvas.draw()
             
@@ -1148,6 +1153,7 @@ class PlottingTool(ttk.Frame):
             self.ax.set_xlabel('ISO', name=C.gfont, fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
+            plt.setp(self.ax.get_xticklabels(), rotation=30, horizontalalignment='right')
             self.ax.set_ylabel('Saturation capacity [e-]', name=C.gfont, fontsize=small_fs)
             self.canvas.draw()
             
@@ -1169,6 +1175,7 @@ class PlottingTool(ttk.Frame):
             self.ax.set_xlabel('ISO', name=C.gfont, fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
+            plt.setp(self.ax.get_xticklabels(), rotation=30, horizontalalignment='right')
             self.ax.set_ylabel('Read noise [e-]', name=C.gfont, fontsize=small_fs)
             self.canvas.draw()
             
@@ -1190,6 +1197,7 @@ class PlottingTool(ttk.Frame):
             self.ax.set_xlabel('ISO', name=C.gfont, fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
+            plt.setp(self.ax.get_xticklabels(), rotation=30, horizontalalignment='right')
             self.ax.set_ylabel('Gain [e-/ADU]', name=C.gfont, fontsize=small_fs)
             self.canvas.draw()
             
@@ -1347,6 +1355,7 @@ class PlottingTool(ttk.Frame):
             self.ax.set_xlabel('ISO', name=C.gfont, fontsize=small_fs)
             self.ax.set_xticks(xvals)
             self.ax.set_xticklabels([str(i) for i in iso])
+            plt.setp(self.ax.get_xticklabels(), rotation=30, horizontalalignment='right')
             self.ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
             self.ax.set_yticklabels(['Min', '', '', '', '', 'Max'])
             self.ax.set_ylabel('Value', name=C.gfont, fontsize=small_fs)
@@ -1365,6 +1374,24 @@ class PlottingTool(ttk.Frame):
     def activateTooltips(self):
     
         '''Add tooltips to all relevant widgets.'''
+
+        if self.cont.isDSLR:
+
+            apc.createToolTip(self.labelISO, C.TTISO, self.cont.tt_fs)
+            apc.createToolTip(self.optionISO, C.TTISO, self.cont.tt_fs)
+
+        elif len(C.GAIN[self.cont.cnum][0]) > 1:
+
+            apc.createToolTip(self.labelGain, C.TTGain, self.cont.tt_fs)
+            apc.createToolTip(self.optionGain, C.TTGain, self.cont.tt_fs)
+        
+        apc.createToolTip(self.labelExp, C.TTExp, self.cont.tt_fs)
+        apc.createToolTip(self.labelDF, C.TTDF, self.cont.tt_fs)
+        apc.createToolTip(self.labelSF, C.TTSFLum if self.cont.hasQE else C.TTSFElectron, self.cont.tt_fs)
+        apc.createToolTip(self.labelTF, C.TTTFLum if self.cont.hasQE else C.TTTFElectron, self.cont.tt_fs)
+        apc.createToolTip(self.labelLF, C.TTLFLum if self.cont.hasQE else C.TTLFElectron, self.cont.tt_fs)
+        apc.createToolTip(self.labelTotal, C.TTTotal, self.cont.tt_fs)
+        apc.createToolTip(self.labelMax, C.TTMax, self.cont.tt_fs)
         
         apc.createToolTip(self.entryExp, C.TTExp, self.cont.tt_fs)
         apc.createToolTip(self.entryDF, C.TTDF, self.cont.tt_fs)
@@ -1377,8 +1404,28 @@ class PlottingTool(ttk.Frame):
     def deactivateTooltips(self):
     
         '''Remove tooltips from all widgets.'''
+
+        if self.cont.isDSLR:
+            
+            self.labelISO.unbind('<Enter>')
+            self.labelISO.unbind('<Motion>')
+            self.labelISO.unbind('<Leave>')
+            self.optionISO.unbind('<Enter>')
+            self.optionISO.unbind('<Motion>')
+            self.optionISO.unbind('<Leave>')
+
+        elif len(C.GAIN[self.cont.cnum][0]) > 1:
+
+            self.labelGain.unbind('<Enter>')
+            self.labelGain.unbind('<Motion>')
+            self.labelGain.unbind('<Leave>')
+            self.optionGain.unbind('<Enter>')
+            self.optionGain.unbind('<Motion>')
+            self.optionGain.unbind('<Leave>')
     
-        for widget in [self.entryExp, self.entryDF, self.entrySF, self.entryTF, self.entryLF,
+        for widget in [self.labelExp, self.labelDF, self.labelSF, self.labelTF, self.labelLF,
+                       self.labelTotal, self.labelMax,
+                       self.entryExp, self.entryDF, self.entrySF, self.entryTF, self.entryLF,
                        self.entryTotal, self.entryMax]:
                            
             widget.unbind('<Enter>')

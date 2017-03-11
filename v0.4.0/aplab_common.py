@@ -25,6 +25,7 @@ class C:
 
     tw = 40
 
+    TTISO = textwrap.fill('The ISO sensitivity used for the subframe.', tw)
     TTExp = textwrap.fill('The exposure time of the subframe.', tw)
     TTUseDark = textwrap.fill('[Deactivate if you don\'t have a dark frame with the same exposure time and temperature as the light frame. This will restrict the noise and flux values that can be calculated, but SNR and DR will not be affected.]', tw)
     TTDarkNoise = textwrap.fill('The standard deviation of pixel values in a dark frame with the same exposure time and temperature as the relevant subframe.', tw) + '\n\n' + textwrap.fill('[This value must be from an uncalibrated frame.]', tw)
@@ -33,11 +34,11 @@ class C:
     TTBGLevel = textwrap.fill('The average or median pixel value in a background region of the subframe.', tw) + '\n\n' + textwrap.fill('[This value must be from an uncalibrated frame.]', tw)
     TTTarget = textwrap.fill('The average or median pixel value in a target region of the subframe, where the SNR is to be calculated.', tw) + '\n\n' + textwrap.fill('[This value must be from an uncalibrated frame.]', tw)
     TTDF = textwrap.fill('The number of photoelectrons per second produced in each pixel by the dark current.', tw)
-    TTSFLum = textwrap.fill('The estimated apparent magnitude of a 1x1 arcsecond piece of the sky.', tw) + '\n\n' + textwrap.fill('[The magnitude unit used here does not correspond exactly to a visual magnitude unit, since the passband of the camera generally will be different from the visual (V) passband. The camera sensitivity is assumed to peak at 555 nm.]', tw)
+    TTSFLum = textwrap.fill('The estimated apparent magnitude of a 1x1 arcsecond piece of the sky.', tw) + '\n\n' + textwrap.fill('[A lower value means more light. The magnitude unit used here does not correspond exactly to a visual magnitude unit, since the passband of the camera generally will be different from the visual (V) passband. The camera sensitivity is assumed to peak at 555 nm.]', tw)
     TTSFElectron = textwrap.fill('The number of photoelectrons per second produced in each pixel as a result of photons from the skyglow.', tw) + '\n\n' + textwrap.fill('[This is a measure of the sky brightness. Different electron fluxes are not directly comparable between different camera models, but are comparable for the same camera model if the optical train is the same.]', tw)
-    TTTFLum = textwrap.fill('The estimated apparent magnitude of a 1x1 arcsecond piece of the target.', tw) + '\n\n' + textwrap.fill('[The magnitude unit used here does not correspond exactly to a visual magnitude unit, since the passband of the camera generally will be different from the visual (V) passband. The camera sensitivity is assumed to peak at 555 nm.]', tw)
+    TTTFLum = textwrap.fill('The estimated apparent magnitude of a 1x1 arcsecond piece of the target.', tw) + '\n\n' + textwrap.fill('[A lower value means more light. The magnitude unit used here does not correspond exactly to a visual magnitude unit, since the passband of the camera generally will be different from the visual (V) passband. The camera sensitivity is assumed to peak at 555 nm.]', tw)
     TTTFElectron = textwrap.fill('The number of photoelectrons per second produced in each target pixel as a result of photons from the target.', tw) + '\n\n' + textwrap.fill('[This is a measure of the brightness of the target. Different electron fluxes are not directly comparable between different camera models, but are comparable for the same camera model if the optical train is the same.]', tw)
-    TTLFLum = textwrap.fill(u'The luminance (in mag/arcsec\u00B2) of the brightest part of the target that you don\'t want to become completely saturated during an exposure. This is used to find an upper limit to the exposure time for that particular target.', tw)
+    TTLFLum = textwrap.fill(u'The luminance (in mag/arcsec\u00B2) of the brightest part of the target that you don\'t want to become completely saturated during an exposure. This is used to find an upper limit to the exposure time for that particular target.', tw) + '\n\n' + textwrap.fill('[A lower value means more light.]', tw)
     TTLFElectron = textwrap.fill(u'The electron flux of the brightest part of the target that you don\'t want to become completely saturated during an exposure. This is used to find an upper limit to the exposure time for that particular target.', tw)
     TTDSFPhoton = textwrap.fill('The number of photons per second that would have to reach each pixel to produce the observed electron flux from both skyglow and dark current.', tw) + '\n\n' + textwrap.fill('[Different photon fluxes are comparable between different camera models, provided that the same optical train is used and that the fluxes relate to the same colour(s) of light.]', tw)
     TTDSFElectron = textwrap.fill('The number of photoelectrons per second produced in each pixel either as a result of photons from the skyglow, or from dark current.', tw) + '\n\n' + textwrap.fill('[Different electron fluxes are not directly comparable between different camera models, but are comparable for the same camera model if the optical train is the same.]', tw)
@@ -87,7 +88,9 @@ class C:
     scsy = scsx = sh/768.0  # Scaling after screen height
 
     # Default background colour
-    DEFAULT_BG = '#{:02x}{:02x}{:02x}'.format(240, 240, 237) if is_win else '#{:02x}{:02x}{:02x}'.format(217, 217, 217)
+    DEFAULT_BG = '#{:02x}{:02x}{:02x}'.format(162, 181, 213)#240, 240, 237) if is_win else '#{:02x}{:02x}{:02x}'.format(217, 217, 217)
+    BUTTON_COLOUR = '#{:02x}{:02x}{:02x}'.format(158, 159, 155)
+    TEXT_COLOUR = '#{:02x}{:02x}{:02x}'.format(255, 255, 255)
 
     # Window sizes
 
@@ -182,7 +185,7 @@ class MessageWindow(ttk.Frame):
         labelFLMod.pack(side='right', expand=True)
         
         tk.Label(frameContent, textvariable=self.varMessageLabel,
-                  font=medium_font).pack(fill='both', expand=True)
+                  font=medium_font, background=C.DEFAULT_BG).pack(fill='both', expand=True)
         
         ttk.Separator(frameBottom, orient='horizontal').pack(side='top', fill='x')
         ttk.Label(frameBottom, text='').pack(side='top', fill='both')

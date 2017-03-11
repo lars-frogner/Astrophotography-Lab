@@ -537,13 +537,12 @@ class ToolManager(tk.Tk):
         self.varSaveError = tk.StringVar()
     
         # Construct saving window on top
-        self.topSave = tk.Toplevel()
+        self.topSave = tk.Toplevel(background=C.DEFAULT_BG)
         self.topSave.title('Save image data')
         self.addIcon(self.topSave)
         apc.setupWindow(self.topSave, 300, 145)
         
-        labelSave = tk.Label(self.topSave, text='Input image keywords\n(target, location, date etc.)',
-                             font=self.small_font)
+        labelSave = ttk.Label(self.topSave, text='Input image keywords\n(target, location, date etc.)')
         entryKeywords = ttk.Entry(self.topSave, textvariable=self.varKeywords, font=self.small_font,
                                   background=C.DEFAULT_BG, width=35)
         buttonSave = ttk.Button(self.topSave, text='Save', command=self.executeSave)
@@ -667,7 +666,7 @@ class ToolManager(tk.Tk):
         self.varLoadData.set(keywords[0])
         
         # Create loading window on top
-        self.topLoad = tk.Toplevel()
+        self.topLoad = tk.Toplevel(background=C.DEFAULT_BG)
         self.topLoad.title('Load image data')
         apc.setupWindow(self.topLoad, 300, 135)
         self.addIcon(self.topLoad)
@@ -711,7 +710,7 @@ class ToolManager(tk.Tk):
                 # Set loaded data in calculator frame
                 frame.gain_idx = int(data[0])
                 frame.rn_idx = int(data[1])
-                frame.varISO.set(C.ISO[self.cnum][frame.gain_idx])
+                frame.varISO.set(0 if not self.isDSLR else C.ISO[self.cnum][frame.gain_idx])
                 frame.varGain.set(C.GAIN[self.cnum][0][frame.gain_idx])
                 frame.varRN.set(C.RN[self.cnum][0][frame.rn_idx])
                 frame.varExp.set(data[2])
@@ -734,7 +733,7 @@ class ToolManager(tk.Tk):
                 # Set loaded data in simulator frame
                 frame.gain_idx = int(data[0])
                 frame.rn_idx = int(data[1])
-                frame.varISO.set(C.ISO[self.cnum][frame.gain_idx])
+                frame.varISO.set(0 if not self.isDSLR else C.ISO[self.cnum][frame.gain_idx])
                 frame.varGain.set(C.GAIN[self.cnum][0][frame.gain_idx])
                 frame.varRN.set(C.RN[self.cnum][0][frame.rn_idx])
                 frame.varExp.set(data[2])
@@ -762,7 +761,7 @@ class ToolManager(tk.Tk):
                 # Set loaded data in plot frame
                 frame.gain_idx = int(data[0])
                 frame.rn_idx = int(data[1])
-                frame.varISO.set(C.ISO[self.cnum][frame.gain_idx])
+                frame.varISO.set(0 if not self.isDSLR else C.ISO[self.cnum][frame.gain_idx])
                 frame.varGain.set(C.GAIN[self.cnum][0][frame.gain_idx])
                 frame.varRN.set(C.RN[self.cnum][0][frame.rn_idx])
                 frame.varExp.set(data[2])
@@ -867,7 +866,7 @@ class ToolManager(tk.Tk):
         self.menubar.entryconfig(4, state='disabled')
     
         # Setup managing window
-        self.topManage = tk.Toplevel()
+        self.topManage = tk.Toplevel(background=C.DEFAULT_BG)
         self.topManage.title('Manage image data')
         self.addIcon(self.topManage)
         apc.setupWindow(self.topManage, 300, 170)
@@ -1004,7 +1003,7 @@ class ToolManager(tk.Tk):
             
             self.varNewname.set(keywords[linenum])
             
-            self.topRename = tk.Toplevel()
+            self.topRename = tk.Toplevel(background=C.DEFAULT_BG)
             self.topRename.title('Insert new name')
             self.addIcon(self.topRename)
             apc.setupWindow(self.topRename, 300, 135)
@@ -1038,17 +1037,17 @@ class ToolManager(tk.Tk):
             for i in range(linenum):
                 
                 file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
-                           .format(tuple([names[i]] + [keywords[i]] + datafull[i])))
+                           .format(*tuple([names[i]] + [keywords[i]] + datafull[i])))
 
             file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
-                       .format(tuple([names[linenum]] + [self.varNewname.get()] + datafull[linenum])))
+                       .format(*tuple([names[linenum]] + [self.varNewname.get()] + datafull[linenum])))
             
             if linenum < len(keywords):
                 
                 for i in range(linenum+1, len(keywords)):
 
                     file.write('{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n' \
-                               .format(tuple([names[i]] + [keywords[i]] + datafull[i])))
+                               .format(*tuple([names[i]] + [keywords[i]] + datafull[i])))
                          
             file.close()
             
@@ -1080,13 +1079,13 @@ class ToolManager(tk.Tk):
         self.menubar.entryconfig(4, state='disabled')
     
         # Setup window
-        self.topCamera = tk.Toplevel()
+        self.topCamera = tk.Toplevel(background=C.DEFAULT_BG)
         self.topCamera.title('Choose camera')
         self.addIcon(self.topCamera)
         apc.setupWindow(self.topCamera, 300, 330)
         self.topCamera.focus_force()
         
-        labelCamera = tk.Label(self.topCamera, text='Choose camera:', font=self.medium_font)
+        labelCamera = tk.Label(self.topCamera, text='Choose camera:', font=self.medium_font, background=C.DEFAULT_BG)
         frameSelection = ttk.Frame(self.topCamera)
         
         labelCamera.pack(side='top', pady=(18*C.scsy, 8*C.scsy), expand=True)
@@ -1127,7 +1126,7 @@ class ToolManager(tk.Tk):
         buttonAddNew.pack(side='top', pady=(0, 25*C.scsy), expand=True)
         
         labelDefault = ttk.Label(frameDefault, text='Use as default:')
-        checkbuttonDefault = tk.Checkbutton(frameDefault, variable=self.varSetDefaultC)
+        checkbuttonDefault = tk.Checkbutton(frameDefault, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varSetDefaultC)
         
         labelDefault.grid(row=0, column=0)
         checkbuttonDefault.grid(row=0, column=1)
@@ -1201,11 +1200,15 @@ class ToolManager(tk.Tk):
         calframe = self.frames[ImageCalculator]
         simframe = self.frames[ImageSimulator]
         plotframe = self.frames[PlottingTool]
+        fovframe = self.frames[FOVCalculator]
         
         # Reset frames to original states
         calframe.setDefaultValues()
         calframe.toggleDarkInputMode()
+
         if self.tooltipsOn.get():
+
+            apc.createToolTip(calframe.labelDark, C.TTDarkNoise if self.isDSLR else C.TTDarkLevel, self.tt_fs)
             apc.createToolTip(calframe.entryDark, C.TTDarkNoise if self.isDSLR else C.TTDarkLevel, self.tt_fs)
         
         simframe.setDefaultValues()
@@ -1220,6 +1223,10 @@ class ToolManager(tk.Tk):
         plotframe.reconfigureNonstaticWidgets()
         
         plotframe.toggleActiveWidgets(plotframe.plotList[0])
+
+        fovframe.update()
+        fovframe.selectObject(fovframe.start_idx)
+        fovframe.setFOV()
         
         if self.calMode.get():
             self.showFrame(MessageWindow if self.noData else ImageCalculator)
@@ -1318,7 +1325,7 @@ class ToolManager(tk.Tk):
             self.changeCamera()
     
         # Setup window
-        self.topAddNewCam = tk.Toplevel()
+        self.topAddNewCam = tk.Toplevel(background=C.DEFAULT_BG)
         self.topAddNewCam.title('Add new camera')
         self.addIcon(self.topAddNewCam)
         apc.setupWindow(self.topAddNewCam, 300, 200)
@@ -1367,14 +1374,14 @@ class ToolManager(tk.Tk):
         self.menubar.entryconfig(4, state='disabled')
     
         # Setup window
-        self.topTelescope = tk.Toplevel()
+        self.topTelescope = tk.Toplevel(background=C.DEFAULT_BG)
         self.topTelescope.title('Choose telescope or lens')
         self.addIcon(self.topTelescope)
         apc.setupWindow(self.topTelescope, 320, 330)
         self.topTelescope.focus_force()
         
         labelTelescope = tk.Label(self.topTelescope, text='Choose telescope or lens:',
-                                  font=self.medium_font)
+                                  font=self.medium_font, background=C.DEFAULT_BG)
         frameSelection = ttk.Frame(self.topTelescope)
         
         labelTelescope.pack(side='top', pady=(18*C.scsy, 8*C.scsy), expand=True)
@@ -1409,7 +1416,7 @@ class ToolManager(tk.Tk):
         buttonAddNew.pack(side='top', pady=(0, 25*C.scsy), expand=True)
         
         labelDefault = ttk.Label(frameDefault, text='Use as default:')
-        checkbuttonDefault = tk.Checkbutton(frameDefault, variable=self.varSetDefaultT)
+        checkbuttonDefault = tk.Checkbutton(frameDefault, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varSetDefaultT)
         
         labelDefault.grid(row=0, column=0)
         checkbuttonDefault.grid(row=0, column=1)
@@ -1542,14 +1549,13 @@ class ToolManager(tk.Tk):
             self.changeTelescope()
     
         # Setup window
-        self.topAddNewTel = tk.Toplevel()
+        self.topAddNewTel = tk.Toplevel(background=C.DEFAULT_BG)
         self.topAddNewTel.title('Add new telescope or lens')
         self.addIcon(self.topAddNewTel)
         apc.setupWindow(self.topAddNewTel, 300, 220)
         self.topAddNewTel.focus_force()
             
-        tk.Label(self.topAddNewTel, text='Please provide requested\ntelescope/lens information:',
-                 font=self.small_font)\
+        ttk.Label(self.topAddNewTel, text='Please provide requested\ntelescope/lens information:')\
                  .pack(side='top', pady=(15*C.scsy, 10*C.scsy), expand=True)
             
         frameInput = ttk.Frame(self.topAddNewTel)
@@ -1562,12 +1568,12 @@ class ToolManager(tk.Tk):
         ttk.Label(frameInput, text='Aperture: ').grid(row=1, column=0, sticky='W')
         ttk.Entry(frameInput, textvariable=varAp, font=self.small_font,
                   background=C.DEFAULT_BG, width=12).grid(row=1, column=1, sticky='W')
-        tk.Label(frameInput, text='mm', font=self.small_font).grid(row=1, column=2, sticky='W')
+        ttk.Label(frameInput, text='mm').grid(row=1, column=2, sticky='W')
                   
         ttk.Label(frameInput, text='Focal length: ').grid(row=2, column=0, sticky='W')
         ttk.Entry(frameInput, textvariable=varFL, font=self.small_font,
                   background=C.DEFAULT_BG, width=12).grid(row=2, column=1, sticky='W')
-        tk.Label(frameInput, text='mm', font=self.small_font).grid(row=2, column=2, sticky='W')
+        ttk.Label(frameInput, text='mm').grid(row=2, column=2, sticky='W')
         
         ttk.Button(self.topAddNewTel, text='OK',
                    command=executeAddNew).pack(side='top', pady=(0, 10*C.scsy), expand=True)
@@ -1613,14 +1619,13 @@ class ToolManager(tk.Tk):
         self.menubar.entryconfig(4, state='disabled')
     
         # Setup window
-        topChangeFLMod = tk.Toplevel()
+        topChangeFLMod = tk.Toplevel(background=C.DEFAULT_BG)
         topChangeFLMod.title('Change focal length modifier')
         apc.setupWindow(topChangeFLMod, 220, 160)
         self.addIcon(topChangeFLMod)
         topChangeFLMod.focus_force()
         
-        tk.Label(topChangeFLMod, text='Input the magnification factor of\nthe barlow or focal reducer:',
-                 font=self.small_font).pack(side='top', pady=(12*C.scsy, 0), expand=True)
+        ttk.Label(topChangeFLMod, text='Input the magnification factor of\nthe barlow or focal reducer:').pack(side='top', pady=(12*C.scsy, 0), expand=True)
         entryFLMod = ttk.Entry(topChangeFLMod, textvariable=varFLMod, font=self.small_font,
                                background=C.DEFAULT_BG, width=10).pack(side='top', pady=12*C.scsy,
                                                                      expand=True)
@@ -1654,7 +1659,7 @@ class ToolManager(tk.Tk):
         self.menubar.entryconfig(4, state='disabled')
     
         # Setup window
-        self.topCModify = tk.Toplevel()
+        self.topCModify = tk.Toplevel(background=C.DEFAULT_BG)
         self.topCModify.title('Modify parameters')
         self.addIcon(self.topCModify)
         apc.setupWindow(self.topCModify, 280, 210)
@@ -1663,9 +1668,8 @@ class ToolManager(tk.Tk):
         # Show a message if no camera data exists
         if self.noData:
         
-            tk.Label(self.topCModify, text='No sensor data exists for\nthe currently active camera.\n\n' \
-                                          + 'You can aquire sensor data\nwith the Image Analyser.',
-                     font=self.small_font).pack(side='top', pady=20*C.scsy, expand=True)
+            ttk.Label(self.topCModify, text='No sensor data exists for\nthe currently active camera.\n\n' \
+                                          + 'You can aquire sensor data\nwith the Image Analyser.').pack(side='top', pady=20*C.scsy, expand=True)
             
             ttk.Button(self.topCModify, text='OK', command=lambda: self.topCModify.destroy())\
                 .pack(side='top', pady=(0, 10*C.scsy), expand=True)
@@ -2099,7 +2103,7 @@ class ToolManager(tk.Tk):
         self.menubar.entryconfig(4, state='disabled')
     
         # Setup window
-        self.topTModify = tk.Toplevel()
+        self.topTModify = tk.Toplevel(background=C.DEFAULT_BG)
         self.topTModify.title('Modify parameters')
         self.addIcon(self.topTModify)
         apc.setupWindow(self.topTModify, 280, 210)
@@ -2275,7 +2279,7 @@ class ToolManager(tk.Tk):
             # Set values
             simframe.gain_idx = calframe.gain_idx
             simframe.rn_idx = calframe.rn_idx
-            simframe.varISO.set(C.ISO[self.cnum][calframe.gain_idx])
+            simframe.varISO.set(0 if not self.isDSLR else C.ISO[self.cnum][calframe.gain_idx])
             simframe.varGain.set(C.GAIN[self.cnum][0][calframe.gain_idx])
             simframe.varRN.set(C.RN[self.cnum][0][calframe.rn_idx])
             simframe.varExp.set('{:g}'.format(calframe.exposure))
@@ -2305,7 +2309,7 @@ class ToolManager(tk.Tk):
             
             simframe.gain_idx = plotframe.gain_idx
             simframe.rn_idx = plotframe.rn_idx
-            simframe.varISO.set(C.ISO[self.cnum][plotframe.gain_idx])
+            simframe.varISO.set(0 if not self.isDSLR else C.ISO[self.cnum][plotframe.gain_idx])
             simframe.varGain.set(C.GAIN[self.cnum][0][plotframe.gain_idx])
             simframe.varRN.set(C.RN[self.cnum][0][plotframe.rn_idx])
             
@@ -2369,7 +2373,7 @@ class ToolManager(tk.Tk):
             # Set values
             plotframe.gain_idx = calframe.gain_idx
             plotframe.rn_idx = calframe.rn_idx
-            plotframe.varISO.set(C.ISO[self.cnum][calframe.gain_idx])
+            plotframe.varISO.set(0 if not self.isDSLR else C.ISO[self.cnum][calframe.gain_idx])
             plotframe.varGain.set(C.GAIN[self.cnum][0][calframe.gain_idx])
             plotframe.varRN.set(C.RN[self.cnum][0][calframe.rn_idx])
             plotframe.varExp.set('{:g}'.format(calframe.exposure))
@@ -2396,7 +2400,7 @@ class ToolManager(tk.Tk):
         
             plotframe.gain_idx = simframe.gain_idx
             plotframe.rn_idx = simframe.rn_idx
-            plotframe.varISO.set(C.ISO[self.cnum][simframe.gain_idx])
+            plotframe.varISO.set(0 if not self.isDSLR else C.ISO[self.cnum][simframe.gain_idx])
             plotframe.varGain.set(C.GAIN[self.cnum][0][simframe.gain_idx])
             plotframe.varRN.set(C.RN[self.cnum][0][simframe.rn_idx])
             
@@ -2459,12 +2463,24 @@ class ToolManager(tk.Tk):
         
         # Change tooltips
         if self.tooltipsOn.get():
+
+            apc.createToolTip(calframe.labelSF, C.TTSFElectron if calframe.varUseDark.get() \
+                                             or self.isDSLR else C.TTDSFElectron, self.tt_fs)
             apc.createToolTip(calframe.labelSF2, C.TTSFElectron if calframe.varUseDark.get() \
                                              or self.isDSLR else C.TTDSFElectron, self.tt_fs)
+            apc.createToolTip(calframe.labelTF, C.TTTFElectron, self.tt_fs)
             apc.createToolTip(calframe.labelTF2, C.TTTFElectron, self.tt_fs)
+
+            apc.createToolTip(simframe.labelSF, C.TTSFElectron, self.tt_fs)
+            apc.createToolTip(simframe.labelTF, C.TTTFElectron, self.tt_fs)
+            apc.createToolTip(simframe.labelLF, C.TTLFElectron, self.tt_fs)
             apc.createToolTip(simframe.entrySF, C.TTSFElectron, self.tt_fs)
             apc.createToolTip(simframe.entryTF, C.TTTFElectron, self.tt_fs)
             apc.createToolTip(simframe.entryLF, C.TTLFElectron, self.tt_fs)
+
+            apc.createToolTip(plotframe.labelSF, C.TTSFElectron, self.tt_fs)
+            apc.createToolTip(plotframe.labelTF, C.TTTFElectron, self.tt_fs)
+            apc.createToolTip(plotframe.labelLF, C.TTLFElectron, self.tt_fs)
             apc.createToolTip(plotframe.entrySF, C.TTSFElectron, self.tt_fs)
             apc.createToolTip(plotframe.entryTF, C.TTTFElectron, self.tt_fs)
             apc.createToolTip(plotframe.entryLF, C.TTLFElectron, self.tt_fs)
@@ -2554,12 +2570,26 @@ class ToolManager(tk.Tk):
         
         # Change tooltips
         if self.tooltipsOn.get():
+
+            apc.createToolTip(calframe.labelSF, C.TTSFLum if calframe.varUseDark.get() \
+                                             or self.isDSLR else C.TTDSFPhoton, self.tt_fs)
             apc.createToolTip(calframe.labelSF2, C.TTSFLum if calframe.varUseDark.get() \
                                              or self.isDSLR else C.TTDSFPhoton, self.tt_fs)
+            apc.createToolTip(calframe.labelTF, C.TTTFLum, self.tt_fs)
             apc.createToolTip(calframe.labelTF2, C.TTTFLum, self.tt_fs)
+
+
+            apc.createToolTip(simframe.labelSF, C.TTSFElectron, self.tt_fs)
+            apc.createToolTip(simframe.labelTF, C.TTTFElectron, self.tt_fs)
+            apc.createToolTip(simframe.labelLF, C.TTLFElectron, self.tt_fs)
             apc.createToolTip(simframe.entrySF, C.TTSFLum, self.tt_fs)
             apc.createToolTip(simframe.entryTF, C.TTTFLum, self.tt_fs)
             apc.createToolTip(simframe.entryLF, C.TTLFLum, self.tt_fs)
+
+
+            apc.createToolTip(plotframe.labelSF, C.TTSFElectron, self.tt_fs)
+            apc.createToolTip(plotframe.labelTF, C.TTTFElectron, self.tt_fs)
+            apc.createToolTip(plotframe.labelLF, C.TTLFElectron, self.tt_fs)
             apc.createToolTip(plotframe.entrySF, C.TTSFLum, self.tt_fs)
             apc.createToolTip(plotframe.entryTF, C.TTTFLum, self.tt_fs)
             apc.createToolTip(plotframe.entryLF, C.TTLFLum, self.tt_fs)
@@ -2741,6 +2771,9 @@ class ToolManager(tk.Tk):
             file.write(lines[-1].split(',')[0] + ', Tooltips: off,' + lines[-1].split(',')[2])
             
             self.defaultTTState.set(0)
+
+            if not self.tooltipsOn.get():
+                self.toggleTooltips()
             
             self.currentFrame().varMessageLabel.set('Default tooltip state: off')
             self.currentFrame().labelMessage.configure(foreground='navy')
@@ -2752,6 +2785,9 @@ class ToolManager(tk.Tk):
             file.write(lines[-1].split(',')[0] + ', Tooltips: on,' + lines[-1].split(',')[2])
             
             self.defaultTTState.set(1)
+
+            if self.tooltipsOn.get():
+                self.toggleTooltips()
             
             self.currentFrame().varMessageLabel.set('Default tooltip state: on')
             self.currentFrame().labelMessage.configure(foreground='navy')
@@ -2773,7 +2809,7 @@ class ToolManager(tk.Tk):
         self.menubar.entryconfig(4, state='disabled')
     
         # Setup window
-        topFS = tk.Toplevel()
+        topFS = tk.Toplevel(background=C.DEFAULT_BG)
         topFS.title('Change font size')
         apc.setupWindow(topFS, 150, 130)
         self.addIcon(topFS)
@@ -2825,14 +2861,13 @@ class ToolManager(tk.Tk):
         self.menubar.entryconfig(4, state='disabled')
     
         # Setup window
-        topWarning = tk.Toplevel()
+        topWarning = tk.Toplevel(background=C.DEFAULT_BG)
         topWarning.title('Warning')
         self.addIcon(topWarning)
         apc.setupWindow(topWarning, 300, 145)
         topWarning.focus_force()
         
-        tk.Label(topWarning, text='Are you sure you want to\nclear the inputted information?',
-                 font=self.small_font).pack(side='top', pady=(20*C.scsy, 5*C.scsy), expand=True)
+        ttk.Label(topWarning, text='Are you sure you want to\nclear the inputted information?').pack(side='top', pady=(20*C.scsy, 5*C.scsy), expand=True)
         
         frameButtons = ttk.Frame(topWarning)
         frameButtons.pack(side='top', expand=True, pady=(0, 10*C.scsy))
@@ -2848,6 +2883,9 @@ class ToolManager(tk.Tk):
             self.menubar.entryconfig(4, state='normal')
         except:
             pass
+
+        frame.varMessageLabel.set('Input cleared.')
+        frame.labelMessage.configure(foreground='navy')
     
     def setDMSAngleUnit(self):
     
