@@ -374,4 +374,4 @@ StarlightXpress SXVR-H16,CCD,0.6,10,39321,0,65535,0.55,7.4,2048,2048
 StarlightXpress SXVR-H18,CCD,0.5,14,25500,0,51000,0.60,5.4,3326,2504
 StarlightXpress SXVR-H35,CCD,0.9,15,50000,0,55556,0.50,9.0,4032,2688
 StarlightXpress SXVR-H694M,CCD,0.3,7,15000,0,50000,0.72,4.54,2750,2200
-Camera: none, Tooltips: on, Fontsize: 10
+Camera: none, Tooltips: on, Fontsize: auto
