@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.font as tkfont
 import sys
+import os
 import datetime
 import traceback
 import textwrap
@@ -80,8 +81,7 @@ class C:
 
     else:
 
-        screendims = subprocess.Popen('xrandr | grep "\*" | cut -d" " -f4', shell=True, stdout=subprocess.PIPE).communicate()[0]
-
+        screendims = subprocess.Popen('xrandr | grep "\*" | cut -d" " -f4', shell=True, stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
         sw = int(screendims.split('x')[0]) # Screen width in pixels
         sh = int(screendims.split('x')[1].split('\n')[0]) # Screen height in pixels
 
@@ -238,6 +238,8 @@ class ErrorWindow(tk.Tk):
         tk.Tk.__init__(self)
         
         self.title('Error')
+
+        container = ttk.Frame(self)
         
         try:
             self.iconbitmap('aplab_icon.ico')
@@ -245,9 +247,16 @@ class ErrorWindow(tk.Tk):
             pass
             
         errfont = tkfont.Font(root=self, family=C.gfont, size=9)
+
+        style = ttk.Style(None)
+        style.configure('TLabel', background=C.DEFAULT_BG)
+        style.configure('TButton', background=C.DEFAULT_BG)
+        style.configure('TFrame', background=C.DEFAULT_BG)
+
+        container.pack(side='top', fill='both', expand=True)
         
-        ttk.Label(self, text=error_message, font=errfont).pack(pady=12*C.scsy, expand=True)
-        ttk.Button(self, text='OK', command=lambda: self.destroy()).pack(pady=(0, 12*C.scsy),
+        ttk.Label(container, text=error_message, font=errfont).pack(pady=12*C.scsy, expand=True)
+        ttk.Button(container, text='OK', command=lambda: self.destroy()).pack(pady=(0, 12*C.scsy),
                                                                          expand=True)
         
         strs = error_message.split('\n')
@@ -288,7 +297,7 @@ class Catcher:
             msg1 = 'A Python error occured:\n\n'
             msg2 = '\nThis event has been stored in the log file "errorlog.txt".'
             
-            file=open('errorlog.txt', 'a')
+            file=open('aplab_errorlog{}errorlog.txt'.format(os.sep), 'a')
             
             file.write('**** ' + str(datetime.datetime.now()) + ' ****\n')
             traceback.print_exc(file=file)
