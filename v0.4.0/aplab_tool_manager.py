@@ -4,6 +4,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.font as tkfont
 import webbrowser
+import os
 import numpy as np
 import aplab_common as apc
 from aplab_common import C, MessageWindow
@@ -71,11 +72,16 @@ class ToolManager(tk.Tk):
         style.configure('leftselectedfile.TLabel', font=self.small_font, background='royalblue')
         style.configure('rightselectedfile.TLabel', font=self.small_font, background='crimson')
         style.configure('leftrightselectedfile.TLabel', font=self.small_font, background='forestgreen')
-        style.configure('TButton', font=self.small_font, background=C.DEFAULT_BG)
         style.configure('TFrame', background=C.DEFAULT_BG)
         style.configure('files.TFrame', background='white')
-        style.configure('TMenubutton', font=self.small_font, background=C.DEFAULT_BG)
-        style.configure('TRadiobutton', font=self.small_font, background=C.DEFAULT_BG)
+        style.configure('TRadiobutton', font=self.small_font, background=C.DEFAULT_BG, bordercolor=C.DEFAULT_BG, activebackground=C.DEFAULT_BG)
+
+        if C.is_win:
+            style.configure('TButton', font=self.small_font, background=C.DEFAULT_BG)
+            style.configure('TMenubutton', font=self.small_font, background=C.DEFAULT_BG)
+        else:
+            style.configure('TButton', font=self.small_font)
+            style.configure('TMenubutton', font=self.small_font)
         
         self.container.pack(side='top', fill='both', expand=True) # Pack main frame
         
@@ -1126,7 +1132,7 @@ class ToolManager(tk.Tk):
         buttonAddNew.pack(side='top', pady=(0, 25*C.scsy), expand=True)
         
         labelDefault = ttk.Label(frameDefault, text='Use as default:')
-        checkbuttonDefault = tk.Checkbutton(frameDefault, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varSetDefaultC)
+        checkbuttonDefault = tk.Checkbutton(frameDefault, highlightbackground=C.DEFAULT_BG, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varSetDefaultC)
         
         labelDefault.grid(row=0, column=0)
         checkbuttonDefault.grid(row=0, column=1)
@@ -1161,11 +1167,11 @@ class ToolManager(tk.Tk):
         # Sets the new camera name in bottom line in camera data file if "Set as default" is selected
         if self.varSetDefaultC.get():
             
-            file = open('cameradata.txt', 'r')
+            file = open('aplab_data{}cameradata.txt'.format(os.sep), 'r')
             lines = file.read().split('\n')
             file.close()
             
-            file = open('cameradata.txt', 'w')
+            file = open('aplab_data{}cameradata.txt'.format(os.sep), 'w')
             for line in lines[:-1]:
                 file.write(line + '\n')
             file.write('Camera: ' + C.CNAME[self.cnum] + ',' + ','.join(lines[-1].split(',')[1:]))
@@ -1287,11 +1293,11 @@ class ToolManager(tk.Tk):
                 return None
                 
             # Read camera data file            
-            file = open('cameradata.txt', 'r')
+            file = open('aplab_data{}cameradata.txt'.format(os.sep), 'r')
             lines = file.read().split('\n')
             file.close()
                 
-            file = open('cameradata.txt', 'w')
+            file = open('aplab_data{}cameradata.txt'.format(os.sep), 'w')
                 
             file.write(lines[0])
             
@@ -1303,7 +1309,7 @@ class ToolManager(tk.Tk):
             file.close()
             
             # Sort camera list
-            idx = apc.sortDataList(name, 'cameradata.txt')
+            idx = apc.sortDataList(name, 'aplab_data{}cameradata.txt'.format(os.sep))
             
             # Insert camera name and type to camera info lists
             C.CNAME.insert(idx, name)
@@ -1416,7 +1422,7 @@ class ToolManager(tk.Tk):
         buttonAddNew.pack(side='top', pady=(0, 25*C.scsy), expand=True)
         
         labelDefault = ttk.Label(frameDefault, text='Use as default:')
-        checkbuttonDefault = tk.Checkbutton(frameDefault, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varSetDefaultT)
+        checkbuttonDefault = tk.Checkbutton(frameDefault, highlightbackground=C.DEFAULT_BG, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varSetDefaultT)
         
         labelDefault.grid(row=0, column=0)
         checkbuttonDefault.grid(row=0, column=1)
@@ -1450,11 +1456,11 @@ class ToolManager(tk.Tk):
         # Sets the new telescope name in bottom line in telescope data file if "Set as default" is selected
         if self.varSetDefaultT.get():
             
-            file = open('telescopedata.txt', 'r')
+            file = open('aplab_data{}telescopedata.txt'.format(os.sep), 'r')
             lines = file.read().split('\n')
             file.close()
             
-            file = open('telescopedata.txt', 'w')
+            file = open('aplab_data{}telescopedata.txt'.format(os.sep), 'w')
             for line in lines[:-1]:
                 file.write(line + '\n')
             file.write('Telescope: ' + C.TNAME[self.tnum])
@@ -1473,12 +1479,17 @@ class ToolManager(tk.Tk):
         calframe = self.frames[ImageCalculator]
         simframe = self.frames[ImageSimulator]
         plotframe = self.frames[PlottingTool]
+        fovframe = self.frames[FOVCalculator]
         
         calframe.setDefaultValues()
         simframe.setDefaultValues()
         plotframe.setDefaultValues()
         
         anframe.clearFiles()
+
+        fovframe.update()
+        fovframe.selectObject(fovframe.start_idx)
+        fovframe.setFOV()
         
         self.topTelescope.destroy() # Close change telescope window
         self.currentFrame().varMessageLabel.set('Telescope changed.')
@@ -1521,11 +1532,11 @@ class ToolManager(tk.Tk):
                 return None
                 
             # Read telescope data file            
-            file = open('telescopedata.txt', 'r')
+            file = open('aplab_data{}telescopedata.txt'.format(os.sep), 'r')
             lines = file.read().split('\n')
             file.close()
                 
-            file = open('telescopedata.txt', 'w')
+            file = open('aplab_data{}telescopedata.txt'.format(os.sep), 'w')
                 
             file.write(lines[0])
             
@@ -1536,7 +1547,7 @@ class ToolManager(tk.Tk):
             file.close()
             
             # Sort telescope list
-            idx = apc.sortDataList(name, 'telescopedata.txt')
+            idx = apc.sortDataList(name, 'aplab_data{}telescopedata.txt'.format(os.sep))
             
             # Insert telescope name, aperture and focal length to telescope info lists
             C.TNAME.insert(idx, name)
@@ -1610,6 +1621,7 @@ class ToolManager(tk.Tk):
             self.frames[ImageSimulator].updateOpticsLabels()
             self.frames[ImageAnalyser].updateAngle()
             self.frames[FOVCalculator].selectObjectController(None)
+            self.frames[FOVCalculator].setFOV()
             
             topChangeFLMod.destroy()
         
@@ -1687,7 +1699,7 @@ class ToolManager(tk.Tk):
             return None
     
         # Read camera data file
-        file = open('cameradata.txt', 'r')
+        file = open('aplab_data{}cameradata.txt'.format(os.sep), 'r')
         self.lines = file.read().split('\n')
         file.close()
         
@@ -1959,7 +1971,7 @@ class ToolManager(tk.Tk):
     
         # Write new camera data file
         
-        file = open('cameradata.txt', 'w')
+        file = open('aplab_data{}cameradata.txt'.format(os.sep), 'w')
         
         idx = self.cnum + 1
         
@@ -2087,7 +2099,7 @@ class ToolManager(tk.Tk):
         self.varNewCParamVal.set('')
         self.varErrorModifyC.set('')
         
-        file = open('cameradata.txt', 'r')
+        file = open('aplab_data{}cameradata.txt'.format(os.sep), 'r')
         self.lines = file.read().split('\n')
         file.close()
         
@@ -2110,7 +2122,7 @@ class ToolManager(tk.Tk):
         self.topTModify.focus_force()
     
         # Read telescope data file
-        file = open('telescopedata.txt', 'r')
+        file = open('aplab_data{}telescopedata.txt'.format(os.sep), 'r')
         self.lines = file.read().split('\n')
         file.close()
         
@@ -2206,7 +2218,7 @@ class ToolManager(tk.Tk):
     
         # Write new camera data file
         
-        file = open('telescopedata.txt', 'w')
+        file = open('aplab_data{}telescopedata.txt'.format(os.sep), 'w')
         
         idx = self.tnum + 1
         
@@ -2246,7 +2258,7 @@ class ToolManager(tk.Tk):
         self.varNewTParamVal.set('')
         self.varErrorModifyT.set('')
         
-        file = open('telescopedata.txt', 'r')
+        file = open('aplab_data{}telescopedata.txt'.format(os.sep), 'r')
         self.lines = file.read().split('\n')
         file.close()
         
@@ -2755,11 +2767,11 @@ class ToolManager(tk.Tk):
     
         self.menuTT.delete(1)
             
-        file = open('cameradata.txt', 'r')
+        file = open('aplab_data{}cameradata.txt'.format(os.sep), 'r')
         lines = file.read().split('\n')
         file.close()
         
-        file = open('cameradata.txt', 'w')
+        file = open('aplab_data{}cameradata.txt'.format(os.sep), 'w')
         
         for line in lines[:-1]:
             file.write(line + '\n')
@@ -2958,11 +2970,11 @@ def setNewFS(app, cnum, tnum, fs):
 
     '''Change default font size and restart application.'''
     
-    file = open('cameradata.txt', 'r')
+    file = open('aplab_data{}cameradata.txt'.format(os.sep), 'r')
     lines = file.read().split('\n')
     file.close()
     
-    file = open('cameradata.txt', 'w')
+    file = open('aplab_data{}cameradata.txt'.format(os.sep), 'w')
     
     for line in lines[:-1]:
         file.write(line + '\n')

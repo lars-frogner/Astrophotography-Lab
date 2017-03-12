@@ -387,7 +387,7 @@ class ImageCalculator(ttk.Frame):
         labelExp2 = ttk.Label(frameUpMiddle, text='seconds')
         
         self.labelToggleDark = ttk.Label(frameUpMiddle, text='Use dark frame info:')
-        self.checkbuttonToggleDark = tk.Checkbutton(frameUpMiddle, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG,
+        self.checkbuttonToggleDark = tk.Checkbutton(frameUpMiddle, highlightbackground=C.DEFAULT_BG, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG,
                                                     variable=self.varUseDark, command=self.toggleDarkInputMode)
         labelToggleDark2 = ttk.Label(frameUpMiddle, text='', width=9)
         
@@ -418,7 +418,7 @@ class ImageCalculator(ttk.Frame):
                                 
         frameLim = ttk.Frame(frameLowMiddle)
         self.labelLim = ttk.Label(frameLim, text='Transfer limit signal only:')
-        self.checkbuttonLim = tk.Checkbutton(frameLim, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varTransfLim)
+        self.checkbuttonLim = tk.Checkbutton(frameLim, highlightbackground=C.DEFAULT_BG, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varTransfLim)
         
         buttonTransferSim = ttk.Button(frameLowMiddle, text='Transfer data to Image Simulator',
                                        command=self.cont.transferToSim, width=29)

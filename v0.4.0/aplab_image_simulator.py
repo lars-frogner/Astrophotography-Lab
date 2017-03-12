@@ -2,6 +2,8 @@
 
 import tkinter as tk
 import tkinter.ttk as ttk
+import os
+import atexit
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -21,6 +23,8 @@ class ImageSimulator(ttk.Frame):
         small_font = self.cont.small_font
         medium_font = self.cont.medium_font
         large_font = self.cont.large_font
+
+        atexit.register(self.deleteTemp)
         
         # Define attributes
         
@@ -96,7 +100,7 @@ class ImageSimulator(ttk.Frame):
         self.topCanvas.destroy()
                      
         # Read demonstration image
-        self.img_orig = matplotlib.image.imread('sim_orig_image.png')
+        self.img_orig = matplotlib.image.imread('aplab_data{}sim_orig_image.png'.format(os.sep))
         
         # Set default attribute values
         
@@ -802,12 +806,12 @@ class ImageSimulator(ttk.Frame):
         img = img/C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]
         
         # Save linear and non-linear version of the simulated image
-        plt.imsave('sim.jpg', img, cmap=plt.get_cmap('gray'), vmin = 0.0, vmax = 1.0)
-        plt.imsave('sim_str.jpg', apc.autostretch(img), cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
+        plt.imsave('aplab_temp{}sim.jpg'.format(os.sep), img, cmap=plt.get_cmap('gray'), vmin = 0.0, vmax = 1.0)
+        plt.imsave('aplab_temp{}sim_str.jpg'.format(os.sep), apc.autostretch(img), cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
         
         # Open as PIL images
-        im = Image.open('sim.jpg')
-        im_str = Image.open('sim_str.jpg')
+        im = Image.open('aplab_temp{}sim.jpg'.format(os.sep))
+        im_str = Image.open('aplab_temp{}sim_str.jpg'.format(os.sep))
         
         sidelength = int(self.canvasSim.winfo_width()) - 5 # Canvas size
         
@@ -978,7 +982,7 @@ class ImageSimulator(ttk.Frame):
             frameStretch = ttk.Frame(self.topCanvas)
         
             self.labelStretch = ttk.Label(frameStretch, text='Stretch:')
-            self.checkbuttonStretch = tk.Checkbutton(frameStretch, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varStretch,
+            self.checkbuttonStretch = tk.Checkbutton(frameStretch, highlightbackground=C.DEFAULT_BG, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varStretch,
                                       command=lambda: self.simulateController(fromCheckbutton=True))
 
             if self.cont.tooltipsOn.get():
@@ -1239,3 +1243,15 @@ class ImageSimulator(ttk.Frame):
         
         ttk.Button(topSettings, text='Close', command=lambda: topSettings.destroy())\
                   .pack(side='bottom', pady=(0, 15*C.scsy), expand=True)
+
+    def deleteTemp(self):
+        
+        try:
+            os.remove('aplab_temp{}sim.jpg'.format(os.sep))
+        except OSError:
+            pass
+
+        try:
+            os.remove('aplab_temp{}sim_str.jpg'.format(os.sep))
+        except OSError:
+            pass

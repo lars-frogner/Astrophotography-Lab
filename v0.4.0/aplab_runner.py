@@ -7,6 +7,7 @@ Written by Lars Frogner
 '''
 
 import tkinter as tk
+import os
 import numpy as np
 import aplab_common as apc
 from aplab_common import C, ErrorWindow, Catcher
@@ -22,7 +23,7 @@ no_tdefault = False    # Set to true if there is no default telescope
 # Try to read camera data and store in lists
 
 try:
-    file1 = open('cameradata.txt', 'r')
+    file1 = open('aplab_data{}cameradata.txt'.format(os.sep), 'r')
     
 except IOError:
 
@@ -30,7 +31,7 @@ except IOError:
     startup_error = 'Could not find "cameradata.txt".'
     
 try:
-    file2 = open('telescopedata.txt', 'r')
+    file2 = open('aplab_data{}telescopedata.txt'.format(os.sep), 'r')
     
 except IOError:
 
@@ -108,7 +109,7 @@ if startup_success:
         except IndexError:
         
             startup_success = False
-            startup_error = 'Invalid data configuration in\nline %d in "cameradata.txt".' \
+            startup_error = 'Invalid data configuration in\nline {:d} in "cameradata.txt".' \
                             .format(len(C.CNAME) + 1)
             break
             
@@ -133,8 +134,8 @@ if startup_success:
         except IndexError:
         
             startup_success = False
-            startup_error = 'Invalid data configuration in\nline %d in "telescopedata.txt".' \
-                            % (len(C.TNAME) + 1)
+            startup_error = 'Invalid data configuration in\nline {:d} in "telescopedata.txt".' \
+                            .format(len(C.TNAME) + 1)
             break
             
         except (TypeError, ValueError):

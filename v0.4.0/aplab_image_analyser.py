@@ -366,7 +366,7 @@ class ImageAnalyser(ttk.Frame):
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
-        pil_img = Image.open(self.labelNames[label] + '.png')
+        pil_img = Image.open('aplab_temp' + os.sep + self.labelNames[label] + '.png')
         
         self.photo_img = ImageTk.PhotoImage(pil_img)
         
@@ -1358,7 +1358,7 @@ class ImageAnalyser(ttk.Frame):
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
         
-        np.save(self.labelNames[label], img)
+        np.save('aplab_temp' + os.sep + self.labelNames[label], img)
             
         self.varMessageLabel.set('{} - Applying screen stretch..'.format(filename))
         self.labelMessage.configure(foreground='navy')
@@ -1662,8 +1662,8 @@ class ImageAnalyser(ttk.Frame):
                         if self.displayed_bias == 1:
                         
                             self.forgetAttributes(self.labelBias1)
-                            os.remove(self.labelNames[self.labelBias1] + '.npy')
-                            os.remove(self.labelNames[self.labelBias1] + '.png')
+                            os.remove('aplab_temp' + os.sep + self.labelNames[self.labelBias1] + '.npy')
+                            os.remove('aplab_temp' + os.sep + self.labelNames[self.labelBias1] + '.png')
                             
                             self.labelBias1.pack_forget()
                             self.varBias1Label.set('')
@@ -1682,12 +1682,12 @@ class ImageAnalyser(ttk.Frame):
                                 self.labelBias1.exposure = self.labelBias2.exposure
                                 self.labelBias1.iso = self.labelBias2.iso
                                 self.varBias1Label.set(self.varBias2Label.get())
-                                os.remove(self.labelNames[self.labelBias1] + '.npy')
-                                os.rename(self.labelNames[self.labelBias2] + '.npy', 
-                                          self.labelNames[self.labelBias1] + '.npy')
+                                os.remove('aplab_temp' + os.sep + self.labelNames[self.labelBias1] + '.npy')
+                                os.rename('aplab_temp' + os.sep + self.labelNames[self.labelBias2] + '.npy', 
+                                          'aplab_temp' + os.sep + self.labelNames[self.labelBias1] + '.npy')
                                           
-                                os.remove(self.labelNames[self.labelBias1] + '.png')
-                                os.rename(self.labelNames[self.labelBias2] + '.png', 
+                                os.remove('aplab_temp' + os.sep + self.labelNames[self.labelBias1] + '.png')
+                                os.rename('aplab_temp' + os.sep + self.labelNames[self.labelBias2] + '.png', 
                                           self.labelNames[self.labelBias1] + '.png')
                                 if self.labelBias2.leftselected:
                                     self.showImage(self.labelBias1)
@@ -1705,8 +1705,8 @@ class ImageAnalyser(ttk.Frame):
                         if self.displayed_dark == 1:
                         
                             self.forgetAttributes(self.labelDark1)
-                            os.remove(self.labelNames[self.labelDark1] + '.npy')
-                            os.remove(self.labelNames[self.labelDark1] + '.png')
+                            os.remove('aplab_temp' + os.sep + self.labelNames[self.labelDark1] + '.npy')
+                            os.remove('aplab_temp' + os.sep + self.labelNames[self.labelDark1] + '.png')
                             
                             self.labelDark1.pack_forget()
                             self.varDark1Label.set('')
@@ -1723,13 +1723,13 @@ class ImageAnalyser(ttk.Frame):
                                 self.labelDark1.exposure = self.labelDark2.exposure
                                 self.labelDark1.iso = self.labelDark2.iso
                                 self.varDark1Label.set(self.varDark2Label.get())
-                                os.remove(self.labelNames[self.labelDark1] + '.npy')
-                                os.rename(self.labelNames[self.labelDark2] + '.npy',
-                                          self.labelNames[self.labelDark1] + '.npy')
+                                os.remove('aplab_temp' + os.sep + self.labelNames[self.labelDark1] + '.npy')
+                                os.rename('aplab_temp' + os.sep + self.labelNames[self.labelDark2] + '.npy',
+                                          'aplab_temp' + os.sep + self.labelNames[self.labelDark1] + '.npy')
                                 
-                                os.remove(self.labelNames[self.labelDark1] + '.png')
-                                os.rename(self.labelNames[self.labelDark2] + '.png',
-                                          self.labelNames[self.labelDark1] + '.png')
+                                os.remove('aplab_temp' + os.sep + self.labelNames[self.labelDark1] + '.png')
+                                os.rename('aplab_temp' + os.sep + self.labelNames[self.labelDark2] + '.png',
+                                          'aplab_temp' + os.sep + self.labelNames[self.labelDark1] + '.png')
                                 if self.labelDark2.leftselected:
                                     self.showImage(self.labelDark1)
                             
@@ -1746,8 +1746,8 @@ class ImageAnalyser(ttk.Frame):
                         if self.displayed_flat == 1:
                         
                             self.forgetAttributes(self.labelFlat1)
-                            os.remove(self.labelNames[self.labelFlat1] + '.npy')
-                            os.remove(self.labelNames[self.labelFlat1] + '.png')
+                            os.remove('aplab_temp' + os.sep + self.labelNames[self.labelFlat1] + '.npy')
+                            os.remove('aplab_temp' + os.sep + self.labelNames[self.labelFlat1] + '.png')
                             
                             self.labelFlat1.pack_forget()
                             self.varFlat1Label.set('')
@@ -1764,13 +1764,13 @@ class ImageAnalyser(ttk.Frame):
                                 self.labelFlat1.exposure = self.labelFlat2.exposure
                                 self.labelFlat1.iso = self.labelFlat2.iso
                                 self.varFlat1Label.set(self.varFlat2Label.get())
-                                os.remove(self.labelNames[self.labelFlat1] + '.npy')
-                                os.rename(self.labelNames[self.labelFlat2] + '.npy', 
-                                          self.labelNames[self.labelFlat1] + '.npy')
+                                os.remove('aplab_temp' + os.sep + self.labelNames[self.labelFlat1] + '.npy')
+                                os.rename('aplab_temp' + os.sep + self.labelNames[self.labelFlat2] + '.npy', 
+                                          'aplab_temp' + os.sep + self.labelNames[self.labelFlat1] + '.npy')
                                 
-                                os.remove(self.labelNames[self.labelFlat1] + '.png')
-                                os.rename(self.labelNames[self.labelFlat2] + '.png', 
-                                          self.labelNames[self.labelFlat1] + '.png')
+                                os.remove('aplab_temp' + os.sep + self.labelNames[self.labelFlat1] + '.png')
+                                os.rename('aplab_temp' + os.sep + self.labelNames[self.labelFlat2] + '.png', 
+                                          'aplab_temp' + os.sep + self.labelNames[self.labelFlat1] + '.png')
                                 if self.labelFlat2.leftselected:
                                     self.showImage(self.labelFlat1)
                             
@@ -1785,8 +1785,8 @@ class ImageAnalyser(ttk.Frame):
                     elif label is self.labelLight:
                     
                         self.forgetAttributes(self.labelLight)
-                        os.remove(self.labelNames[self.labelLight] + '.npy')
-                        os.remove(self.labelNames[self.labelLight] + '.png')
+                        os.remove('aplab_temp' + os.sep + self.labelNames[self.labelLight] + '.npy')
+                        os.remove('aplab_temp' + os.sep + self.labelNames[self.labelLight] + '.png')
                         
                         self.labelLight.pack_forget()
                         self.varLightLabel.set('')
@@ -1797,8 +1797,8 @@ class ImageAnalyser(ttk.Frame):
                     elif label is self.labelSaturated:
                     
                         self.forgetAttributes(self.labelSaturated)
-                        os.remove(self.labelNames[self.labelSaturated] + '.npy')
-                        os.remove(self.labelNames[self.labelSaturated] + '.png')
+                        os.remove('aplab_temp' + os.sep + self.labelNames[self.labelSaturated] + '.npy')
+                        os.remove('aplab_temp' + os.sep + self.labelNames[self.labelSaturated] + '.png')
                         
                         self.labelSaturated.pack_forget()
                         self.varSaturatedLabel.set('')
@@ -1873,7 +1873,7 @@ class ImageAnalyser(ttk.Frame):
                     return False
                     
                 # Use light frame as saturated frame
-                saturated = np.load(self.labelNames[self.labelLight] + '.npy')
+                saturated = np.load('aplab_temp' + os.sep + self.labelNames[self.labelLight] + '.npy')
                 useLight = True
             
             # Show message if required files haven't been added
@@ -1884,14 +1884,14 @@ class ImageAnalyser(ttk.Frame):
                 return None
         else:
         
-            saturated = np.load(self.labelNames[self.labelSaturated] + '.npy')
+            saturated = np.load('aplab_temp' + os.sep + self.labelNames[self.labelSaturated] + '.npy')
             useLight = False
             
         # Get raw image data
-        bias1 = np.load(self.labelNames[self.labelBias1] + '.npy')
-        bias2 = np.load(self.labelNames[self.labelBias2] + '.npy')
-        flat1 = np.load(self.labelNames[self.labelFlat1] + '.npy')
-        flat2 = np.load(self.labelNames[self.labelFlat2] + '.npy')
+        bias1 = np.load('aplab_temp' + os.sep + self.labelNames[self.labelBias1] + '.npy')
+        bias2 = np.load('aplab_temp' + os.sep + self.labelNames[self.labelBias2] + '.npy')
+        flat1 = np.load('aplab_temp' + os.sep + self.labelNames[self.labelFlat1] + '.npy')
+        flat2 = np.load('aplab_temp' + os.sep + self.labelNames[self.labelFlat2] + '.npy')
         
         # Define central crop area for flat frames
         h, w = flat1.shape
@@ -2049,16 +2049,16 @@ class ImageAnalyser(ttk.Frame):
                         return None
             
             # Read camera data file            
-            file = open('cameradata.txt', 'r')
+            file = open('aplab_data{}cameradata.txt'.format(os.sep), 'r')
             old_text = file.read()
             lines = old_text.split('\n')
             file.close()
 
-            file = open('cameradata_user_backup.txt', 'w')
+            file = open('aplab_data{}cameradata_user_backup.txt'.format(os.sep), 'w')
             file.write(old_text)
             file.close()
                 
-            file = open('cameradata.txt', 'w')
+            file = open('aplab_data{}cameradata.txt'.format(os.sep), 'w')
                 
             file.write(lines[0])
                 
@@ -2406,7 +2406,7 @@ class ImageAnalyser(ttk.Frame):
         '''Show topwindow with statistics of selected area or entire image.'''
         
         # Get raw image data
-        img = np.load(self.labelNames[self.getSelectedLabel()] + '.npy')
+        img = np.load('aplab_temp' + os.sep + self.labelNames[self.getSelectedLabel()] + '.npy')
         
         # Crop image if a selection box has been drawn
         if self.localSelection:
@@ -2571,8 +2571,8 @@ class ImageAnalyser(ttk.Frame):
             calframe = self.cont.frames[ImageCalculator]
               
             # Get raw data of selected area
-            img_crop = np.load(self.labelNames[label] + '.npy')[self.selectionArea[1]:self.selectionArea[3],
-                                                                self.selectionArea[0]:self.selectionArea[2]]
+            img_crop = np.load('aplab_temp' + os.sep + self.labelNames[label] + '.npy')[self.selectionArea[1]:self.selectionArea[3],
+                                                                                        self.selectionArea[0]:self.selectionArea[2]]
             
             # Calculate required values and transfer to corresponding widgets
             if varBGRegion.get():
@@ -2659,7 +2659,7 @@ class ImageAnalyser(ttk.Frame):
                         return None
                     
                     # Get raw image data
-                    img = np.load(self.labelNames[label] + '.npy')
+                    img = np.load('aplab_temp' + os.sep + self.labelNames[label] + '.npy')
                     
                     # Crop image if a selection box has been drawn
                     if self.localSelection:
@@ -2683,8 +2683,8 @@ class ImageAnalyser(ttk.Frame):
                 else:
                 
                     # Get raw data of images
-                    img1 = np.load(self.labelNames[self.labelDark1] + '.npy')
-                    img2 = np.load(self.labelNames[self.labelDark2] + '.npy')
+                    img1 = np.load('aplab_temp' + os.sep + self.labelNames[self.labelDark1] + '.npy')
+                    img2 = np.load('aplab_temp' + os.sep + self.labelNames[self.labelDark2] + '.npy')
                     
                     # Crop images if a selection box has been drawn
                     if self.localSelection:
@@ -2714,7 +2714,7 @@ class ImageAnalyser(ttk.Frame):
                 if self.displayed_dark == 1:
             
                     # Get raw image data
-                    img = np.load(self.labelNames[label] + '.npy')
+                    img = np.load('aplab_temp' + os.sep + self.labelNames[label] + '.npy')
                     
                     # Crop image if a selection box has been drawn
                     if self.localSelection:
@@ -2737,8 +2737,8 @@ class ImageAnalyser(ttk.Frame):
                 else:
                 
                     # Get raw data of images
-                    img1 = np.load(self.labelNames[self.labelDark1] + '.npy')
-                    img2 = np.load(self.labelNames[self.labelDark2] + '.npy')
+                    img1 = np.load('aplab_temp' + os.sep + self.labelNames[self.labelDark1] + '.npy')
+                    img2 = np.load('aplab_temp' + os.sep + self.labelNames[self.labelDark2] + '.npy')
                     
                     # Crop images if a selection box has been drawn
                     if self.localSelection:
@@ -3157,14 +3157,14 @@ class ImageAnalyser(ttk.Frame):
     
         '''Redraw an auto-stretched version of the histogram.'''
     
-        label.stretched_img = apc.autostretch(np.load(self.labelNames[label] + '.npy'))
+        label.stretched_img = apc.autostretch(np.load('aplab_temp' + os.sep + self.labelNames[label] + '.npy'))
         self.updateHist(label)
     
     def resetToLinear(self, label):
     
         '''Show the histogram of the linear image.'''
     
-        label.stretched_img = np.load(self.labelNames[label] + '.npy')
+        label.stretched_img = np.load('aplab_temp' + os.sep + self.labelNames[label] + '.npy')
         self.updateHist(label)
         
     def updateHist(self, label):
@@ -3185,7 +3185,7 @@ class ImageAnalyser(ttk.Frame):
         '''Create a photo image from the raw image of the label.'''
     
         # Save data as temporary image
-        im = Image.fromarray((255.0/65535.0*label.stretched_img).astype(np.uint8)).save(self.labelNames[label] + '.png')
+        im = Image.fromarray((255.0/65535.0*label.stretched_img).astype(np.uint8)).save('aplab_temp' + os.sep + self.labelNames[label] + '.png')
 
         plt.close('all')
         
@@ -3197,11 +3197,11 @@ class ImageAnalyser(ttk.Frame):
         for file in self.labelNames.values():
 
             try:
-                os.remove(file + '.npy')
+                os.remove('aplab_temp' + os.sep + file + '.npy')
             except OSError:
                 pass
             try:
-                os.remove(file + '.png')
+                os.remove('aplab_temp' + os.sep + file + '.png')
             except OSError:
                 pass
    

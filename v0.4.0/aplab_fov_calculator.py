@@ -41,7 +41,7 @@ class FOVCalculator(ttk.Frame):
         #self.cont.protocol('WM_DELETE_WINDOW', self.saveCoords)
         atexit.register(self.saveCoords)
         
-        file = open('coordinates.txt', 'r')
+        file = open('aplab_data{}coordinates.txt'.format(os.sep), 'r')
         coords = file.read().split(',')
         file.close()
             
@@ -51,7 +51,7 @@ class FOVCalculator(ttk.Frame):
         self.validLat = coords[0] != ''
         self.validLon = coords[1] != ''
         
-        file = open('objectdata.txt', 'r')
+        file = open('aplab_data{}objectdata.txt'.format(os.sep), 'r')
         lines = file.read().split('\n')
         file.close()
         
@@ -241,7 +241,7 @@ class FOVCalculator(ttk.Frame):
         
         labelTime.grid(row=0, column=0, sticky='W')
         self.entryTime.grid(row=0, column=1, padx=(0, 0), sticky='W')
-        buttonCurrent.grid(row=0, column=2, padx=(32, 0), sticky='W')
+        buttonCurrent.grid(row=0, column=2, padx=(2, 0), sticky='W')
         labelDate.grid(row=1, column=0, sticky='W')
         self.entryDate.grid(row=1, column=1, columnspan=2, sticky='W')
         
@@ -358,7 +358,7 @@ class FOVCalculator(ttk.Frame):
         self.buttonTransfer = ttk.Button(frameButtons, text='Transfer surf. br.', command=self.transferSB)
 
         self.buttonPlot.pack(side='left', expand=True)
-        self.buttonTransfer.pack(side='right', expand=True)
+        #self.buttonTransfer.pack(side='right', expand=True)
 
         frameButtons.pack(side='top', pady=(10*C.scsy, 10*C.scsy), fill='x')
 
@@ -388,7 +388,7 @@ class FOVCalculator(ttk.Frame):
     
     def saveCoords(self):
         
-        file = open('coordinates.txt', 'w')
+        file = open('aplab_data{}coordinates.txt'.format(os.sep), 'w')
         file.write('{},{}'.format(self.varLat.get() if self.validLat else '', self.varLon.get() if self.validLon else ''))
         file.close()
         #self.cont.destroy()
@@ -486,7 +486,7 @@ class FOVCalculator(ttk.Frame):
         self.obj_idx = idx
         
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            'Objects{}{}.jpg'.format(os.sep, self.obDes[self.obj_idx]))
+                            'aplab_data{0}object_images{0}{1}.jpg'.format(os.sep, self.obDes[self.obj_idx]))
         
         self.varCredit.set(self.imCred[self.obj_idx])
         
@@ -560,6 +560,9 @@ class FOVCalculator(ttk.Frame):
         im_new_pix_w = im_ang_w*canv_w/view_ang_w
         im_new_pix_h = int(round(im_new_pix_w*float(im_pix_h)/im_pix_w))
         im_new_pix_w = int(round(im_new_pix_w))
+
+        if im_new_pix_w < 1: im_new_pix_w = 1
+        if im_new_pix_h < 1: im_new_pix_h = 1
 
         resized_im = im.resize((im_new_pix_w, im_new_pix_h), Image.ANTIALIAS)
 
@@ -1122,11 +1125,11 @@ class FOVCalculator(ttk.Frame):
             frameCheck.pack(side='top', expand=True)
             
             ttk.Label(frameCheck, text='Show Moon: ').grid(row=0, column=0, sticky='W')
-            self.checkbuttonMoon = tk.Checkbutton(frameCheck, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varUseMoon, command=self.plotAlt)
+            self.checkbuttonMoon = tk.Checkbutton(frameCheck, highlightbackground=C.DEFAULT_BG, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varUseMoon, command=self.plotAlt)
             self.checkbuttonMoon.grid(row=0, column=1)
             
             ttk.Label(frameCheck, text='Show day/night: ').grid(row=1, column=0, sticky='W')
-            self.checkbuttonSun = tk.Checkbutton(frameCheck, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varUseSun, command=self.plotAlt)
+            self.checkbuttonSun = tk.Checkbutton(frameCheck, highlightbackground=C.DEFAULT_BG, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varUseSun, command=self.plotAlt)
             self.checkbuttonSun.grid(row=1, column=1)
         
         if self.obName[self.obj_idx] == 'Moon':
@@ -1211,8 +1214,10 @@ class FOVCalculator(ttk.Frame):
         
         if ymin < 0 and ymax > 0: self.ax1.plot([xvals[0], xvals[-1]], [0, 0], '-', color='dimgray', 
                                                 zorder=1)
+
+        legend_bg = '#{:02x}{:02x}{:02x}'.format(236, 240, 246)
         
-        p0, = self.ax1.plot([], [], color='#{:02x}{:02x}{:02x}'.format(236, 240, 246), label=(self.obName[self.obj_idx]))
+        p0, = self.ax1.plot([], [], color=legend_bg, label=(self.obName[self.obj_idx]))
         if state == 'rs':
             p3, = self.ax1.plot([xvals[set_idx]], [alts[set_idx]], marker=7, color='navy', zorder=3,
                                label='Set time: {:02d}:{:02d}'.format(times[set_idx].hour, times[set_idx].minute))
@@ -1223,7 +1228,7 @@ class FOVCalculator(ttk.Frame):
             l = self.ax1.legend(handles=[p0, p1, p2, p3, p4], loc='center left', bbox_to_anchor=(1, 0.7), 
                                 numpoints=1, fontsize=self.cont.tt_fs)
         else:
-            p3, = self.ax1.plot([], [], color='white', 
+            p3, = self.ax1.plot([], [], color=legend_bg, 
                                label=('(Circumpolar)' if state == 'circ' else '(Never visible)'))
             l = self.ax1.legend(handles=[p0, p3, p1, p2], loc='center left', bbox_to_anchor=(1, 0.7), 
                                 numpoints=1, fontsize=self.cont.tt_fs)
