@@ -83,7 +83,7 @@
 <li><a id="u2" href="#Downloading and installation">&nbsp;Downloading and installation</a>
     <ol>
     <li><a id="u2.1" href="#For Windows users">&nbsp;For Windows users</a></li>
-    <li><a id="u2.2" href="#For Ubuntu users">&nbsp;For Ubuntu users</a></li>
+    <li><a id="u2.2" href="#For Linux users">&nbsp;For Linux users</a></li>
     </li></ol>
 <li><a id="u3" href="#Managing equipment">&nbsp;Managing equipment</a>
     <ol>
@@ -129,15 +129,16 @@
     <li><a id="u9.2" href="#How suggested imaging settings are calculated">&nbsp;How suggested imaging settings are calculated</a></li>
     </li></ol>
 <li><a id="u10" href="#The Plotting Tool">&nbsp;The Plotting Tool</a></li>
-<li><a id="u11" href="#Reliability of the results">&nbsp;Reliability of the results</a></li>
-<li><a id="u12" href="#Tools used">&nbsp;Tools used</a></li>
-<li><a id="u13" href="#Troubleshooting">&nbsp;Troubleshooting</a></li>
+<li><a id="u11" href="#The Field of View Calculator">&nbsp;The Field of View Calculator</a></li>
+<li><a id="u12" href="#Reliability of the results">&nbsp;Reliability of the results</a></li>
+<li><a id="u13" href="#Tools used">&nbsp;Tools used</a></li>
+<li><a id="u14" href="#Troubleshooting">&nbsp;Troubleshooting</a></li>
 </ol>
 
 <br><br>
 <a NAME="Requirements"><font color="#373737"><h3>1. Requirements</font></h3></a>
-<p>Astrophotography Lab is available for Windows and Ubuntu. The Windows versions have been tested on Windows 7, 8.1 and 10. The Ubuntu version has been tested on Ubuntu 14.04.</p>
-<p>The program uses <a id="dcr1" href="https://www.cybercom.net/~dcoffin/dcraw/" onclick="trackOutboundLink('https://www.cybercom.net/~dcoffin/dcraw/'); return false;">dcraw</a> to convert DSLR raw images. It is included in the Windows versions, but Ubuntu users need to install it by running the following terminal command: <tt>sudo apt-get install dcraw</tt></p>
+<p>Astrophotography Lab is available for Windows and Linux. The Windows versions have been tested on Windows 7, 8.1 and 10. The Linux version has been tested on Ubuntu 16.04.</p>
+<p>The program uses <a id="dcr1" href="https://www.cybercom.net/~dcoffin/dcraw/" onclick="trackOutboundLink('https://www.cybercom.net/~dcoffin/dcraw/'); return false;">dcraw</a> to convert DSLR raw images. It is included in the Windows versions, but Linux users need to install it by running the following terminal command: <tt>sudo apt-get install dcraw</tt></p>
 
 <br>
 <a NAME="Downloading and installation"><font color="#373737"><h3>2. Downloading and installation</font></h3></a>
@@ -157,15 +158,13 @@
 <p><li>&nbsp;Extract "APLab.exe" from the zip file to the folder where the old version of Astrophotography Lab is located, and overwrite the existing "APLab.exe" file.</li></p>
 <p><li>&nbsp;The update is now installed.</li></p>
 </ol>
-<a NAME="For Ubuntu users"><font color="#373737"><h4>2.2. For Ubuntu users</font></h4></a>
+<a NAME="For Linux users"><font color="#373737"><h4>2.2. For Linux users</font></h4></a>
 <ol>
-<p><li>&nbsp;Go to the download page and locate the latest Ubuntu standalone version.</li></p>
+<p><li>&nbsp;Go to the download page and locate the latest Linux standalone version.</li></p>
 <p><li>&nbsp;Download "aplab-vx.x.x-ubuntu-standalone.zip" from the bottom of the page that is linked to.</li></p>
 <p><li>&nbsp;Extract the "Astrophotography Lab" folder from "aplab-vx.x.x-ubuntu-standalone.tar.gz" to wherever you prefer.</li></p>
-<p><li>&nbsp;In the extracted folder you'll find a file named "aplab.desktop". Open it in a text editor.</li></p>
-<p><li>&nbsp;Insert the path of the folder to which you extracted the tar.gz file the two places where it says "&lt;INSERT FILE PATH HERE&gt;". Save and close the editor.</li></p>
-<p><li>&nbsp;Right-click on "aplab.desktop" and select "Properties". In the "Permissions" tab, check the "Allow executing file as program" checkbox.</li></p>
-<p><li>&nbsp;You can now start Astrophotography Lab by running the .desktop file, which should now be called "Astrophotography Lab" and have a blue icon.</li></p>
+<p><li>&nbsp;Open a terminal window and navigate to the extracted "Astrophotography Lab" folder. Run the command <tt>chmod +x aplab_setup.sh</tt> to make the setup script executable, then execute it by writing <tt>./aplab_setup.sh</tt>.</li></p>
+<p><li>&nbsp;A file named "Astrophotography Lab" will be created, which you can use to start the program from anywhere.</li></p>
 </ol>
 <br>
 <a NAME="Managing equipment"><font color="#373737"><h3>3. Managing equipment</font></h3></a>
@@ -197,7 +196,7 @@
 <p>The Image Calculator, Image Simulator and Plotting Tool have buttons for transferring inputted values to other tools. When transferring data from the Image Calculator, you need to at least have calculated a value for skyglow before the data can be transferred, since the Image Simulator and Plotting Tool uses this in their input boxes rather than image data. When transferring inputted values between the Image Simulator and Plotting Tool, all the valid input will be copied directly over to their respective input box in the other tool. Transferring data from raw images in the Image Analyser to the Image Calculator is described this section: <a id="u7.7_1" href="#Transferring data to the Image Calculator">7.7. Transferring data to the Image Calculator</a>.</p>
 
 <a NAME="Clearing input"><font color="#373737"><h4>4.3. Clearing input</font></h4></a>
-<p>All the tools have a button for clearing inputted data. If you click it, you will need to confirm the action before the data is cleared, to avoid that you remove the data by accident.</p>
+<p>All the relevant tools have a button for clearing inputted data. If you click it, you will need to confirm the action before the data is cleared, to avoid that you remove the data by accident.</p>
 
 <br>
 <a NAME="The file menu"><font color="#373737"><h3>5. The file menu</font></h3></a>
@@ -334,7 +333,11 @@
 <p>You can use the plots to find a lot of useful information. For a good example of this, take a look at Steve King's <a href="http://www.astronomyforum.net/astrophotography-image-processing-forum/204348-using-astrophotography-lab-determine-proper-exposure-time.html" onclick="trackOutboundLink('http://www.astronomyforum.net/astrophotography-image-processing-forum/204348-using-astrophotography-lab-determine-proper-exposure-time.html'); return false;">nice tutorial</a> on determining the optimal exposure time using one of the plots. I plan to provide more information on interpreting the plots later on.</p>
 
 <br>
-<a NAME="Reliability of the results"><font color="#373737"><h3>11. Reliability of the results</font></h3></a>
+<a NAME="The Field of View Calculator"><font color="#373737"><h3>11. The Field of View Calculator</font></h3></a>
+<p>The Field of View Calculator lets you plan your imaging session by selecting targets and seeing how big they will appear in the image. Some information about the target, as well as the extent of your field of view, will also be displayed. The time, date and location can be set in the top left of the window. You can search for specific objects, or filter the list of targets by group (e.g. Messier objects or solar system object), type (e.g. spiral galaxy or globular cluster) and altitude. There is also a button for plotting the altitude of the target. This will bring up a graph showing the variation in altitude over time, as well as when and where the object rises, sets and culminates. You can also display the movement of the moon and the transitions between day and night.</p>
+
+<br>
+<a NAME="Reliability of the results"><font color="#373737"><h3>12. Reliability of the results</font></h3></a>
 <p>The calculations of sensor data rely on accurate measurements of photon noise in a flat frame. The noise measurements can be affected if the flat frame is not uniform. To prevent this, the program asks for two flat frames, and subtracts one from the other to remove any features in the image.</p>
 <p>If for some reason the two images are not equal (maybe a dust spot moved after the first frame was captured), then the subtracted image will not be uniform and the noise measurement will be affected. Keep this in mind when capturing the flat frames.</p>
 <p>The results given by the Image Calculator are only as accurate as the data it uses for the calculations. While the data included in the default camera and telescope profiles shouldn't be too far off the correct values, I cannot vouch for its accuracy.</p>
@@ -344,9 +347,9 @@
 <p>APLab does <i>not</i> try to compensate for this kind of in-camera processing, because of insufficient knowledge of what is being done to the images. But by using measurements of noise rather than intensity in certain circumstances, the calculations are less sensitive to effects like long exposure darkening.</p>
 
 <br>
-<a NAME="Tools used"><font color="#373737"><h3>12. Tools used</font></h3></a>
+<a NAME="Tools used"><font color="#373737"><h3>13. Tools used</font></h3></a>
 <ul>
-<li><a href="https://www.python.org/" onclick="trackOutboundLink('https://www.python.org/'); return false;">Python 2.7</a></li>
+<li><a href="https://www.python.org/" onclick="trackOutboundLink('https://www.python.org/'); return false;">Python 3</a></li>
 <li><a href="http://www.tcl.tk/" onclick="trackOutboundLink('http://www.tcl.tk/'); return false;">Tcl/Tk</a></li>
 <li><a href="http://www.numpy.org/" onclick="trackOutboundLink('http://www.numpy.org/'); return false;">NumPy</a></li>
 <li><a href="http://matplotlib.org/" onclick="trackOutboundLink('http://matplotlib.org/'); return false;">matplotlib</a></li>
@@ -354,19 +357,21 @@
 <li><a href="http://www.stsci.edu/institute/software_hardware/pyfits" onclick="trackOutboundLink('http://www.stsci.edu/institute/software_hardware/pyfits'); return false;">PyFITS</a></li>
 <li><a href="https://pypi.python.org/pypi/ExifRead" onclick="trackOutboundLink('https://pypi.python.org/pypi/ExifRead'); return false;">ExifRead</a></li>
 <li><a id="dcr2" href="https://www.cybercom.net/~dcoffin/dcraw/" onclick="trackOutboundLink('https://www.cybercom.net/~dcoffin/dcraw/'); return false;">dcraw</a></li>
+<li><a href="http://rhodesmill.org/pyephem/" onclick="trackOutboundLink('http://rhodesmill.org/pyephem/'); return false;">PyEphem</a></li>
+<li><a href="http://infohost.nmt.edu/tcc/help/lang/python/examples/sidereal/" onclick="trackOutboundLink('http://infohost.nmt.edu/tcc/help/lang/python/examples/sidereal/'); return false;">sidereal.py</a></li>
 <li><a href="https://github.com/pyinstaller/pyinstaller/wiki" onclick="trackOutboundLink('https://github.com/pyinstaller/pyinstaller/wiki'); return false;">PyInstaller</a></li>
 </ul>
 
 <br>
-<a NAME="Troubleshooting"><font color="#373737"><h3>13. Troubleshooting</font></h3></a>
+<a NAME="Troubleshooting"><font color="#373737"><h3>14. Troubleshooting</font></h3></a>
 <p>If you encounter an issue with the program, here is the standard procedure:</p>
 <p><b>- Did you get an error message in the program?</b></p>
 <p>If yes:</p>
-<p>The message has been stored in the file "errorlog.txt" in the same directory as the program. <a id="uc2" href="contact.html">Contact me</a>, describe the issue and provide the error log.</p>
+<p>The message has been stored in the file "errorlog.txt" in the "aplab_errorlog" subdirectory. <a id="uc2" href="contact.html">Contact me</a>, describe the issue and provide the error log.</p>
 <br>
 <p>If no:</p>
-<p>Go to the download site for your version of the program and download "aplab-vx.x.x-win-debug.zip". Install it like you did with the regular version. The debug versions differ from the regular versions in a single aspect, namely that they run with the windows terminal visible in the background. Any errors that are not caught by the logging function of the program might be displayed in the windows terminal. Run the debug version and try to replicate the error.</p>
-<p><b>- Did you get an error message in the windows terminal?</b></p>
+<p>On Windows, run the APLab_debug executable (located in the same folder as the APLab executable) and try to replicate the error. The debug version differ from the regular versions in a single aspect, namely that they run with the terminal visible in the background. On Linux, you can just run the APLab executable from the terminal. Any errors that are not caught by the logging function of the program might be displayed in the terminal.</p>
+<p><b>- Did you get an error message in the terminal?</b></p>
 <p>If yes: </p>
 <p><a id="uc3" href="contact.html">Contact me</a>, describe the issue and provide the error message.</p>
 <p>If no:</p>
