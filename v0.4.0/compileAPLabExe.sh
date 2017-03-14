@@ -11,7 +11,7 @@ NAME=APLab
 cd "${BASE}"
 
 echo Creating main executable...
-pyinstaller aplab_runner.py --name=$NAME
+python3 /home/lars/Downloads/pyinstaller-develop/pyinstaller.py aplab_runner.py --name=$NAME
 
 echo Organizing files...
 
@@ -26,6 +26,7 @@ rm -r "${BASE}/build"
 rm -r "${BASE}/dist"
 rm "${BASE}/${NAME}.spec"
 rm "${BASE}/__pycache__/aplab_runner.cpython-35.pyc"
+rm -r "${BASE}/${FOLDER}/share/icons"
 cd "${BASE}/${FOLDER}/aplab_data"
 cp cameradata.txt cameradata_backup.txt
 cp telescopedata.txt telescopedata_backup.txt
