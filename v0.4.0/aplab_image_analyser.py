@@ -1127,7 +1127,7 @@ class ImageAnalyser(ttk.Frame):
         self.labelMessage.update_idletasks()
         
         # Create path string compatible with terminal
-        norm_filepath = shlex.quote(filepath)
+        norm_filepath = '\"' + filepath + '\"'
             
         # Create path string compatible with python file opening methods
         py_filepath = os.sep.join(filepath.split('/'))
@@ -1147,7 +1147,7 @@ class ImageAnalyser(ttk.Frame):
             self.labelMessage.update_idletasks()
             
             tiff_filepath = '.'.join(py_filepath.split('.')[:-1]) + '.tiff'
-            
+             
             file = open(tiff_filepath, 'rb')
             tags = exifread.process_file(file)
             file.close()
@@ -1197,7 +1197,7 @@ class ImageAnalyser(ttk.Frame):
 
             del_command = 'del /Q' if C.is_win else 'rm -f'
 
-            subprocess.call('{} {}'.format(del_command, tiff_filepath),
+            subprocess.call('{} "{}"'.format(del_command, tiff_filepath),
                             shell=True)
                 
         # If image is a CCD raw image
