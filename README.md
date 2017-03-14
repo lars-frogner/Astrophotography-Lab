@@ -12,8 +12,9 @@ Here are some of the things you can do with APLab:
 * Find out how camera settings and imaging conditions will affect your images by plotting graphs or simulating a synthetic image.
 * Measure the field of view or angular distances in your image.
 * Get useful information about your camera, optics, image and imaging conditions.
+* Explore potential imaging targets by viewing their size in the field of view, and obtaining information about their location in the sky.
 
-The program consists of four main tools: an analyser tool, a calculator tool, a simulator tool and a plotting tool. The tools are connected, allowing you to transfer information between them, and easily go all the way from measuring your camera's sensor to finding the optimal settings for your next imaging session.
+The program consists of five main tools: an analyser tool, a calculator tool, a simulator tool, a plotting tool and a field of view tool. The tools are connected, allowing you to transfer information between them, and easily go all the way from measuring your camera's sensor to finding the optimal settings and target for your next imaging session.
 
 APLab supports a wide range of CCD and DSLR cameras and telescopes by default, and you can easily add the necessary information for your own equipment.
 
