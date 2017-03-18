@@ -1620,8 +1620,9 @@ class ToolManager(tk.Tk):
             self.frames[ImageCalculator].updateOpticsLabels()
             self.frames[ImageSimulator].updateOpticsLabels()
             self.frames[ImageAnalyser].updateAngle()
-            self.frames[FOVCalculator].selectObjectController(None)
-            self.frames[FOVCalculator].setFOV()
+            fovframe = self.frames[FOVCalculator]
+            fovframe.selectObject(fovframe.obj_idx)
+            fovframe.setFOV()
             
             topChangeFLMod.destroy()
         
