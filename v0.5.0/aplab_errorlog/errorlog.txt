@@ -1,0 +1,247 @@
+**** 2017-03-15 14:37:50.548445 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 135, in addImage
+    anchor='center')
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python36-32\lib\tkinter\__init__.py", line 2483, in create_image
+    return self._create('image', args, kw)
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python36-32\lib\tkinter\__init__.py", line 2474, in _create
+    *(args + self._options(cnf, kw))))
+_tkinter.TclError: image "<PIL.PngImagePlugin.PngImageFile image mode=RGBA size=4290x2856 at 0x7731AD0>" doesn't exist
+
+**** 2017-03-15 14:39:51.498028 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 141, in addImage
+    self.enableWidgets()
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 165, in enableWidgets
+    self.buttonAdd.configure(state='normal')
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python36-32\lib\tkinter\__init__.py", line 1479, in configure
+    return self._configure('configure', cnf, kw)
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python36-32\lib\tkinter\__init__.py", line 1470, in _configure
+    self.tk.call(_flatten((self._w, cmd)) + self._options(cnf))
+_tkinter.TclError: invalid command name ".!frame.!imagesolver.!frame2.!frame.!frame.!button"
+
+**** 2017-03-18 11:40:33.580966 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 185, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 199, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', '"C:\\Users\\Lars\\Pictures\\Astrofoto"', '"m81.png"', '"--scale-low 1"']' returned non-zero exit status 1
+
+**** 2017-03-18 11:41:20.660364 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 185, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 199, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', '"C:\\Users\\Lars\\Pictures\\Astrofoto"', '"m81.png"', '"--scale-low 1"']' returned non-zero exit status 1
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 185, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 199, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', '"C:\\Users\\Lars\\Pictures\\Astrofoto"', '"m81.png"', '"--scale-low 1"']' returned non-zero exit status 1
+
+**** 2017-03-18 11:43:00.266315 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 185, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 201, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', '"C:\\Users\\Lars\\Pictures\\Astrofoto"', '"m81.png"', '"--scale-low 1"']' returned non-zero exit status 1
+
+**** 2017-03-18 11:45:13.973158 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 187, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 203, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', '"C:\\Users\\Lars\\Pictures\\Astrofoto"', '"m81.png"', '"--scale-low 1"']' returned non-zero exit status 1
+
+**** 2017-03-18 11:46:09.947880 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 187, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 203, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', '"C:\\Users\\Lars\\Pictures\\Astrofoto"', '"m81.png"', '"--scale-low 1"']' returned non-zero exit status 1
+
+**** 2017-03-18 11:47:33.557765 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 187, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 203, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', 'C:\\Users\\Lars\\Pictures\\Astrofoto', 'm81.png', '--scale-low 1']' returned non-zero exit status 1
+
+**** 2017-03-18 11:48:49.578213 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 187, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 203, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', 'C:\\Users\\Lars\\Pictures\\Astro foto', 'm81.png', '--scale-low 1']' returned non-zero exit status 1
+
+**** 2017-03-18 11:51:10.290454 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 187, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 201, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', 'C:\\Users\\Lars\\Pictures\\Astro foto', 'm81.png', '--scale-low 1']' returned non-zero exit status 1
+
+**** 2017-03-18 11:57:59.006884 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 190, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 204, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', 'C:\\Users\\Lars\\Pictures\\Astro foto', 'm81.png', '--scale-low 1']' returned non-zero exit status 1
+
+**** 2017-03-18 11:59:10.928397 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 190, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 204, in execute
+    raise subprocess.CalledProcessError(return_code, command)
+subprocess.CalledProcessError: Command '['aplab_astrometry\\solve-field-wrapper.bat', 'C:\\Users\\Lars\\Pictures\\Astro foto', 'm81.png', '--scale-low 1']' returned non-zero exit status 1
+
+**** 2017-03-18 12:23:30.036352 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 131, in addImage
+    self.imagename_base = '.'.join(filename.split('.')[:-1])
+NameError: name 'filename' is not defined
+
+**** 2017-03-18 12:24:18.568841 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 196, in solve
+    filepath,
+NameError: name 'filepath' is not defined
+
+**** 2017-03-18 12:34:14.005389 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 167, in addImage
+    self.check_existing()
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 183, in check_existing
+    print(int(f.read()))
+ValueError: invalid literal for int() with base 10: b'\x01'
+
+**** 2017-03-18 12:49:26.493781 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 202, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 217, in execute
+    for stdout_line in iter(process.stdout.readline, ""):
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python35-32\lib\encodings\cp1252.py", line 22, in decode
+    def decode(self, input, final=False):
+KeyboardInterrupt
+
+**** 2017-03-18 13:01:38.547080 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 204, in solve
+    for output in self.execute(command):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 220, in execute
+    for stdout_line in iter(process.stdout.readline, ""):
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python35-32\lib\encodings\cp1252.py", line 22, in decode
+    def decode(self, input, final=False):
+KeyboardInterrupt
+
+**** 2017-03-18 13:49:38.474404 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 139, in addImage
+    if len(imagepath) == 0:
+NameError: name 'imagepath' is not defined
+
+**** 2017-03-18 13:50:33.111696 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 173, in addImage
+    self.optionShow.set(self.showtypes[0])
+AttributeError: 'OptionMenu' object has no attribute 'set'
+
+**** 2017-03-18 22:36:23.891232 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 173, in addImage
+    self.readWCS()
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 331, in readWCS
+    first_word_right = line[81:].split()[0]
+IndexError: list index out of range
+
+**** 2017-03-18 22:38:41.022712 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 173, in addImage
+    self.readWCS()
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 333, in readWCS
+    first_word_right = line[81:].split()[0]
+IndexError: list index out of range
+
+**** 2017-03-18 22:44:43.350983 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 173, in addImage
+    self.readWCS()
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 340, in readWCS
+    entries[entry[0].strip()] = entry[1].strip()
+IndexError: list index out of range
+
+**** 2017-03-18 23:30:44.156950 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_common.py", line 288, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.5.0\aplab_image_solver.py", line 178, in addImage
+    shutil.rmtree(os.path.join('aplab_astrometry', 'astrometry', 'solved_images', self.imagename))
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python35-32\lib\shutil.py", line 488, in rmtree
+    return _rmtree_unsafe(path, onerror)
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python35-32\lib\shutil.py", line 370, in _rmtree_unsafe
+    onerror(os.listdir, path, sys.exc_info())
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python35-32\lib\shutil.py", line 368, in _rmtree_unsafe
+    names = os.listdir(path)
+FileNotFoundError: [WinError 3] The system cannot find the path specified: 'aplab_astrometry\\astrometry\\solved_images\\m81.png'
+

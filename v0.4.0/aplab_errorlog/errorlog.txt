@@ -1,0 +1,24 @@
+**** 2017-03-18 09:45:10.273625 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.4.0\aplab_common.py", line 287, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.4.0\aplab_tool_manager.py", line 1623, in ok
+    self.frames[FOVCalculator].selectObjectController(None)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.4.0\aplab_fov_calculator.py", line 403, in selectObjectController
+    if self.listboxObjects.size() > 0: self.selectObject(self.obName.index(self.listboxObjects.get(self.listboxObjects.curselection())))
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python35-32\lib\tkinter\__init__.py", line 2637, in get
+    return self.tk.call(self._w, 'get', first)
+_tkinter.TclError: bad listbox index "": must be active, anchor, end, @x,y, or a number
+
+**** 2017-03-18 10:05:49.803887 ****
+Traceback (most recent call last):
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.4.0\aplab_common.py", line 287, in __call__
+    return self.func(*args)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.4.0\aplab_tool_manager.py", line 1626, in ok
+    self.frames[FOVCalculator].selectObjectController(None)
+  File "C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography Lab [lrep]\v0.4.0\aplab_fov_calculator.py", line 403, in selectObjectController
+    if self.listboxObjects.size() > 0: self.selectObject(self.obName.index(self.listboxObjects.get(self.listboxObjects.curselection())))
+  File "C:\Users\Lars\AppData\Local\Programs\Python\Python35-32\lib\tkinter\__init__.py", line 2637, in get
+    return self.tk.call(self._w, 'get', first)
+_tkinter.TclError: bad listbox index "": must be active, anchor, end, @x,y, or a number
+
