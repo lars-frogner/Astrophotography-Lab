@@ -11,7 +11,7 @@ NAME=APLab
 cd "${BASE}"
 
 echo Creating main executable...
-python3 /home/lars/Downloads/pyinstaller-develop/pyinstaller.py aplab_runner.py --name=$NAME
+pyinstaller aplab_runner.py --name=$NAME
 
 echo Organizing files...
 
