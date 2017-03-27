@@ -88,4 +88,8 @@ del /Q %BASE%\__pycache__\"aplab_runner.cpython-35.pyc"
 copy %BASE%\%README% %BASE%\README.txt
 @if %errorlevel% neq 0 exit /b %errorlevel%
 
+@echo Compressing archive...
+
+@rar a -r -df %ZIPFOLDER%.zip %FOLDER% README.txt
+
 @echo Done

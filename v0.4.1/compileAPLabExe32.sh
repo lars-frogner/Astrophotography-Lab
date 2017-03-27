@@ -2,18 +2,18 @@
 set -e
 set -x
 
-BASE='/home/lars/Dropbox/Programmering/Astrophotography/Astrophotography Lab [lrep]/v0.4.1'
+BASE='/home/lars/v0.4.1'
 FOLDER='Astrophotography Lab'
-TARFOLDER=aplab-v0.4.10-linux-standalone
+TARFOLDER=aplab-v0.4.1-linux-32-bit-standalone
 README=README_v0.4.1_linux.txt
 NAME=APLab
 
 cd "${BASE}"
 
-echo Creating main executable...
+echo 'Creating main executable...'
 pyinstaller aplab_runner.py --name=$NAME
 
-echo Organizing files...
+echo 'Organizing files...'
 
 mv "${BASE}/dist/${NAME}" "${BASE}/dist/${FOLDER}"
 mv "${BASE}/dist/${FOLDER}" "${BASE}/"
@@ -32,8 +32,11 @@ cp cameradata.txt cameradata_backup.txt
 cp telescopedata.txt telescopedata_backup.txt
 cp objectdata.txt objectdata_backup.txt
 
-echo Preparing zip package
+echo 'Compressing archive...'
 
 cp "${BASE}/${README}" "${BASE}/README.txt"
+tar -czf "${TARFOLDER}.tar.gz" -C "${BASE}" "${FOLDER}" README.txt
+rm -r "${BASE}/${FOLDER}"
+rm "${BASE}/README.txt"
 
 echo Done
