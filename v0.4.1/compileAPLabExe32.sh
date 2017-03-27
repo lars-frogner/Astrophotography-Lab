@@ -2,7 +2,7 @@
 set -e
 set -x
 
-BASE='/home/lars/v0.4.1'
+BASE='/home/lars/Dropbox/Programmering/Astrophotography/Astrophotography Lab [lrep]/v0.4.1'
 FOLDER='Astrophotography Lab'
 TARFOLDER=aplab-v0.4.1-linux-32-bit-standalone
 README=README_v0.4.1_linux.txt
@@ -27,10 +27,12 @@ rm -r "${BASE}/dist"
 rm "${BASE}/${NAME}.spec"
 rm "${BASE}/__pycache__/aplab_runner.cpython-35.pyc"
 rm -r "${BASE}/${FOLDER}/share/icons"
+
 cd "${BASE}/${FOLDER}/aplab_data"
 cp cameradata.txt cameradata_backup.txt
 cp telescopedata.txt telescopedata_backup.txt
 cp objectdata.txt objectdata_backup.txt
+cd "${BASE}"
 
 echo 'Compressing archive...'
 
