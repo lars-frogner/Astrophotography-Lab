@@ -28,7 +28,7 @@ class ToolManager(tk.Tk):
         self.tnum = tnum
         self.toolsConfigured = False # True if the non-"Image Analyser" classes are initialized
         
-        self.title('Astrophotography Lab 0.4.0') # Set window title
+        self.title('Astrophotography Lab 0.4.1') # Set window title
         
         self.addIcon(self) # Add window icon if it exists
 
