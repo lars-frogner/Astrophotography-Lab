@@ -584,11 +584,12 @@ class FOVCalculator(ttk.Frame):
             
             self.canvasView.configure(bg='#{:02x}{:02x}{:02x}'.format(*tuple(bg_colour)))
 
+            if im_new_pix_w < canv_w or im_new_pix_h < canv_h:
+                im_pixels = resized_im.load()
+
             if im_new_pix_w < canv_w:
 
                 bordersize_w = im_new_pix_w//10
-
-                im_pixels = resized_im.load()
 
                 for i in range(bordersize_w+1):
 
