@@ -5,7 +5,7 @@ import tkinter.ttk as ttk
 import sys
 import os
 import subprocess
-import shlex
+import re
 import atexit
 import numpy as np
 import matplotlib
@@ -1133,7 +1133,7 @@ class ImageAnalyser(ttk.Frame):
         py_filepath = os.sep.join(filepath.split('/'))
     
         # If image is a DSLR raw image
-        if '*.' + filename.split('.')[1].lower() in self.supportedformats[0][1]:
+        if '*.' + filename.split('.')[-1].lower() in self.supportedformats[0][1]:
         
             self.varMessageLabel.set('{} - Converting to TIFF..'.format(filename))
             self.labelMessage.configure(foreground='navy')
@@ -1204,7 +1204,7 @@ class ImageAnalyser(ttk.Frame):
         else:
             
             # If image is a TIFF file
-            if filename.split('.')[1].lower() in ['tif', 'tiff']:
+            if filename.split('.')[-1].lower() in ['tif', 'tiff']:
             
                 self.varMessageLabel.set('{} - Reading TIFF file..'.format(filename))
                 self.labelMessage.configure(foreground='navy')
@@ -1224,7 +1224,7 @@ class ImageAnalyser(ttk.Frame):
                 label.exposure = self.checkExp(True, tags, compare, label, type)
                 
             # If image is a FITS file
-            elif filename.split('.')[1].lower() in ['fit', 'fits']:
+            elif filename.split('.')[-1].lower() in ['fit', 'fits']:
                 
                 self.varMessageLabel.set('{} - Reading FITS file..'.format(filename))
                 self.labelMessage.configure(foreground='navy')
@@ -1286,13 +1286,13 @@ class ImageAnalyser(ttk.Frame):
                             
                         if parts[0] == 'Filter pattern':
 
-                            if C.is_win:
-                                self.CFAPattern = parts[1].strip()
-                            else:
-                                self.CFAPattern = parts[1].strip()[:2] + '/' + parts[1].strip()[2:4]
+                            try:
+                                self.CFAPattern = (re.sub(r'[^a-zA-Z]', '', parts[1])[:4]).upper()
+                            except:
+                                self.CFAPattern = None
                 
             # Ask user for CFA pattern if it wasn't detected or if camera is colour CCD
-            if self.CFAPattern is None:
+            if self.CFAPattern not in ['RGGB', 'BGGR', 'GRBG', 'GBRG']:
                 self.busy = True
                 self.askCFAPattern()
                 self.wait_window(self.topAskCFA)
@@ -1305,11 +1305,6 @@ class ImageAnalyser(ttk.Frame):
                 self.labelMessage.configure(foreground='crimson')
                 raise Exception
                 
-            if not self.CFAPattern in ['RG/GB', 'BG/GR', 'GR/BG', 'GB/RG']:
-                self.varMessageLabel.set('CFA pattern {} not recognized.'.format(self.CFAPattern))
-                self.labelMessage.configure(foreground='crimson')
-                raise Exception
-                
             self.varMessageLabel.set('{} - Extracting {} pixels..' \
                                      .format(filename, ('green' if self.useGreen else 'red')))
             self.labelMessage.configure(foreground='navy')
@@ -1319,17 +1314,17 @@ class ImageAnalyser(ttk.Frame):
             
             h, w = img.shape
             
-            if (self.CFAPattern == 'GB/RG' and self.useGreen) \
-               or (self.CFAPattern == 'GR/BG' and self.useGreen) \
-               or (self.CFAPattern == 'RG/GB' and not self.useGreen):
+            if (self.CFAPattern == 'GBRG' and self.useGreen) \
+               or (self.CFAPattern == 'GRBG' and self.useGreen) \
+               or (self.CFAPattern == 'RGGB' and not self.useGreen):
                 img = img[0:(h-1):2, 0:(w-1):2] # Quadrant 1
-            elif (self.CFAPattern == 'RG/GB' and self.useGreen) \
-                 or (self.CFAPattern == 'BG/GR' and self.useGreen) \
-                 or (self.CFAPattern == 'GR/BG' and not self.useGreen):
+            elif (self.CFAPattern == 'RGGB' and self.useGreen) \
+                 or (self.CFAPattern == 'BGGR' and self.useGreen) \
+                 or (self.CFAPattern == 'GRBG' and not self.useGreen):
                 img = img[0:(h-1):2, 1:w:2] # Quadrant 2
-            elif self.CFAPattern == 'GB/RG' and not self.useGreen:
+            elif self.CFAPattern == 'GBRG' and not self.useGreen:
                 img = img[1:h:2, 0:(w-1):2] # Quadrant 3
-            elif self.CFAPattern == 'BG/GR' and not self.useGreen:
+            elif self.CFAPattern == 'BGGR' and not self.useGreen:
                 img = img[1:h:2, 1:w:2] # Quadrant 4
                 
             if type == 'light':
@@ -1525,7 +1520,7 @@ class ImageAnalyser(ttk.Frame):
         self.topAskCFA.focus_force()
         
         self.cancelled = True
-        CFAList = ['RG/GB', 'BG/GR', 'GR/BG', 'GB/RG']
+        CFAList = ['RGGB', 'BGGR', 'GRBG', 'GBRG']
         
         self.varCFAPattern = tk.StringVar()
         self.varCFAPattern.set(CFAList[0])
