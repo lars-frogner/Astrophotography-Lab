@@ -1,2 +1,6 @@
 /Local
 *.pyc
+README*.txt
+README*.md
+sidereal.py
+dcraw.exe
