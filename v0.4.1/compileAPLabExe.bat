@@ -90,6 +90,8 @@ copy %BASE%\%README% %BASE%\README.txt
 
 @echo Compressing archive...
 
-@rar a -r -df %ZIPFOLDER%.zip %FOLDER% README.txt
+@7z a -mx9 -tzip %ZIPFOLDER%.zip %FOLDER%\ README.txt
+@rmdir /S /Q %FOLDER%
+@del /Q README.txt
 
 @echo Done
