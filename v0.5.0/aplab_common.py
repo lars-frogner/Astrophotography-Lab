@@ -53,6 +53,7 @@ class C:
     TTFR = textwrap.fill('The ratio of the effective focal length to the aperture diameter.', tw) + '\n\n' + textwrap.fill('[A lower focal ratio means that a higher rate of photons can reach each pixel, making the image brighter.]', tw)
     TTIS = textwrap.fill('The angle corresponding to the length of a single pixel in the image.', tw)
     TTRL = textwrap.fill('The angular resolution estimated with the Rayleigh Criterion. This is the smallest angular separation of two stars that still can be resolved.', tw) + '\n\n' + textwrap.fill('[The light from the stars is assumed to have a wavelength of 550 nm. The actual resolution will usually be poorer than the estimated value, due to optical imperfections and atmospheric seeing.]', tw)
+    TTEDR = textwrap.fill('The number of pixels per second traversed by a star lying at the celestial equator.', tw) + '\n\n' + textwrap.fill('[Stars not on the celestial equator will move more slowly. Multiply with the sine of the declination angle to obtain the drift rate at a given declination.]', tw)
     TTGain = textwrap.fill('The ratio of the number of photoelectrons produced in a pixel to the resulting pixel value in the digital image.', tw)
     TTSatCap = textwrap.fill('The maximum number of photoelectrons that can be produced in a pixel before the pixel value reaches the white point.', tw)
     TTBL = textwrap.fill('The mean pixel value of a bias frame, where no photons have reached the sensor.', tw)

@@ -113,7 +113,7 @@ class ToolManager(tk.Tk):
         
         # Set default values
         self.varCamName.set('Camera:')
-        self.varTelName.set('Telescope:')
+        self.varTelName.set('Telescope/lens:')
         
         self.varFLMod.set('Focal length modifier: 1x')
         
@@ -185,10 +185,10 @@ class ToolManager(tk.Tk):
         
         # "Telescope" submenu of "Settings"
         self.menuTelescope = tk.Menu(self.menubar, tearoff=0)
-        self.menuTelescope.add_command(label='Change telescope', command=self.changeTelescope)
-        self.menuTelescope.add_command(label='Modify telescope parameters', command=self.modifyTelParams)
+        self.menuTelescope.add_command(label='Change telescope/lens', command=self.changeTelescope)
+        self.menuTelescope.add_command(label='Modify telescope/lens parameters', command=self.modifyTelParams)
         
-        self.menuSettings.add_cascade(label='Telescope', menu=self.menuTelescope)
+        self.menuSettings.add_cascade(label='Telescope/lens', menu=self.menuTelescope)
         
         # Add FL modifier command
         self.menuSettings.add_command(label='Change FL modifier', command=self.changeFLMod)
@@ -304,7 +304,7 @@ class ToolManager(tk.Tk):
                 
         else:
         
-            self.varTelName.set('Telescope: ' + C.TNAME[self.tnum])
+            self.varTelName.set('Telescope/lens: ' + C.TNAME[self.tnum])
         
         # Image scale for the selected camera-telescope combination
         self.ISVal = np.arctan2(C.PIXEL_SIZE[self.cnum][0]*1e-3,
@@ -340,11 +340,11 @@ class ToolManager(tk.Tk):
         self.toolsConfigured = True
         
         # Show start page
-        self.showFrame(ImageAnalyser)
+        self.showFrame(FOVCalculator)
         
         self.focus_force()
 
-        self.enterSolvFrame()
+        self.enterFOVFrame()
         
     def showFrame(self, page):
     
@@ -1445,12 +1445,12 @@ class ToolManager(tk.Tk):
     
         # Setup window
         self.topTelescope = tk.Toplevel(background=C.DEFAULT_BG)
-        self.topTelescope.title('Choose telescope or lens')
+        self.topTelescope.title('Choose telescope/lens')
         self.addIcon(self.topTelescope)
         apc.setupWindow(self.topTelescope, 320, 330)
         self.topTelescope.focus_force()
         
-        labelTelescope = tk.Label(self.topTelescope, text='Choose telescope or lens:',
+        labelTelescope = tk.Label(self.topTelescope, text='Choose telescope/lens:',
                                   font=self.medium_font, background=C.DEFAULT_BG)
         frameSelection = ttk.Frame(self.topTelescope)
         
@@ -1478,7 +1478,7 @@ class ToolManager(tk.Tk):
         
         frameDefault = ttk.Frame(self.topTelescope)
         buttonChange = ttk.Button(self.topTelescope, text='OK', command=self.executeTelChange)
-        buttonAddNew = ttk.Button(self.topTelescope, text='Add new telescope or lens',
+        buttonAddNew = ttk.Button(self.topTelescope, text='Add new telescope/lens',
                                   command=self.addNewTelescope)
         
         frameDefault.pack(side='top', expand=True)
@@ -1527,16 +1527,16 @@ class ToolManager(tk.Tk):
             file = open('aplab_data{}telescopedata.txt'.format(os.sep), 'w')
             for line in lines[:-1]:
                 file.write(line + '\n')
-            file.write('Telescope: ' + C.TNAME[self.tnum])
+            file.write('Telescope/lens: ' + C.TNAME[self.tnum])
             file.close()
             
-        self.varTelName.set('Telescope: ' + C.TNAME[self.tnum])
+        self.varTelName.set('Telescope/lens: ' + C.TNAME[self.tnum])
             
         anframe = self.frames[ImageAnalyser]
             
         if not self.toolsConfigured:
             self.topTelescope.destroy()
-            anframe.varMessageLabel.set('Telescope selected.')
+            anframe.varMessageLabel.set('Telescope/lens selected.')
             anframe.labelMessage.configure(foreground='navy')
             return None
         
@@ -1555,7 +1555,7 @@ class ToolManager(tk.Tk):
         fovframe.setFOV()
         
         self.topTelescope.destroy() # Close change telescope window
-        self.currentFrame().varMessageLabel.set('Telescope changed.')
+        self.currentFrame().varMessageLabel.set('Telescope/lens changed.')
         self.currentFrame().labelMessage.configure(foreground='navy')
         
     def addNewTelescope(self):
@@ -1573,11 +1573,9 @@ class ToolManager(tk.Tk):
         
             # Get inputted name of new camera
             name = varTelName.get()
-            
-            try:
-                aperture = float(varAp.get())
-            except:
-                varMessageLabel.set('Invalid aperture input.')
+                
+            if name == '' or ',' in name:
+                varMessageLabel.set('Invalid telescope/lens name input.')
                 return None
             
             try:
@@ -1585,9 +1583,11 @@ class ToolManager(tk.Tk):
             except:
                 varMessageLabel.set('Invalid focal length input.')
                 return None
-                
-            if name == '' or ',' in name:
-                varMessageLabel.set('Invalid telescope/lens name input.')
+            
+            try:
+                aperture = float(varAp.get())
+            except:
+                varMessageLabel.set('Invalid aperture input.')
                 return None
                     
             if name in C.TNAME:
@@ -1624,7 +1624,7 @@ class ToolManager(tk.Tk):
     
         # Setup window
         self.topAddNewTel = tk.Toplevel(background=C.DEFAULT_BG)
-        self.topAddNewTel.title('Add new telescope or lens')
+        self.topAddNewTel.title('Add new telescope/lens')
         self.addIcon(self.topAddNewTel)
         apc.setupWindow(self.topAddNewTel, 300, 220)
         self.topAddNewTel.focus_force()
@@ -1639,13 +1639,13 @@ class ToolManager(tk.Tk):
         ttk.Entry(frameInput, textvariable=varTelName, font=self.small_font,
                   background=C.DEFAULT_BG, width=20).grid(row=0, column=1, columnspan=2)
                   
-        ttk.Label(frameInput, text='Aperture: ').grid(row=1, column=0, sticky='W')
-        ttk.Entry(frameInput, textvariable=varAp, font=self.small_font,
+        ttk.Label(frameInput, text='Focal length: ').grid(row=1, column=0, sticky='W')
+        ttk.Entry(frameInput, textvariable=varFL, font=self.small_font,
                   background=C.DEFAULT_BG, width=12).grid(row=1, column=1, sticky='W')
         ttk.Label(frameInput, text='mm').grid(row=1, column=2, sticky='W')
                   
-        ttk.Label(frameInput, text='Focal length: ').grid(row=2, column=0, sticky='W')
-        ttk.Entry(frameInput, textvariable=varFL, font=self.small_font,
+        ttk.Label(frameInput, text='Aperture: ').grid(row=2, column=0, sticky='W')
+        ttk.Entry(frameInput, textvariable=varAp, font=self.small_font,
                   background=C.DEFAULT_BG, width=12).grid(row=2, column=1, sticky='W')
         ttk.Label(frameInput, text='mm').grid(row=2, column=2, sticky='W')
         

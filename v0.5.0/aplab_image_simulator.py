@@ -23,8 +23,6 @@ class ImageSimulator(ttk.Frame):
         small_font = self.cont.small_font
         medium_font = self.cont.medium_font
         large_font = self.cont.large_font
-
-        atexit.register(self.deleteTemp)
         
         # Define attributes
         
@@ -60,6 +58,7 @@ class ImageSimulator(ttk.Frame):
         self.varFRInfo = tk.StringVar()
         self.varISInfo = tk.StringVar()
         self.varRLInfo = tk.StringVar()
+        self.varEDRInfo = tk.StringVar()
         
         self.varDRLabel = tk.StringVar()
         self.varRNLabel = tk.StringVar()
@@ -100,7 +99,10 @@ class ImageSimulator(ttk.Frame):
         self.topCanvas.destroy()
                      
         # Read demonstration image
-        self.img_orig = matplotlib.image.imread('aplab_data{}sim_orig_image.png'.format(os.sep))
+        self.im_resolution_label = 'medium'
+        self.im_resolutions = {'small': (256, 256), 'medium': (512, 512), 'large': (1024, 1024)}
+        self.im_display_size = self.im_resolutions[self.im_resolution_label]
+        self.img_orig = matplotlib.image.imread('aplab_data{}sim_orig_image_{}.png'.format(os.sep, self.im_resolution_label))
         
         # Set default attribute values
         
@@ -124,8 +126,7 @@ class ImageSimulator(ttk.Frame):
         frameRight.pack(side='right', padx=(0, 30*C.scsx), expand=True)
         
         frameOptics.pack(side='top', pady=(25*C.scsy, 50*C.scsy), expand=True)
-        ttk.Label(frameLeft, text='User modified camera/optics data is displayed in blue' \
-                                    + '\n\n*Only required to get suggested camera settings',
+        ttk.Label(frameLeft, text='User modified camera/optics data is displayed in blue',
                   foreground='dim gray').pack(side='bottom', pady=(8*C.scsy, 25*C.scsy))
         frameSensor.pack(side='bottom', expand=True)
         
@@ -190,6 +191,10 @@ class ImageSimulator(ttk.Frame):
         self.labelRL2 = ttk.Label(frameOptics, textvariable=self.varRLInfo, anchor='center', width=7)
         labelRL3 = ttk.Label(frameOptics, text='arcsec')
         
+        self.labelEDR = ttk.Label(frameOptics, text='Equatorial drift rate: ')
+        self.labelEDR2 = ttk.Label(frameOptics, textvariable=self.varEDRInfo, anchor='center', width=7)
+        labelEDR3 = ttk.Label(frameOptics, text='pixels/sec')
+        
         # Define sensor frame widgets
         
         labelSensor = ttk.Label(frameSensor, text='Sensor', font=medium_font, anchor='center',
@@ -246,6 +251,10 @@ class ImageSimulator(ttk.Frame):
         self.labelRL.grid(row=6, column=0, sticky='W')
         self.labelRL2.grid(row=6, column=1)
         labelRL3.grid(row=6, column=2, sticky='W')
+        
+        self.labelEDR.grid(row=7, column=0, sticky='W')
+        self.labelEDR2.grid(row=7, column=1)
+        labelEDR3.grid(row=7, column=2, sticky='W')
         
         # Place sensor frame widgets
         
@@ -393,7 +402,7 @@ class ImageSimulator(ttk.Frame):
                                  background=C.DEFAULT_BG, width=9)
         labelTF2 = ttk.Label(frameUpMiddle, textvariable=self.varTFLabel)
         
-        self.labelLF = ttk.Label(frameUpMiddle, text='*Limit signal:')
+        self.labelLF = ttk.Label(frameUpMiddle, text='Max signal:')
         self.entryLF = ttk.Entry(frameUpMiddle, textvariable=self.varLF, font=small_font,
                                  background=C.DEFAULT_BG, width=9)
         labelLF2 = ttk.Label(frameUpMiddle, textvariable=self.varLFLabel)
@@ -624,6 +633,7 @@ class ImageSimulator(ttk.Frame):
                                                 /C.APERTURE[self.cont.tnum][0], 1)))
         self.varISInfo.set('{:.3g}'.format(self.cont.ISVal))
         self.varRLInfo.set('{:.2g}'.format(1.22*5.5e-4*180*3600/(C.APERTURE[self.cont.tnum][0]*np.pi)))
+        self.varEDRInfo.set('{:.2g}'.format(15.041/self.cont.ISVal))
         
         # Set text colour according to whether the data is default or user added
         self.labelFL2.configure(foreground=('black' if C.FOCAL_LENGTH[self.cont.tnum][1] == 0 else 'navy'))
@@ -674,6 +684,22 @@ class ImageSimulator(ttk.Frame):
             return None
             
         try:
+            self.lf = (self.cont.convSig(self.varLF.get(), False) if self.cont.lumSignalType.get() \
+                                                        else self.varLF.get())
+
+            if self.lf < self.tf:
+
+                self.varMessageLabel.set('Max signal cannot be lower than target signal.')
+                self.labelMessage.configure(foreground='crimson')
+                self.emptyInfoLabels()
+                return None
+            
+        except tk.TclError:
+
+            self.varLF.set('{:.2g}'.format(self.tf))
+            self.lf = self.tf
+            
+        try:
             self.subs = self.varSubs.get()
             
         except tk.TclError:
@@ -722,43 +748,14 @@ class ImageSimulator(ttk.Frame):
         self.varMessageLabel.set('SNR calculated.')
         self.labelMessage.configure(foreground='navy')
     
-    def simulateController(self, fromCheckbutton=False):
+    def simulateController(self):
     
-        '''Changes the displayed simulated image according to various conditions.'''
-        
-        # If the "Simulate image" button is pressed
-        if not fromCheckbutton:
-        
-            # Calculate data and run simulation if all input is valid
-        
-            self.processInput()
-        
-            if self.noInvalidInput:
-            
-                # Show error message if the number of subframes is too high (to avoid memory error)
-                if self.subs > 200:
-                    self.varMessageLabel.set(\
-                    'Please decrease number of subframes to 200 or less before simulating.')
-                    self.labelMessage.configure(foreground='crimson')
-                    return None
-                
-                self.showCanvasWindow()
-                
-                self.simulateImage()
-        
-        # If the "Stretch" checkbutton was pressed and calculated data exists
-        elif self.dataCalculated:
-        
-            # Redraw the simulated image as stretched or unstretched depending on checkbutton state
-            if self.varStretch.get():
-        
-                self.canvasSim.create_image(0, 0, image=self.photoim_str, anchor='nw')
-                self.canvasSim.image = self.photoim_str
-                
-            else:
-            
-                self.canvasSim.create_image(0, 0, image=self.photoim, anchor='nw')
-                self.canvasSim.image = self.photoim
+        '''Changes the displayed simulated image.'''
+    
+        self.processInput()
+    
+        if self.noInvalidInput:
+            self.showCanvasWindow()
             
     def simulateImage(self):
     
@@ -770,54 +767,103 @@ class ImageSimulator(ttk.Frame):
         self.labelMessage.update_idletasks()
     
         gain = float(C.GAIN[self.cont.cnum][0][self.gain_idx]) # Gain [e-/ADU]
-        rn = C.RN[self.cont.cnum][0][self.rn_idx] # Read noise [e-]
-    
-        dark_signal_e = self.df*self.exposure # Mean dark current signal [e-]
-        sky_signal_e = self.sf*self.exposure # Mean sky background signal [e-]
-        target_signal_e = self.tf*self.exposure # Mean target signal [e-]
+        rn = C.RN[self.cont.cnum][0][self.rn_idx]/gain # Read noise [ADU]
+        black_level = C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx]
+        white_level = C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]
 
-        imsize = (256, 256, self.subs) # Image dimensions (including stack size)
-            
-        map = np.where(self.img_orig > 0.0) # Locations of target pixels
+        self.img_orig = matplotlib.image.imread('aplab_data{}sim_orig_image_{}.png'.format(os.sep, self.im_resolution_label))
+
+        im_size = self.im_resolutions[self.im_resolution_label] # Image dimensions
+
+        stack_img = np.zeros(im_size, dtype='float32')
+
+        target_map = self.img_orig.astype('float32')
+
+        i_grid, j_grid = np.meshgrid(np.arange(im_size[0]), np.arange(im_size[1]))
+
+        bulge_size = 0.04*(im_size[0] + im_size[1])
+        bulge_map = np.exp(-((i_grid - im_size[0]/2)**2 + (j_grid - im_size[1]/2)**2)/bulge_size**2)
         
         # Generate sky, target and dark images from Poisson distributions
-        dark = np.random.poisson(dark_signal_e, imsize)/gain
-        sky = np.random.poisson(sky_signal_e, imsize)/gain
-        target = np.random.poisson(target_signal_e, imsize)/gain
-        
-        # Generate bias images with correct amount of Gaussian read noise
-        bias = C.BLACK_LEVEL[self.cont.cnum][0][self.gain_idx] \
-               + (np.random.normal(0, rn, imsize).astype(int))/gain
-        
-        # Combine signals to get final images
-        img = bias + dark + sky
+        no_signal = np.zeros(im_size)
+        bias_offset_adu = (black_level*np.ones(im_size)).astype('int32')
+        dark_signal_e = self.df*self.exposure*np.ones(im_size)
+        background_signal_e = self.sf*self.exposure*np.ones(im_size)
+        target_signal_e = self.tf*self.exposure*target_map + (self.lf - self.tf)*self.exposure*bulge_map
+
+        # Generate bias image with correct amount of Gaussian read noise
+        if self.show_bias_offset and self.show_bias_noise:
+            get_bias = lambda: np.random.normal(black_level, rn, im_size).astype('int32')
+        elif self.show_bias_offset:
+            get_bias = lambda: bias_offset_adu
+        elif self.show_bias_noise:
+            get_bias = lambda:  np.random.normal(0, rn, im_size).astype('int32')
+        else:
+            get_bias = lambda: no_signal
+
+        if self.show_dark_signal and self.show_dark_noise:
+            get_dark = lambda: np.random.poisson(dark_signal_e, im_size)
+        elif self.show_dark_signal:
+            get_dark = lambda: dark_signal_e
+        elif self.show_dark_noise:
+            get_dark = lambda: np.random.poisson(dark_signal_e, im_size) - dark_signal_e
+        else:
+            get_dark = lambda: no_signal
+
+        if self.show_background_signal and self.show_background_noise:
+            get_background = lambda: np.random.poisson(background_signal_e, im_size)
+        elif self.show_background_signal:
+            get_background = lambda: background_signal_e
+        elif self.show_background_noise:
+            get_background = lambda: np.random.poisson(background_signal_e, im_size) - background_signal_e
+        else:
+            get_background = lambda: no_signal
+
+        if self.show_target_signal and self.show_target_noise:
+            get_target = lambda: np.random.poisson(target_signal_e, im_size)
+        elif self.show_target_signal:
+            get_target = lambda: target_signal_e
+        elif self.show_target_noise:
+            get_target = lambda: np.random.poisson(target_signal_e, im_size) - target_signal_e
+        else:
+            get_target = lambda: 0
+
+        if self.subs > 1:
+            def update_stack_text(i):
+                self.varMessageLabel.set('Stacking frame {:d} of {:d}..'.format(i, self.subs))
+                self.labelMessage.configure(foreground='navy')
+                self.labelMessage.update_idletasks()
+        else:
+            update_stack_text = lambda i: None
+
         for i in range(self.subs):
-            img[:, :, i][map] += target[:, :, i][map]*self.img_orig[map]
-        
-        # Truncate invalid pixel values
-        img[img < 0.0] = 0.0
-        img[img > C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]] \
-                                                     = C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]
-        
+
+            update_stack_text(i+1)
+
+            img = get_bias() + ((get_dark() + get_background() + get_target())/gain).astype('int32')
+
+            # Truncate invalid pixel values
+            img[img < 0] = 0
+            img[img > white_level] = white_level
+
+            stack_img[:, :] += img.astype('float32')/white_level
+
         # Take mean of images to get a stacked image
-        img = np.mean(img, axis=2)
-        
-        # Scale pixel values to be between 0 and 1, with 1 corresponding to the saturation capacity
-        img = img/C.WHITE_LEVEL[self.cont.cnum][0][self.gain_idx]
+        stack_img[:, :] /= float(self.subs)
         
         # Save linear and non-linear version of the simulated image
-        plt.imsave('aplab_temp{}sim.jpg'.format(os.sep), img, cmap=plt.get_cmap('gray'), vmin = 0.0, vmax = 1.0)
-        plt.imsave('aplab_temp{}sim_str.jpg'.format(os.sep), apc.autostretch(img), cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
+        plt.imsave('aplab_temp{}sim.jpg'.format(os.sep), stack_img, cmap=plt.get_cmap('gray'), vmin = 0.0, vmax = 1.0)
+        plt.imsave('aplab_temp{}sim_str.jpg'.format(os.sep), apc.autostretch(stack_img), cmap=plt.get_cmap('gray'), vmin=0, vmax=65535)
         
         # Open as PIL images
         im = Image.open('aplab_temp{}sim.jpg'.format(os.sep))
         im_str = Image.open('aplab_temp{}sim_str.jpg'.format(os.sep))
-        
-        sidelength = int(self.canvasSim.winfo_width()) - 5 # Canvas size
+
+        self.im_display_size = (int(self.canvasSim.winfo_width()), int(self.canvasSim.winfo_height()))
         
         # Resize images to fit canvas
-        im_res = im.resize((sidelength, sidelength), Image.ANTIALIAS)
-        im_res_str = im_str.resize((sidelength, sidelength), Image.ANTIALIAS)
+        im_res = im.resize((self.im_display_size[0], self.im_display_size[1]), Image.ANTIALIAS)
+        im_res_str = im_str.resize((self.im_display_size[0], self.im_display_size[1]), Image.ANTIALIAS)
         
         # Convert to PhotoImage
         self.photoim = ImageTk.PhotoImage(im_res)
@@ -874,6 +920,7 @@ class ImageSimulator(ttk.Frame):
         apc.createToolTip(self.labelFR, C.TTFR, self.cont.tt_fs)
         apc.createToolTip(self.labelIS, C.TTIS, self.cont.tt_fs)
         apc.createToolTip(self.labelRL, C.TTRL, self.cont.tt_fs)
+        apc.createToolTip(self.labelEDR, C.TTEDR, self.cont.tt_fs)
         apc.createToolTip(self.labelGainI, C.TTGain, self.cont.tt_fs)
         apc.createToolTip(self.labelSatCap, C.TTSatCap, self.cont.tt_fs)
         apc.createToolTip(self.labelBL, C.TTBL, self.cont.tt_fs)
@@ -894,6 +941,7 @@ class ImageSimulator(ttk.Frame):
         apc.createToolTip(self.labelFR2, C.TTFR, self.cont.tt_fs)
         apc.createToolTip(self.labelIS2, C.TTIS, self.cont.tt_fs)
         apc.createToolTip(self.labelRL2, C.TTRL, self.cont.tt_fs)
+        apc.createToolTip(self.labelEDR2, C.TTEDR, self.cont.tt_fs)
         apc.createToolTip(self.labelGainI2, C.TTGain, self.cont.tt_fs)
         apc.createToolTip(self.labelSatCap2, C.TTSatCap, self.cont.tt_fs)
         apc.createToolTip(self.labelBL2, C.TTBL, self.cont.tt_fs)
@@ -935,11 +983,11 @@ class ImageSimulator(ttk.Frame):
         for widget in [self.entryExp, self.entryDF, self.entrySF, self.entryTF, self.entryLF, self.entrySubs,
                        self.labelExp, self.labelDF, self.labelSF, self.labelTF, self.labelLF, self.labelSubs,
                        self.labelSNR2, self.labelStackSNR2, self.labelDR2, self.labelFL2, 
-                       self.labelEFL, self.labelAP, self.labelFR, self.labelIS, self.labelRL, 
+                       self.labelEFL, self.labelAP, self.labelFR, self.labelIS, self.labelRL, self.labelEDR, 
                        self.labelGainI, self.labelSatCap, self.labelBL, self.labelWL, self.labelPS, 
                        self.labelQE, self.labelRNI, self.labelDN, self.labelSN, self.labelTBGN,
                        self.labelSNR2, self.labelStackSNR2, self.labelDR2, self.labelFL2, 
-                       self.labelEFL2, self.labelAP2, self.labelFR2, self.labelIS2, self.labelRL2, 
+                       self.labelEFL2, self.labelAP2, self.labelFR2, self.labelIS2, self.labelRL2, self.labelEDR2, 
                        self.labelGainI2, self.labelSatCap2, self.labelBL2, self.labelWL2, self.labelPS2, 
                        self.labelQE2, self.labelRNI2, self.labelDN2, self.labelSN2, self.labelTBGN2]:
                            
@@ -963,40 +1011,202 @@ class ImageSimulator(ttk.Frame):
 
         # If the window isn't already created
         if not self.topCanvas.winfo_exists():
-                
+
+            self.bias_options = ['Offset + read noise', 'Offset', 'Read noise', 'None']
+            self.signal_options = ['Signal + noise', 'Signal', 'Noise', 'None']
+            self.resolution_options = ['Small', 'Medium', 'Large']
+
+            self.varSimBias = tk.StringVar()
+            self.varSimDark = tk.StringVar()
+            self.varSimBackground = tk.StringVar()
+            self.varSimTarget = tk.StringVar()
+            self.varSimResolution = tk.StringVar()
+
+            self.varSimBias.set(self.bias_options[0])
+            self.varSimDark.set(self.signal_options[0])
+            self.varSimBackground.set(self.signal_options[0])
+            self.varSimTarget.set(self.signal_options[0])
+            self.varSimResolution.set(self.im_resolution_label[0].upper() + self.im_resolution_label[1:])
+
+            self.show_bias_offset = True
+            self.show_bias_noise = True
+            self.show_dark_signal = True
+            self.show_dark_noise = True
+            self.show_background_signal = True
+            self.show_background_noise = True
+            self.show_target_signal = True
+            self.show_target_noise = True
+    
             # Setup window
             self.topCanvas = tk.Toplevel(background=C.DEFAULT_BG)
             self.topCanvas.title('Simulated image')
             self.cont.addIcon(self.topCanvas)
-            apc.setupWindow(self.topCanvas, 330, 350)
+            apc.setupWindow(self.topCanvas, self.im_display_size[0] + 300*C.scsx, self.im_display_size[1] + 50*C.scsy)
             self.topCanvas.focus_force()
             self.topCanvas.wm_attributes('-topmost', 1)
+
+            self.frameView = ttk.Frame(self.topCanvas)
+
+            labelView = ttk.Label(self.frameView, text='Viewing options', font=self.cont.medium_font, anchor='center')
+
+            labelBias = ttk.Label(self.frameView, text='Bias:')
+            optionBias = ttk.OptionMenu(self.frameView, self.varSimBias, None, *self.bias_options,
+                                        command=self.updateSimBias)
+
+            labelDark = ttk.Label(self.frameView, text='Dark:')
+            optionDark = ttk.OptionMenu(self.frameView, self.varSimDark, None, *self.signal_options,
+                                        command=self.updateSimDark)
+
+            labelBackground = ttk.Label(self.frameView, text='Background:')
+            optionBackground = ttk.OptionMenu(self.frameView, self.varSimBackground, None, *self.signal_options,
+                                              command=self.updateSimBackground)
+
+            labelTarget = ttk.Label(self.frameView, text='Target:')
+            optionTarget = ttk.OptionMenu(self.frameView, self.varSimTarget, None, *self.signal_options,
+                                          command=self.updateSimTarget)
+
+            labelResolution = ttk.Label(self.frameView, text='Resolution:')
+            optionResolution = ttk.OptionMenu(self.frameView, self.varSimResolution, None, *self.resolution_options,
+                                              command=self.updateResolution)
+
+            labelView.grid(row=0, column=0, columnspan=2, pady=(0, 10*C.scsy))
+
+            labelBias.grid(row=1, column=0, sticky='W')
+            optionBias.grid(row=1, column=1, sticky='W')
+
+            labelDark.grid(row=2, column=0, sticky='W')
+            optionDark.grid(row=2, column=1, sticky='W')
+
+            labelBackground.grid(row=3, column=0, sticky='W')
+            optionBackground.grid(row=3, column=1, sticky='W')
+
+            labelTarget.grid(row=4, column=0, sticky='W')
+            optionTarget.grid(row=4, column=1, sticky='W')
+
+            labelResolution.grid(row=5, column=0, sticky='W', pady=10*C.scsy)
+            optionResolution.grid(row=5, column=1, sticky='W', pady=10*C.scsy)
+
+            ttk.Button(self.frameView, text='Update', command=self.updateSim).grid(row=6, column=0, columnspan=2, pady=10*C.scsy)
+
+            self.frameView.pack(side='right', expand=True, padx=10*C.scsx)
                 
-            self.canvasSim = tk.Canvas(self.topCanvas, width=round(320*C.scsy),
-                                       height=round(320*C.scsy), bg='white', bd=2,
-                                       relief='groove')
+            self.canvasSim = tk.Canvas(self.topCanvas, width=self.im_display_size[0], height=self.im_display_size[1],
+                                       bg='white', bd=2, relief='groove')
                 
-            self.canvasSim.pack(side='top', expand=True)
+            self.canvasSim.pack(side='top')
         
             # Create stretch checkbutton
-            frameStretch = ttk.Frame(self.topCanvas)
+            self.frameStretch = ttk.Frame(self.topCanvas)
         
-            self.labelStretch = ttk.Label(frameStretch, text='Stretch:')
-            self.checkbuttonStretch = tk.Checkbutton(frameStretch, highlightbackground=C.DEFAULT_BG, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varStretch,
-                                      command=lambda: self.simulateController(fromCheckbutton=True))
+            self.labelStretch = ttk.Label(self.frameStretch, text='Stretch:')
+            self.checkbuttonStretch = tk.Checkbutton(self.frameStretch, highlightbackground=C.DEFAULT_BG,
+                                                     background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG, variable=self.varStretch,
+                                                     command=self.updateStretch)
 
             if self.cont.tooltipsOn.get():
 
                 apc.createToolTip(self.labelStretch, C.TTStretch, self.cont.tt_fs)
                 apc.createToolTip(self.checkbuttonStretch, C.TTStretch, self.cont.tt_fs)
-            
-            frameStretch.pack(side='bottom', expand=True)
         
             self.labelStretch.pack(side='left')
             self.checkbuttonStretch.pack(side='left')
             
+            self.frameStretch.pack(side='bottom', expand=True)
+            
             self.topCanvas.update()
+
+        self.updateSim()
+
+    def updateStretch(self):
+        
+        # Redraw the simulated image as stretched or unstretched depending on checkbutton state
+        if self.varStretch.get():
     
+            self.canvasSim.create_image(0, 0, image=self.photoim_str, anchor='nw')
+            self.canvasSim.image = self.photoim_str
+            
+        else:
+        
+            self.canvasSim.create_image(0, 0, image=self.photoim, anchor='nw')
+            self.canvasSim.image = self.photoim
+    
+    def updateSimBias(self, selected_value):
+ 
+        if selected_value == self.bias_options[0]:
+            self.show_bias_offset = True
+            self.show_bias_noise = True
+        elif selected_value == self.bias_options[1]:
+            self.show_bias_offset = True
+            self.show_bias_noise = False
+        elif selected_value == self.bias_options[2]:
+            self.show_bias_offset = False
+            self.show_bias_noise = True
+        else:
+            self.show_bias_offset = False
+            self.show_bias_noise = False
+
+    def updateSimDark(self, selected_value):
+
+        if selected_value == self.signal_options[0]:
+            self.show_dark_signal = True
+            self.show_dark_noise = True
+        elif selected_value == self.signal_options[1]:
+            self.show_dark_signal = True
+            self.show_dark_noise = False
+        elif selected_value == self.signal_options[2]:
+            self.show_dark_signal = False
+            self.show_dark_noise = True
+        else:
+            self.show_dark_signal = False
+            self.show_dark_noise = False
+
+    def updateSimBackground(self, selected_value):
+
+        if selected_value == self.signal_options[0]:
+            self.show_background_signal = True
+            self.show_background_noise = True
+        elif selected_value == self.signal_options[1]:
+            self.show_background_signal = True
+            self.show_background_noise = False
+        elif selected_value == self.signal_options[2]:
+            self.show_background_signal = False
+            self.show_background_noise = True
+        else:
+            self.show_background_signal = False
+            self.show_background_noise = False
+
+    def updateSimTarget(self, selected_value):
+
+        if selected_value == self.signal_options[0]:
+            self.show_target_signal = True
+            self.show_target_noise = True
+        elif selected_value == self.signal_options[1]:
+            self.show_target_signal = True
+            self.show_target_noise = False
+        elif selected_value == self.signal_options[2]:
+            self.show_target_signal = False
+            self.show_target_noise = True
+        else:
+            self.show_target_signal = False
+            self.show_target_noise = False
+
+    def updateResolution(self, selected_value):
+
+        self.im_resolution_label = selected_value.lower()
+
+    def updateSim(self):
+    
+        self.processInput()
+    
+        if self.noInvalidInput:
+
+            f = np.min([float(self.topCanvas.winfo_width() - self.frameView.winfo_width() - 60*C.scsx)/self.im_display_size[0],
+                        float(self.topCanvas.winfo_height() - self.frameStretch.winfo_height() - 20*C.scsy)/self.im_display_size[1]])
+
+            self.canvasSim.configure(width=int(f*self.im_display_size[0]), height=int(f*self.im_display_size[1]))
+
+            self.simulateImage()
+
     def getSuggestedSettings(self):
         
         try:
@@ -1016,8 +1226,17 @@ class ImageSimulator(ttk.Frame):
         try:
             lf = self.cont.convSig(self.varLF.get(), False) if self.cont.lumSignalType.get() \
                                                             else self.varLF.get()
+
+            if lf < tf:
+
+                self.varMessageLabel.set('Max signal cannot be lower than target signal.')
+                self.labelMessage.configure(foreground='crimson')
+                self.emptyInfoLabels()
+                return None    
+
         except tk.TclError:
-            self.varLF.set('')
+
+            self.varLF.set('{:.2g}'.format(tf))
             lf = tf
             
         maxf = lf + sf + df
@@ -1243,15 +1462,3 @@ class ImageSimulator(ttk.Frame):
         
         ttk.Button(topSettings, text='Close', command=lambda: topSettings.destroy())\
                   .pack(side='bottom', pady=(0, 15*C.scsy), expand=True)
-
-    def deleteTemp(self):
-        
-        try:
-            os.remove('aplab_temp{}sim.jpg'.format(os.sep))
-        except OSError:
-            pass
-
-        try:
-            os.remove('aplab_temp{}sim_str.jpg'.format(os.sep))
-        except OSError:
-            pass

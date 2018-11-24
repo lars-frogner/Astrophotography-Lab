@@ -2,6 +2,8 @@
 
 import tkinter as tk
 import tkinter.ttk as ttk
+import tkinter.filedialog
+import sys
 import os
 import atexit
 import time
@@ -19,11 +21,11 @@ from aplab_common import C
 class ImageSolver(ttk.Frame):
 
     def __init__(self, parent, controller):
-        
+
         '''Initialize Image Solver frame.'''
-    
+
         ttk.Frame.__init__(self, parent)
-        
+
         self.cont = controller
         small_font = self.cont.small_font
         medium_font = self.cont.medium_font
@@ -39,12 +41,12 @@ class ImageSolver(ttk.Frame):
         self.previousPath = os.path.expanduser('~/Pictures') # Default file path
 
         self.showtypes = ['Original', 'Annotated', 'Objects', 'Index']
-        
+
         self.noInput = True
         self.currentImage = None
 
         self.solver_thread = threading.Timer(0, self.solve)
-        
+
         self.varShowType = tk.StringVar()
         self.varScaleFac = tk.DoubleVar()
         self.varUseSysScale = tk.IntVar()
@@ -53,57 +55,58 @@ class ImageSolver(ttk.Frame):
 
         self.varShowType.set(self.showtypes[0])
         self.varScaleFac.set('')
-        
+
         # Define frames
-        
+
         frameHeader = ttk.Frame(self)
         frameContent = ttk.Frame(self)
         frameLeft = ttk.Frame(frameContent)
         self.frameRight = ttk.Frame(frameContent)
         frameMessage = ttk.Frame(self)
-        
+
         # Place frames
-        
+
         frameHeader.pack(side='top', fill='x')
-        
+
         frameContent.pack(side='top', fill='both', expand=True)
-        
+
         frameLeft.pack(side='left', padx=(30*C.scsx, 0), fill='y')
         self.frameRight.pack(side='right', fill='both', expand=True)
-        
+
         frameMessage.pack(side='bottom', fill='x')
-        
+
         # *** Header frame ***
-        
+
         labelHeader = ttk.Label(frameHeader, text='Image Solver', font=self.cont.large_font,
                                 anchor='center')
-        
+
         frameNames = ttk.Frame(frameHeader)
-        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName, 
-                                 font=self.cont.smallbold_font, foreground='darkslategray', 
-                                 anchor='center')
-        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName, 
+        labelCamName = ttk.Label(frameNames, textvariable=self.cont.varCamName,
                                  font=self.cont.smallbold_font, foreground='darkslategray',
                                  anchor='center')
-        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, foreground='darkslategray', 
+        labelTelName = ttk.Label(frameNames, textvariable=self.cont.varTelName,
+                                 font=self.cont.smallbold_font, foreground='darkslategray',
+                                 anchor='center')
+        labelFLMod = ttk.Label(frameNames, textvariable=self.cont.varFLMod, foreground='darkslategray',
                                  font=self.cont.smallbold_font, anchor='center')
-        
+
         labelHeader.pack(side='top', pady=3*C.scsy)
-        
+
         ttk.Separator(frameHeader, orient='horizontal').pack(side='top', fill='x')
-        
+
         frameNames.pack(side='top', fill='x')
         labelCamName.pack(side='left', expand=True)
         labelTelName.pack(side='left', expand=True)
         labelFLMod.pack(side='right', expand=True)
-        
+
         # *** Left frame ***
 
 
         frameControll = ttk.Frame(frameLeft)
-        
+
         self.buttonAdd = ttk.Button(frameControll, text='Add image', width=10, command=self.addImage)
         self.buttonSolve = ttk.Button(frameControll, text='Solve', width=10, command=lambda: self.solver_thread.start())
+        self.buttonAbort = ttk.Button(frameControll, text='Abort', width=10, command=lambda: self.abort_solving())
 
         self.buttonSolve.configure(state='disabled')
 
@@ -119,12 +122,12 @@ class ImageSolver(ttk.Frame):
         frameInput = ttk.Frame(frameLeft)
 
         labelInput = ttk.Label(frameInput, text='Solving options', font=medium_font, anchor='center')
-        
+
         self.labelToggleScale = ttk.Label(frameInput, text='Use system image scale:')
         self.checkbuttonToggleScale = tk.Checkbutton(frameInput, highlightbackground=C.DEFAULT_BG, background=C.DEFAULT_BG, activebackground=C.DEFAULT_BG,
                                                     variable=self.varUseSysScale, command=self.toggleSysScaleMode)
         labelToggleScale2 = ttk.Label(frameInput, text='', width=9)
-        
+
         self.labelScaleFac = ttk.Label(frameInput, text='Image scale factor:')
         self.entryScaleFac = ttk.Entry(frameInput, textvariable=self.varScaleFac, width=5, font=small_font,
                                   background=C.DEFAULT_BG)
@@ -159,31 +162,31 @@ class ImageSolver(ttk.Frame):
 
         labelShow.grid(row=0, column=0, sticky='W')
         self.optionShow.grid(row=0, column=1)
-        
+
         # *** Right frame ***
 
         self.labelCanv = ttk.Label(self.frameRight, text='<Added images will be displayed here>',
                                    anchor='center')
-        
+
         self.canvasView = tk.Canvas(self.frameRight, width=0, height=0, bg='black')
 
         self.labelCanv.pack(expand=True)
-        
+
         # *** Message frame ***
-        
+
         self.labelMessage = ttk.Label(frameMessage, textvariable=self.varMessageLabel)
-        
+
         ttk.Separator(frameMessage, orient='horizontal').pack(side='top', fill='x')
         self.labelMessage.pack(anchor='w', padx=(5*C.scsx, 0))
-    
+
     def addImage(self):
 
         self.disableWidgets()
 
         # Show file selection menu and store selected file
-            
-        fullimagepath = tk.filedialog.askopenfilename(filetypes=self.supportedformats,
-                                                      initialdir=self.previousPath)
+
+        fullimagepath = tkinter.filedialog.askopenfilename(filetypes=self.supportedformats,
+                                                           initialdir=self.previousPath)
 
         # Do nothing if no files were selected
         if len(fullimagepath) == 0:
@@ -200,7 +203,7 @@ class ImageSolver(ttk.Frame):
         self.varMessageLabel.set('Adding image {}..'.format(imagename))
         self.labelMessage.configure(foreground='navy')
         self.labelMessage.update_idletasks()
-        
+
         self.previousPath = '/'.join(fullimagepath.split('/')[:-1])
 
         if self.noInput:
@@ -212,16 +215,16 @@ class ImageSolver(ttk.Frame):
         self.check_solved()
 
         if self.is_solved:
-        
+
             self.buttonSolve.configure(state='disabled')
             self.optionShow.configure(state='normal')
             self.varShowType.set(self.showtypes[1])
             self.updateShowType(self.showtypes[1])
-        
+
         else:
 
             old_dir_path = os.path.join('aplab_astrometry', 'astrometry', 'solved_images', self.imagename)
-            
+
             if os.path.isdir(old_dir_path):
                 shutil.rmtree(old_dir_path)
 
@@ -244,14 +247,14 @@ class ImageSolver(ttk.Frame):
 
         f = np.min([float(self.frameRight.winfo_width() - 50*C.scsx)/im_pix_w,
                     float(self.frameRight.winfo_height() - 30*C.scsy)/im_pix_h])
-        
+
         canv_w = int(f*im_pix_w)
         canv_h = int(f*im_pix_h)
 
         self.im_res = ImageTk.PhotoImage(im.resize((canv_w, canv_h), Image.ANTIALIAS))
 
         im = None
-        
+
         self.canvasView.configure(width=canv_w, height=canv_h)
 
         self.currentImage = self.canvasView.create_image(0.5*canv_w, 0.5*canv_h, image=self.im_res,
@@ -262,7 +265,7 @@ class ImageSolver(ttk.Frame):
         solved_path = os.path.join('aplab_astrometry', 'astrometry', 'solved_images', self.imagename, self.imagename_base + '.solved')
 
         if os.path.exists(solved_path):
-        
+
             f = open(solved_path, 'rb')
             self.is_solved = int.from_bytes(f.read(), byteorder='little')
             f.close()
@@ -289,13 +292,11 @@ class ImageSolver(ttk.Frame):
                 res_fac = 1.0
 
             args.append('--scale-units arcsecperpix')
-            args.append('--scale-low {:.2f}'.format(0.9*self.cont.ISVal/res_fac))
-            args.append('--scale-high {:.2f}'.format(1.1*self.cont.ISVal/res_fac))
+            args.append('--scale-low {:.2f}'.format(0.75*self.cont.ISVal/res_fac))
+            args.append('--scale-high {:.2f}'.format(1.25*self.cont.ISVal/res_fac))
 
         else:
             args.append('--guess-scale')
-
-        print(args)
 
         command = [os.path.join('aplab_astrometry', 'solve-field-wrapper.bat'),
                    self.imagepath,
@@ -305,10 +306,20 @@ class ImageSolver(ttk.Frame):
 
         self.labelMessage.configure(foreground='navy')
 
+        self.buttonSolve.pack_forget()
+        self.buttonAbort.pack(side='top', expand=True)
+
         for output in self.execute(command):
-            print(output, end='')
+            print(output.encode(sys.stdout.encoding, errors='replace'), end='')
             self.varMessageLabel.set(output.strip())
             self.labelMessage.update_idletasks()
+
+        self.end_solving()
+
+    def end_solving(self):
+
+        self.buttonAbort.pack_forget()
+        self.buttonSolve.pack(side='top', expand=True)
 
         self.check_solved()
 
@@ -340,12 +351,19 @@ class ImageSolver(ttk.Frame):
 
         self.enableWidgets()
 
+    def abort_solving(self):
+
+        self.stopThread()
+        self.end_solving()
+
     def execute(self, command):
 
         process = subprocess.Popen(command, stdout=subprocess.PIPE, universal_newlines=True)
 
+        print(subprocess.list2cmdline(process.args))
+
         for stdout_line in iter(process.stdout.readline, ""):
-            yield stdout_line 
+            yield stdout_line
 
         process.stdout.close()
         return_code = process.wait()
@@ -354,24 +372,24 @@ class ImageSolver(ttk.Frame):
             raise subprocess.CalledProcessError(return_code, command)
 
     def showCanvas(self):
-    
+
         '''Show canvas widget.'''
-    
+
         self.labelCanv.pack_forget()
         self.canvasView.pack(side='top', expand=True)
 
     def disableWidgets(self):
-    
+
         '''Disable widgets that can be interacted with.'''
-    
+
         self.buttonAdd.configure(state='disabled')
         self.buttonSolve.configure(state='disabled')
         self.disableInputWidgets()
-        
+
     def enableWidgets(self):
-    
+
         '''Enable widgets that can be interacted with.'''
-    
+
         self.buttonAdd.configure(state='normal')
 
         if self.is_solved:

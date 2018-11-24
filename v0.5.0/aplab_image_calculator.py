@@ -50,6 +50,7 @@ class ImageCalculator(ttk.Frame):
         self.varFRInfo = tk.StringVar()
         self.varISInfo = tk.StringVar()
         self.varRLInfo = tk.StringVar()
+        self.varEDRInfo = tk.StringVar()
         
         self.varDFInfo = tk.StringVar()
         self.varSFInfo = tk.StringVar()
@@ -179,6 +180,10 @@ class ImageCalculator(ttk.Frame):
         self.labelRL2 = ttk.Label(frameOptics, textvariable=self.varRLInfo, anchor='center', width=7)
         labelRL3 = ttk.Label(frameOptics, text='arcsec')
         
+        self.labelEDR = ttk.Label(frameOptics, text='Equatorial drift rate: ')
+        self.labelEDR2 = ttk.Label(frameOptics, textvariable=self.varEDRInfo, anchor='center', width=7)
+        labelEDR3 = ttk.Label(frameOptics, text='pixels/sec')
+        
         # Define sensor frame widgets
         
         labelSensor = ttk.Label(frameSensor, text='Sensor', font=medium_font, anchor='center',
@@ -235,6 +240,10 @@ class ImageCalculator(ttk.Frame):
         self.labelRL.grid(row=6, column=0, sticky='W')
         self.labelRL2.grid(row=6, column=1)
         labelRL3.grid(row=6, column=2, sticky='W')
+        
+        self.labelEDR.grid(row=7, column=0, sticky='W')
+        self.labelEDR2.grid(row=7, column=1)
+        labelEDR3.grid(row=7, column=2, sticky='W')
         
         # Place sensor frame widgets
         
@@ -659,6 +668,7 @@ class ImageCalculator(ttk.Frame):
                                                 /C.APERTURE[self.cont.tnum][0], 1)))
         self.varISInfo.set('{:.3g}'.format(self.cont.ISVal))
         self.varRLInfo.set('{:.2g}'.format(1.22*5.5e-4*180*3600/(C.APERTURE[self.cont.tnum][0]*np.pi)))
+        self.varEDRInfo.set('{:.2g}'.format(15.041/self.cont.ISVal))
         
         # Set text colour according to whether the data is default or user added
         self.labelFL2.configure(foreground=('black' if C.FOCAL_LENGTH[self.cont.tnum][1] == 0 else 'navy'))
@@ -982,6 +992,7 @@ class ImageCalculator(ttk.Frame):
         apc.createToolTip(self.labelFR, C.TTFR, self.cont.tt_fs)
         apc.createToolTip(self.labelIS, C.TTIS, self.cont.tt_fs)
         apc.createToolTip(self.labelRL, C.TTRL, self.cont.tt_fs)
+        apc.createToolTip(self.labelEDR, C.TTEDR, self.cont.tt_fs)
         apc.createToolTip(self.labelGainI, C.TTGain, self.cont.tt_fs)
         apc.createToolTip(self.labelSatCap, C.TTSatCap, self.cont.tt_fs)
         apc.createToolTip(self.labelBL, C.TTBL, self.cont.tt_fs)
@@ -1004,6 +1015,7 @@ class ImageCalculator(ttk.Frame):
         apc.createToolTip(self.labelFR2, C.TTFR, self.cont.tt_fs)
         apc.createToolTip(self.labelIS2, C.TTIS, self.cont.tt_fs)
         apc.createToolTip(self.labelRL2, C.TTRL, self.cont.tt_fs)
+        apc.createToolTip(self.labelEDR2, C.TTEDR, self.cont.tt_fs)
         apc.createToolTip(self.labelGainI2, C.TTGain, self.cont.tt_fs)
         apc.createToolTip(self.labelSatCap2, C.TTSatCap, self.cont.tt_fs)
         apc.createToolTip(self.labelBL2, C.TTBL, self.cont.tt_fs)
@@ -1045,12 +1057,12 @@ class ImageCalculator(ttk.Frame):
                        self.entryExp, self.checkbuttonToggleDark, self.entryDark, self.entryBGN,
                        self.entryBGL, self.entryTarget, self.checkbuttonLim, 
                        self.labelSNR, self.labelDR, self.labelFL, self.labelEFL, self.labelAP, 
-                       self.labelFR, self.labelIS, self.labelRL, self.labelGainI, self.labelSatCap, 
+                       self.labelFR, self.labelIS, self.labelRL, self.labelEDR, self.labelGainI, self.labelSatCap, 
                        self.labelBL, self.labelWL, self.labelPS, self.labelQE, self.labelRNI, 
                        self.labelDN, self.labelSN, self.labelTBGN, self.labelDF, self.labelSF, 
                        self.labelTF, 
                        self.labelSNR2, self.labelDR2, self.labelFL2, self.labelEFL2, self.labelAP2, 
-                       self.labelFR2, self.labelIS2, self.labelRL2, self.labelGainI2, self.labelSatCap2, 
+                       self.labelFR2, self.labelIS2, self.labelRL2, self.labelEDR2, self.labelGainI2, self.labelSatCap2, 
                        self.labelBL2, self.labelWL2, self.labelPS2, self.labelQE2, self.labelRNI2, 
                        self.labelDN2, self.labelSN2, self.labelTBGN2, self.labelDF2, self.labelSF2, 
                        self.labelTF2]:
