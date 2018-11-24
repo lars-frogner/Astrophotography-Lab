@@ -1,10 +1,14 @@
-@set /p CW_IN_PATH=< "%~dp0cygwin_install_path.txt"
-@set /p ADN_IN_PATH=< "%~dp0astrometry\astrometry_install_path.txt"
-@set ADN_BASE_PATH=%CW_IN_PATH%\home\%USERNAME%\astrometry
-@set BASH=%CW_IN_PATH%\bin\bash
+@set /p CW_PATH_WIN=< "%~dp0cygwin_install_path.txt"
+@set BASH=%CW_PATH_WIN%\bin\bash
 
-@xcopy /q /i /y "%~1\%~2" "%ADN_BASE_PATH%\solved_images\%~2\"
+@set /p ADN_WORK_PATH_CW=< "%~dp0astrometry_working_path.txt"
+@set ADN_WORK_PATH_WIN=%CW_PATH_WIN%%ADN_WORK_PATH_CW:/=\%
 
-@"%BASH%" --login -c "%ADN_IN_PATH%/bin/solve-field %~3 ""$(cygpath -u -a '%ADN_BASE_PATH%\solved_images\%~2\%~2')"""
+@set ADN_PATH_CW=%ADN_WORK_PATH_CW%/astrometry
+@set ADN_PATH_WIN=%ADN_WORK_PATH_WIN%\astrometry
 
-@move /y "%ADN_BASE_PATH%\solved_images\%~2" "%~dp0astrometry\solved_images\%~2"
+@xcopy /q /i /y "%~1\%~2" "%ADN_PATH_WIN%\solved_images\%~2\"
+
+@"%BASH%" --login -c """%ADN_PATH_CW%/solve-field-wrapper.sh"" ""$1"" ""$2"" ""$3""" "cygwin-wrapper" "" "%~2" "%~3"
+
+@move /y "%ADN_PATH_WIN%\solved_images\%~2" "%~dp0astrometry\solved_images\%~2"

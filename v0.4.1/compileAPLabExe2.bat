@@ -1,15 +1,19 @@
-@set BASE=C:\Users\Lars\Dropbox\Programmering\Astrophotography\"Astrophotography_Lab_[lrep]"\v0.4.1
-@set FOLDER="APLab"
-@set ZIPFOLDER="aplab-v0.4.1-win-standalone"
-@set README="README_v0.4.1_win.txt"
+@set VERSION=0.4.2
+@set VFOLDER=0.4.1
+@set BASE=C:\Users\Lars\Dropbox\Programmering\Astrophotography\Astrophotography_Lab_[lrep]\v%VFOLDER%
+@set FOLDER=APLab
+@set ZIPFOLDER=aplab-v%VERSION%-win-standalone
+@set README=README_v%VERSION%_win.txt
 @set NAME=APLab
+@REM @set COMP_COMMAND=pyinstaller
+@set COMP_COMMAND=python C:\Users\Lars\Downloads\pyinstaller-develop\pyinstaller.py
 
 cd %BASE%
 @if %errorlevel% neq 0 exit /b %errorlevel%
 
 @echo Creating main executable...
 
-pyinstaller aplab_runner.py --icon=aplab_icon.ico --name=%NAME% --noconsole
+%COMP_COMMAND% aplab_runner.py --icon=aplab_icon.ico --name=%NAME% --noconsole
 @if %errorlevel% neq 0 exit /b %errorlevel%
 
 @echo Organizing files...
@@ -60,7 +64,7 @@ cd %BASE%
 
 @echo Creating debug executable...
 
-pyinstaller aplab_runner.py --icon=aplab_icon.ico --name=%NAME%_debug
+%COMP_COMMAND% aplab_runner.py --icon=aplab_icon.ico --name=%NAME%_debug
 @if %errorlevel% neq 0 exit /b %errorlevel%
 
 @echo Organizing files...

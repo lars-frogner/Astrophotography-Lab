@@ -1,4 +1,4 @@
-@set BASE=C:\Users\Lars\Dropbox\Programmering\Astrophotography\"Astrophotography Lab [lrep]"\v0.4.1
+@set BASE=C:\Users\Lars\Dropbox\Programmering\Astrophotography\"Astrophotography_Lab_[lrep]"\v0.4.1
 @set ZIPFOLDER="aplab-v0.4.2-win-update"
 @set README="README_v0.4.2_win.txt"
 @set NAME=APLab

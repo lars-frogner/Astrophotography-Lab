@@ -15,11 +15,11 @@ LOG=${SCRIPTPATH}/setup_log.txt
 echo 'Standard output and errors will be written to setup_log.txt'
 echo 'Standard errors will also be displayed on screen'
 
-echo "Working directory is ${SCRIPTPATH}" | tee ${LOG}
+echo "Working directory is ${SCRIPTPATH}" | tee "${LOG}"
 
 # Find which directory to store index files in
-INDEXPATH=$(< astrometry_install_path.txt)/data
-echo "Storing index files in ${INDEXPATH}" | tee -a ${LOG}
+INDEXPATH=$(< "${SCRIPTPATH}/astrometry_install_path.txt")/data
+echo "Storing index files in ${INDEXPATH}" | tee -a "${LOG}"
 
 # Find which range of index files to download
 I1=$1
@@ -35,7 +35,7 @@ then
         exit
     fi
     I2=$1
-    echo "Retrieving index file ${I1}.." | tee -a ${LOG}
+    echo "Retrieving index file ${I1}.." | tee -a "${LOG}"
 else
     if [ $1 -lt 0 ]
     then
@@ -51,7 +51,7 @@ else
         exit
     fi
     I2=$2
-    echo "Retrieving index files ${I1} through ${I2}.." | tee -a ${LOG}
+    echo "Retrieving index files ${I1} through ${I2}.." | tee -a "${LOG}"
 fi
 
 # Code for checking download size
@@ -112,10 +112,10 @@ do
             INDEXNAME=index-42$(printf %02d $i)-$(printf %02d $j).fits
             if [ -f "${INDEXPATH}/${INDEXNAME}" ]
             then
-                echo "${INDEXNAME} already exists" | tee -a ${LOG}
+                echo "${INDEXNAME} already exists" | tee -a "${LOG}"
             else
-                echo "Downloading ${INDEXNAME}.." | tee -a ${LOG}
-                wget -P "${INDEXPATH}/" -O "${INDEXPATH}/${INDEXNAME}" "http://data.astrometry.net/4200/${INDEXNAME}" | tee -a ${LOG}
+                echo "Downloading ${INDEXNAME}.." | tee -a "${LOG}"
+                wget -P "${INDEXPATH}/" -O "${INDEXPATH}/${INDEXNAME}" "http://data.astrometry.net/4200/${INDEXNAME}" | tee -a "${LOG}"
             fi
         done
 
@@ -126,22 +126,22 @@ do
             INDEXNAME=index-42$(printf %02d $i)-$(printf %02d $j).fits
             if [ -f "${INDEXPATH}/${INDEXNAME}" ]
             then
-                echo "${INDEXNAME} already exists" | tee -a ${LOG}
+                echo "${INDEXNAME} already exists" | tee -a "${LOG}"
             else
-                echo "Downloading ${INDEXNAME}.." | tee -a ${LOG}
-                wget -P "${INDEXPATH}/" -O "${INDEXPATH}/${INDEXNAME}" "http://data.astrometry.net/4200/${INDEXNAME}" | tee -a ${LOG}
+                echo "Downloading ${INDEXNAME}.." | tee -a "${LOG}"
+                wget -P "${INDEXPATH}/" -O "${INDEXPATH}/${INDEXNAME}" "http://data.astrometry.net/4200/${INDEXNAME}" | tee -a "${LOG}"
             fi
         done
     else
         INDEXNAME=index-42$(printf %02d $i).fits
         if [ -f "${INDEXPATH}/${INDEXNAME}" ]
         then
-            echo "${INDEXNAME} already exists" | tee -a ${LOG}
+            echo "${INDEXNAME} already exists" | tee -a "${LOG}"
         else
-            echo "Downloading ${INDEXNAME}.." | tee -a ${LOG}
-            wget -P "${INDEXPATH}/" -O "${INDEXPATH}/${INDEXNAME}" "http://data.astrometry.net/4200/${INDEXNAME}" | tee -a ${LOG}
+            echo "Downloading ${INDEXNAME}.." | tee -a "${LOG}"
+            wget -P "${INDEXPATH}/" -O "${INDEXPATH}/${INDEXNAME}" "http://data.astrometry.net/4200/${INDEXNAME}" | tee -a "${LOG}"
         fi
     fi
 done
 
-echo 'Done' | tee -a ${LOG}
+echo 'Done' | tee -a "${LOG}"
